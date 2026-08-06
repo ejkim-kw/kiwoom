@@ -2269,6 +2269,62 @@ function tossCatGrid(){
     </div>`
   ).join('') + `</div>`;
 }
+/* Ver 4.5 · 대메뉴 상단 탭(공통/국내/그외상품) + 대메뉴/중메뉴 — 디지털ARS 메뉴구조도 v0.2 기준.
+   각 대메뉴: {id(전역번호), t(대메뉴명), ic(아이콘), subs[중메뉴명...]}. subs 비면 대메뉴 자체가 최종(중메뉴 없음). 중메뉴 클릭 이후 절차는 추후 정의. */
+const V45_MENU_TABS = [
+  {k:'common', nm:'공통', cats:[
+    {id:1, t:'MTS/HTS 화면',   ic:'order',  d:'HTS·MTS 화면 사용을 문의해요',              subs:['HTS 화면 문의','MTS 화면 문의']},
+    {id:2, t:'ID/PW/인증서',   ic:'shield', d:'ID·비밀번호·인증서를 조회하고 관리해요',    subs:['ID조회/PW초기화','장기미사용ID 제한 해지','간편인증/공동인증서']},
+    {id:3, t:'비대면 업무',     ic:'idcard', d:'계좌개설·비밀번호·출금계좌 등을 비대면으로 처리해요', subs:['계좌개설 및 1원입금인증','증권계좌번호확인','계좌비밀번호 재설정','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
+    {id:4, t:'계좌정보/뱅킹',   ic:'wallet', d:'계좌정보 조회·변경과 이체·대체를 이용해요', subs:['계좌정보 조회 및 변경','은행이체','주식대체']},
+    {id:6, t:'사고 등록/해지',  ic:'bell',   d:'계좌 사고를 등록하거나 해지해요',           subs:[]},
+    {id:8, t:'서류발급',        ic:'cert',   d:'필요한 증명서·서류를 발급받아요',           subs:[]},
+  ]},
+  {k:'domestic', nm:'국내', cats:[
+    {id:5, t:'미수금 및 신용/대출',       ic:'wallet', d:'미수·반대매매와 신용·대출을 확인·신청해요',   subs:['미수 및 반대매매','신용/대출 약정 안내','신용/대출 신청 및 상환']},
+    {id:7, t:'국내주식 주문 및 잔고조회', ic:'order',  d:'시세·주문·체결·잔고조회까지 이용해요',         subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
+    {id:9, t:'유상청약 및 공모주청약',    ic:'ipo',    d:'유상·공모주 청약과 권리업무를 신청해요',       subs:['유상청약','공모주청약','반대의사 및 매수청구','그외 권리업무']},
+  ]},
+  {k:'etc', nm:'그외상품', cats:[
+    {id:10, t:'해외주식',            ic:'ipo',    d:'해외주식과 RIA계좌 업무를 이용해요',            subs:['해외주식 관련','RIA계좌']},
+    {id:11, t:'금융상품',            ic:'wallet', d:'ISA·연금·펀드 등 금융상품에 가입·관리해요',     subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
+    {id:12, t:'국내선물옵션',        ic:'order',  d:'국내 선물·옵션 거래를 문의해요',                subs:[]},
+    {id:13, t:'CFD 및 상품선물옵션', ic:'order',  d:'CFD·상품선물옵션 거래를 문의해요',              subs:['해외CFD 및 상품선물옵션','국내CFD']},
+    {id:14, t:'부가서비스',          ic:'doc',    d:'ARS 주문이용·비밀번호·퀵넘버를 신청해요',       subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스']},
+    {id:15, t:'금융센터 전화번호 안내', ic:'phone', d:'금융센터 대표 전화번호를 안내해요',            subs:[]},
+  ]},
+];
+function v45CatById(id){ for(const tab of V45_MENU_TABS){ const c=tab.cats.find(x=>x.id===id); if(c) return c; } return null; }
+function v45MenuTabs(){
+  const cur = s1state.v45Tab || 'common';
+  const idx = Math.max(0, V45_MENU_TABS.findIndex(t=>t.k===cur));
+  const tabs = V45_MENU_TABS.map(t=>
+    `<div class="v45-tab ${t.k===cur?'on':''}" data-v45tab="${t.k}">${t.nm}</div>`
+  ).join('');
+  // 슬라이딩 버블 + 탭들. 버블은 활성 인덱스 위치로 초기 배치(transform), 클릭 시 이동 애니메이션
+  return `<div class="v45-tabs"><div class="v45-tab-bubble" style="transform:translateX(${idx*100}%)"></div>${tabs}</div>`;
+}
+function v45Menu(){
+  const cur = s1state.v45Tab || 'common';
+  const tab = V45_MENU_TABS.find(t=>t.k===cur) || V45_MENU_TABS[0];
+  // 대메뉴 리스트(아이콘+대메뉴명+화살표). 클릭 → 중메뉴 있으면 드릴다운 / 없으면 최종(추후 절차)
+  return `<div class="toss-list">` + tab.cats.map(c=>
+    `<div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic">${I[c.ic]||I.order}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw">${I.chev}</div></div>`
+  ).join('') + `</div>`;
+}
+/* 대메뉴 드릴다운: 중메뉴 리스트 (뒤로가기 + 대메뉴명 타이틀). 중메뉴 클릭 이후 절차는 추후 정의 */
+function renderV45Sub(){
+  const cat = v45CatById(s1state.v45Cat);
+  if(!cat || !cat.subs.length){ s1state.v45Cat=null; return ''; }   // 방어용(분기 조건에서 이미 subs 유무 확인)
+  const list = cat.subs.map(s=>
+    `<div class="toss-cat" data-v45sub="${s}"><div class="tc-body"><div class="tc-nm">${s}</div></div><div class="tc-arw">${I.chev}</div></div>`
+  ).join('');
+  return `<div class="home-wrap toss-home">`
+    + `<div class="toss-stick"><div class="toss-top"><div class="toss-back" data-v45back title="이전">${I.chev}</div><div class="head-spacer"></div></div>`
+    + `<div class="toss-dhead"><div class="td-title">${cat.t}</div></div></div>`
+    + `<div class="toss-drill"><div class="toss-list">${list}</div></div>`
+    + `</div>`;
+}
 /* Ver 4.0 · '상담 없이 해결할 수 있어요' 자가해결 카드 (토스 IMG_5635 참고) — 기본 1개만, 화살표로만 펼침/접기 */
 /* FAQ 카드 아이콘: 사이버보안 스타일의 자체 제작 원본 라인 SVG (외부 에셋·라이선스 불필요) */
 const V40_FAQ = [
@@ -2386,6 +2442,27 @@ function v45Banner(){
     <div class="v45-bn-ic">${ic}</div>
   </div>`;
 }
+/* Ver 4.5 · '상담 없이 직접 해결해요' 자가해결 가로 스크롤 카드 (FAQ 4항목을 카드배너화). 각 카드는 실제 셀프서비스 플로우로 진입(핸들러는 tossFaqCard와 동일: data-iodstart/certstart/isastart/pwreset) */
+function v45SelfSolve(){
+  const IC = {
+    io:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M21 7H7"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h14"/></svg>',
+    doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>',
+    up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 18v-5"/><path d="M9.6 15.4 12 13l2.4 2.4"/></svg>',
+    lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  };
+  const items = [
+    {t:'입출금이 안돼요',              act:'data-iodstart',  svg:'<img src="assets/glass3.png" alt="입출금이 안돼요">'},
+    {t:'서류 발급현황이 궁금해요',     act:'data-certstart', svg:'<img src="assets/glass5.png" alt="서류 발급현황">'},
+    {t:'ISA 가입서류를 내고 싶어요',   act:'data-isastart',  svg:'<img src="assets/glass4.png" alt="ISA 가입서류">'},
+    {t:'비밀번호를 모르겠어요',       act:'data-pwreset',   svg:'<img src="assets/glass2.jpeg" alt="비밀번호를 모르겠어요">'},
+  ];
+  // 카드 스타일 = 대메뉴 그리드와 동일(.toss-gcell/.tg-ic/.tg-nm 재사용), 2×2 배치
+  const cards = items.map(it =>
+    `<div class="toss-gcell" ${it.act} role="button"><div class="tg-ic">${it.svg}</div><div class="tg-nm">${it.t}</div></div>`
+  ).join('');
+  // 섹션 헤더는 문구('혹시 이런 내용이 궁금하신가요?') + 아래 2×2 그리드
+  return `<div class="v45-selfsolve"><div class="v45ss-head">혹시 이런 내용이 궁금하신가요?</div><div class="v45ss-grid">${cards}</div></div>`;
+}
 function banner(){
   return `<div class="banner">
     <div class="big">최대 551<small>만원</small></div>
@@ -2395,6 +2472,13 @@ function banner(){
   </div>`;
 }
 function tabbar(active){
+  if(isV45()){
+    // Ver 4.5 하단 네비(bottom.jpg): [홈 / 챗봇(중앙 구 버튼) / 서비스종료], 홈·서비스종료는 아이콘만(라벨 없음)
+    // 서비스종료는 .end(빨강) 미사용 → 전화기(음성ARS) 아이콘과 동일한 뮤트 그레이(v45nav-side)
+    return `<div class="tb v45nav-side" data-tab="home" title="홈">${I.home}</div>`
+      + `<div class="tb v45nav-chat" data-tab="chat" title="챗봇"><img src="assets/chat.jpg" alt="챗봇"></div>`
+      + `<div class="tb v45nav-side" data-tab="end" title="서비스종료">${I.power}</div>`;
+  }
   return `<div class="tb" data-tab="voice">${I.phone}<span>음성ARS</span></div>
     <div class="tb" data-tab="chat">${I.chat}<span>챗봇</span></div>
     <div class="tb end" data-tab="end">${I.power}<span>서비스종료</span></div>`;
@@ -4704,11 +4788,17 @@ function renderS1(){
         + banner()
         + appFooter()
         + `</div>`;
+    } else if(isV45() && v45CatById(s1state.v45Cat) && v45CatById(s1state.v45Cat).subs.length){
+      // Ver 4.5 · 대메뉴 선택 시 중메뉴 드릴다운 페이지 (메뉴구조도 v0.2)
+      html = renderV45Sub();
     } else if(isV40()){
       /* Ver 4.0 계열 · 토스 스타일 디지털 ARS (포인트=키움 마젠타·네이비) — 9 카테고리(ARS_CAT6). v40=토스 리스트 / v41=3×3 그리드. 드릴다운·전체메뉴없음 공통. */
       const path = s1state.sarsPath || [];
       // 우상단 큰글씨 on/off 스위치 (기존 전역 bigFont+applyScale 재사용)
-      const bf = `<div class="bigfont-toggle ${bigFont?'on':''}" data-bigfont title="큰글씨 ${bigFont?'끄기':'켜기'}"><svg class="bf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13h6"/><path d="m2 16 4.5-11 4.5 11"/><path d="M18 16V7"/><path d="m14 11 4-4 4 4"/></svg><span class="bf-t">큰글씨</span></div>`;
+      // Ver 4.5: ON/OFF 글자 토글 스위치 / 그 외 버전: 기존 아이콘+라벨 토글
+      const bf = isV45()
+        ? `<div class="bigfont-switch ${bigFont?'on':''}" data-bigfont role="switch" aria-checked="${bigFont?'true':'false'}" title="큰글씨 ${bigFont?'끄기':'켜기'}"><span class="bfs-label">큰글씨</span><span class="bfs-track"><span class="bfs-txt bfs-on">ON</span><span class="bfs-txt bfs-off">OFF</span><span class="bfs-knob"></span></span></div>`
+        : `<div class="bigfont-toggle ${bigFont?'on':''}" data-bigfont title="큰글씨 ${bigFont?'끄기':'켜기'}"><svg class="bf-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13h6"/><path d="m2 16 4.5-11 4.5 11"/><path d="M18 16V7"/><path d="m14 11 4-4 4 4"/></svg><span class="bf-t">큰글씨</span></div>`;
       // 우상단 사고신고 아이콘 → 사고등록 매체 플로팅(ACC_SHEET) 재사용
       const accReport = `<div class="acc-report" data-mediasheet="accident" title="사고신고" role="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="acc-report-t">사고신고</span></div>`;
       // Ver 4.0 메인화면(대메뉴 목록)에만 적용하는 여백·폰트 정리 훅 (v41 그리드·v42·드릴다운 미적용)
@@ -4716,10 +4806,10 @@ function renderS1(){
       html = `<div class="home-wrap toss-home${bigFont?' bigfont':''}${v40main}">`;
       if(path.length===0){
         // 상단 로고~인사말은 고정(sticky), 아래 FAQ·카테고리 리스트만 스크롤
-        html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${accReport}</div></div>`
+        html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
           + `<div class="toss-hero"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div></div>`
-          + tossFaqCard()
-          + (isV45() ? (v45Banner() + tossCatGrid()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v45: 배너+그리드 / v41: 3×3 그리드 / v40: 리스트
+          + (isV45() ? v45SelfSolve() : tossFaqCard())
+          + (isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v45: 자가해결 2×2 + 탭(공통/국내/그외상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
         // 드릴다운 헤더: 현재 단계 이름을 타이틀로(대메뉴 진입 시 = 대메뉴명), 대메뉴 단계면 설명글도 표기
         const dtrail = sarsWalk(catData(), path).trail;
@@ -5800,6 +5890,39 @@ document.addEventListener('click', (e)=>{
   // V2.1 메인 인라인 탭(셀프서비스/ARS메뉴/상담원연결) 전환 — 트리 상태 초기화
   const v21 = t.closest('[data-v21tab]');
   if(v21){ s1state.v21Tab=v21.dataset.v21tab; s1state.sarsPath=[]; s1state.amOpen=-1; s1state.amOpen2=-1; renderS1(); return; }
+  // Ver 4.5 대메뉴 탭(공통/국내/그외상품) 전환 — 버블 슬라이딩 위해 전체 re-render 대신 부분 갱신
+  const v45t = t.closest('[data-v45tab]');
+  if(v45t){
+    const k = v45t.dataset.v45tab;
+    if(k !== s1state.v45Tab){
+      s1state.v45Tab = k;
+      s1state.v45Cat = null;   // 탭 전환 시 드릴다운 초기화
+      const idx = Math.max(0, V45_MENU_TABS.findIndex(x=>x.k===k));
+      const tabsEl = v45t.closest('.v45-tabs');
+      const bubble = tabsEl && tabsEl.querySelector('.v45-tab-bubble');
+      if(bubble) bubble.style.transform = `translateX(${idx*100}%)`;   // 버블 슬라이딩
+      if(tabsEl) tabsEl.querySelectorAll('.v45-tab').forEach(el=>el.classList.toggle('on', el.dataset.v45tab===k));
+      const menuEl = tabsEl && tabsEl.nextElementSibling;   // 탭 바로 뒤 = 메뉴 리스트
+      if(menuEl){ const tmp=document.createElement('div'); tmp.innerHTML=v45Menu(); const fresh=tmp.firstElementChild; if(fresh) menuEl.replaceWith(fresh); else renderS1(); }
+      else renderS1();
+    }
+    return;
+  }
+  // Ver 4.5 대메뉴 클릭 → 중메뉴 드릴다운(subs 있으면) / 없으면 최종(추후 절차 정의)
+  const v45c = t.closest('[data-v45cat]');
+  if(v45c){
+    const cat = v45CatById(+v45c.dataset.v45cat);
+    if(cat){
+      if(cat.subs.length){ s1state.v45Cat = cat.id; renderS1(); }
+      else { flash(`‘${cat.t}’ 메뉴입니다. (중메뉴 없음 · 이후 절차 정의 예정)`); }
+    }
+    return;
+  }
+  // Ver 4.5 중메뉴 드릴다운 뒤로가기 → 대메뉴 리스트
+  if(t.closest('[data-v45back]')){ s1state.v45Cat = null; renderS1(); return; }
+  // Ver 4.5 중메뉴 클릭 → 이후 절차는 추후 정의(현재 안내 placeholder)
+  const v45s = t.closest('[data-v45sub]');
+  if(v45s){ flash(`‘${v45s.dataset.v45sub}’ 중메뉴 선택 · 이후 절차 정의 예정`); return; }
   // [큰글씨] ON · 큰 카드 아코디언: 카드 탭=인라인 펼침/접힘, 서비스 탭=해당 카테고리 소메뉴 드릴다운
   // Ver 4.0 · '상담 없이 해결할 수 있어요' 자가해결 카드 펼침/접기 (화살표)
   if(t.closest('[data-faqtoggle]')){ s1state.faqOpen = !s1state.faqOpen; renderS1(); return; }
@@ -6136,7 +6259,7 @@ const SCHEME_META = {
 
 let refFirm = 'kiwoom';   // 참고 탭에서 현재 선택된 증권사 (기본: 키움증권 현행)
 let sianScheme = 's1';    // 시안 탭에서 현재 선택된 시안 (s1=시안1 / dars1=시안2 / dars2=시안3)
-let s1Ver = 'v40';        // 시안1 기본 버전 = Ver 4.0(v40). 맨 URL(파라미터 없음) 진입 시 메인을 Ver 4.0으로 표시. (타 버전은 QR ?v= 파라미터로 진입)
+let s1Ver = 'v45';        // 시안1 기본 버전 = Ver 4.5(v45). 맨 URL(파라미터 없음) 진입 시 메인을 Ver 4.5로 표시. (타 버전은 QR ?v= 파라미터로 진입)
 /* Ver 2.1 — 메인 3탭(셀프서비스/ARS메뉴/상담원연결)·드로어·favSrc 등 v21 전용 동작 게이트 */
 function isV21Ver(){ return s1Ver==='v21'; }
 /* Ver 4.0 계열 — 토스 스킨·9 카테고리(ARS_CAT6)·상담연결 팝업 등 공통 동작 게이트 (v40=리스트 메인 / v41=3×3 그리드 메인, 로직 동일) */
@@ -6250,6 +6373,7 @@ function updateSceneLabel(){
     v2:['kiwoom-qr-ver2.0.png','Ver 2.0'], v21:['kiwoom-qr-ver2.1.png','Ver 2.1'],
     v40:['kiwoom-qr-v40.png','Ver 4.0'],
     v41:['kiwoom-qr-v41.png','Ver 4.1'], v42:['kiwoom-qr-v42.png','Ver 4.2'],
+    v45:['kiwoom-qr-v45.png','Ver 4.5'],
     dform:['kiwoom-qr-dform.png','Digital Form'], dform2:['kiwoom-qr-dform2.png','Ver 4.3'], dform3:['kiwoom-qr-dform3.png','Digital Form_v0.1'],
     dars1:['kiwoom-qr-ver3.0.png','Ver 3.0'], dars2:['kiwoom-qr-ver1.2.1.png','Ver 1.2.1']
   };
@@ -6275,7 +6399,7 @@ function selectSian(v, ver){
     // 깊은 페이지에 있었어도 항상 메인(home)으로 초기화 + 인라인 탭/트리 상태 리셋
     closeMenuDrawer();
     s1state.page='home'; s1state.fromFav=false; s1state.noHome=false; s1state.noBack=false; s1state.history=[];
-    s1state.v21Tab='self'; s1state.sarsPath=[]; s1state.amOpen=-1; s1state.amOpen2=-1;
+    s1state.v21Tab='self'; s1state.v45Tab='common'; s1state.v45Cat=null; s1state.sarsPath=[]; s1state.amOpen=-1; s1state.amOpen2=-1;
     renderS1();
   } else if(v==='dars1'){ if(window.__darsHome1) window.__darsHome1(); }
   else if(v==='dars2'){ if(window.__darsHome2) window.__darsHome2(); }
@@ -6487,6 +6611,7 @@ switchScheme('sian');
       'v40':['s1','v40'],'4.0':['s1','v40'],'v4':['s1','v40'],
       'v41':['s1','v41'],'4.1':['s1','v41'],'v4.1':['s1','v41'],
       'v42':['s1','v42'],'4.2':['s1','v42'],'v4.2':['s1','v42'],
+      'v45':['s1','v45'],'4.5':['s1','v45'],'v4.5':['s1','v45'],
       'dars1':['dars1'],'3.0':['dars1'],'v3':['dars1'],'v30':['dars1'],
       'dars2':['dars2'],'1.2.1':['dars2'],'s3':['dars2'],
       'dform':['dform'],'dform2':['dform2'],'4.3':['dform2'],'v4.3':['dform2'],'dform3':['dform3']

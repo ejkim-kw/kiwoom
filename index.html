@@ -415,6 +415,77 @@ body{
 .flow.toss.v45 .otp-row .auth-input:focus{outline:none}
 .flow.toss.v45 .otp-timer{color:#4848D8}
 
+/* ===== Ver 4.5 · 큰글씨 ON/OFF 글자 스위치 (우상단) ===== */
+.bigfont-switch{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;flex:none}
+.bigfont-switch .bfs-label{font-size:calc(12.5px*var(--scale));font-weight:700;color:#8B95A1;white-space:nowrap;transition:color .2s}
+.bigfont-switch.on .bfs-label{color:#4848D8}
+.bigfont-switch .bfs-track{position:relative;width:54px;height:27px;border-radius:14px;background:#D5D8E0;transition:background .2s;flex:none}
+.bigfont-switch.on .bfs-track{background:linear-gradient(135deg,#5E5EF0,#4848D8)}
+.bigfont-switch .bfs-knob{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .22s cubic-bezier(.4,0,.2,1)}
+.bigfont-switch.on .bfs-knob{transform:translateX(27px)}
+.bigfont-switch .bfs-txt{position:absolute;top:0;height:27px;display:flex;align-items:center;font-size:9.5px;font-weight:800;letter-spacing:.4px;transition:opacity .2s}
+.bigfont-switch .bfs-on{left:9px;color:#fff;opacity:0}
+.bigfont-switch .bfs-off{right:8px;color:#8A909C;opacity:1}
+.bigfont-switch.on .bfs-on{opacity:1}
+.bigfont-switch.on .bfs-off{opacity:0}
+.bigfont-switch:active .bfs-track{filter:brightness(.96)}
+
+/* ===== Ver 4.5 · '혹시 이런 내용이 궁금하신가요?' 자가해결 2×2 그리드 (대메뉴 그리드 카드 스타일 재사용) ===== */
+.v45-selfsolve{margin:0 0 4px}
+.v45ss-head{font-size:calc(15px*var(--scale));font-weight:400;color:#111;padding:0 22px;margin:8px 0 12px;letter-spacing:-.2px}   /* 인사말 아래 간격 두고 문구 섹션 헤더 — 검정 얇은 글씨, 좌 22px(=안녕하세요 라인) */
+.v45ss-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 20px 18px}   /* 2×2, 좌우 20px 여백 */
+/* 아이콘 왼쪽 · 메뉴명 오른쪽(가로 배치). ※.flow.toss.v45 접두사로 기본 .toss-gcell(column) 명시도 상회 */
+.flow.toss.v45 .v45ss-grid .toss-gcell{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;min-height:72px;padding:12px}
+.flow.toss.v45 .v45ss-grid .tg-ic{width:38px;height:38px;overflow:hidden}
+.flow.toss.v45 .v45ss-grid .tg-ic svg{width:20px;height:20px}
+.flow.toss.v45 .v45ss-grid .tg-ic img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
+/* 이미지 아이콘(glass 등)은 사각 칩 없이 아이콘 자체를 크게 → 흰 배경이 흰 카드와 merge되어 아이콘만 꽉 차게 보임 */
+.flow.toss.v45 .v45ss-grid .tg-ic:has(img){width:48px;height:48px;background:transparent;border-radius:0;overflow:visible}
+.flow.toss.v45 .v45ss-grid .tg-nm{font-size:calc(12.5px*var(--scale));text-align:left;flex:1;min-width:0;line-height:1.3}
+
+/* ===== Ver 4.5 · 배경 그라데이션 (상단 자가해결 존=인디고 틴트 → 대메뉴 그리드 존=흰색 자연스럽게 블렌드) ===== */
+.flow.toss.v45 .toss-home{background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#FFFFFF 420px)}
+.flow.toss.v45 .toss-stick{background:#EBEDFF}   /* 고정 헤더(로고~인사말)를 그라데이션 상단색과 동일하게 → 스크롤 시 이음새 없음 */
+.flow.toss.v45 .statusbar{background:#EBEDFF}   /* 상단 상태바(시계)부터 인디고 틴트 → 시계~인사말~자가해결 배경 일체화 */
+.flow.toss.v45 .v45-selfsolve .toss-gcell{background:#fff}   /* 인디고 틴트 배경 위에서 흰 카드가 도드라지도록 명확히 흰색 유지 */
+
+/* ===== Ver 4.5 · 대메뉴 상단 탭 (공통/국내/그외상품) — 세그먼트 + 슬라이딩 버블 ===== */
+/* 구조(공통): 위치·크기·슬라이딩 전환 (스타일과 분리 — 스타일만 교체 가능) */
+.v45-tabs{position:relative;display:flex;gap:0;padding:5px;margin:8px 20px 14px;border-radius:999px}
+.v45-tab-bubble{position:absolute;z-index:0;top:5px;left:5px;height:calc(100% - 10px);width:calc((100% - 10px) / 3);border-radius:999px;transition:transform .34s cubic-bezier(.34,1.12,.46,1)}
+.v45-tab-bubble::before{content:'';position:absolute;border-radius:999px;pointer-events:none}
+.v45-tab{flex:1;position:relative;z-index:1;text-align:center;padding:9px 0;border-radius:999px;font-size:calc(13.5px*var(--scale));font-weight:700;cursor:pointer;white-space:nowrap;transition:color .28s}
+
+/* [보존] 조약돌 리퀴드 글라스 스타일(이전) — 삭제 금지. 복원: 이 블록 주석 해제 + 아래 tab2 블록 주석 처리
+.v45-tabs{background:#E2E9F7;box-shadow:inset 0 1px 2.5px rgba(52,96,220,.15)}
+.v45-tab-bubble{background:linear-gradient(178deg,rgba(251,253,255,.98) 0%,rgba(220,236,255,.95) 46%,rgba(170,206,255,.93) 100%);box-shadow:0 8px 18px rgba(52,96,220,.20),0 3px 7px rgba(52,96,220,.15),0 1px 1px rgba(52,96,220,.12),inset 0 2px 2px rgba(255,255,255,.96),inset 0 -4px 7px rgba(96,138,238,.34);-webkit-backdrop-filter:blur(8px) saturate(1.4);backdrop-filter:blur(8px) saturate(1.4)}
+.v45-tab-bubble::before{left:6px;right:6px;top:2px;height:52%;background:linear-gradient(180deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.22) 68%,rgba(255,255,255,0) 100%)}
+.v45-tab{color:#8090AE}
+.v45-tab.on{color:#1E419A}
+.v45-tab:not(.on):active{color:#4848D8}
+*/
+
+/* 플랫 스타일(3D 효과 없음): 연한 회색 트랙 + 흰 배경 pill + 하늘색 테두리만 */
+.v45-tabs{background:#F0F1F4}
+.v45-tab-bubble{background:#ffffff;border:2.5px solid #5DA8F5;box-sizing:border-box}
+.v45-tab-bubble::before{display:none}
+.v45-tab{color:#8A93A3}
+.v45-tab.on{color:#3A86D9}
+.v45-tab:not(.on):active{color:#3A86D9}
+
+/* ===== Ver 4.5 · 하단 네비게이터 (bottom.jpg 참고: 흰 플로팅 바 + 중앙 챗봇 구 버튼) ===== */
+.flow.toss.v45 .tabbar{position:relative;margin:0;padding:15px 42px calc(15px + env(safe-area-inset-bottom));background:#fff;border:none;border-top:1px solid #E9ECF4;border-radius:24px 24px 0 0;box-shadow:0 -6px 20px rgba(40,50,110,.10);display:flex;align-items:center;justify-content:space-between;overflow:visible}
+.flow.toss.v45 .tabbar .tb{flex:0 0 auto;flex-direction:row;gap:0}
+.flow.toss.v45 .tabbar .tb span{display:none}   /* 버튼명(라벨) 제거 */
+/* 홈·서비스종료 = 아이콘만, 전화기(음성ARS) 아이콘과 동일 뮤트 그레이 */
+.flow.toss.v45 .tabbar .v45nav-side{color:#9AA3B2}
+.flow.toss.v45 .tabbar .v45nav-side svg{width:27px;height:27px}
+.flow.toss.v45 .tabbar .v45nav-side:active{transform:scale(.9)}
+/* 챗봇 = chat.jpg 구(球) 버튼, 중앙에 위로 띄움(raised). 절대배치라 바 높이에 영향 없음 */
+.flow.toss.v45 .tabbar .v45nav-chat{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateY(-18px);width:60px;height:60px;border-radius:50%;overflow:hidden;box-shadow:0 10px 20px rgba(120,175,245,.5),0 3px 8px rgba(120,175,245,.32)}
+.flow.toss.v45 .tabbar .v45nav-chat img{width:100%;height:100%;object-fit:cover;display:block}
+.flow.toss.v45 .tabbar .v45nav-chat:active{transform:translate(-50%,-50%) translateY(-18px) scale(.94)}
+
 .flow.toss .toss-home{min-height:100%;display:flex;flex-direction:column;background:#fff}
 /* 상단 헤더(로고~인사말 / 뒤로가기~제목·설명) 고정 — 아래 리스트만 스크롤 */
 .flow.toss .toss-stick{position:sticky;top:0;z-index:6;background:#fff;flex:none}
@@ -2166,6 +2237,7 @@ body{
   border-radius:2px;background:var(--purple)}
 #dars1-phone .d1-tab:active{opacity:.6}
 #dars1-phone .d1-pane[hidden]{display:none}
+#darsv44-phone .d1-pane[hidden]{display:none}
 /* ARS·상담원 드릴다운 패널 (연보라 배경 — 시안2 inline-detail 참고) */
 #dars1-phone .d1-arspanel{background:var(--purple-ll);border-radius:18px;padding:6px 10px 4px}
 /* 탭 콘텐츠일 때 인사글 하단 여백 축소(대메뉴가 한 화면에) */
@@ -2246,36 +2318,33 @@ body{
 #darsv44-phone .notice-card {
   background: var(--v44-primary);
   border: none;
-  border-radius: 20px;
-  padding: 18px 16px;
-  margin: 0 0 16px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  border-radius: 14px;
+  padding: 9px 12px;
+  margin: 0 0 14px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   box-shadow: var(--v44-shadow-md);
   cursor: default;
 }
 #darsv44-phone .notice-card .nic svg { stroke: rgba(255,255,255,0.85); }
 #darsv44-phone .notice-card .nmq {
-  -webkit-mask-image: none;
-  mask-image: none;
-  overflow: visible;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 4%, black 90%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 4%, black 90%, transparent 100%);
 }
 #darsv44-phone .notice-card .ntrack {
-  animation: none;
-  display: flex;
-  flex-direction: column;
-  white-space: normal;
+  display: inline-flex;
+  white-space: nowrap;
+  animation: darsMq 22s linear infinite;
 }
 #darsv44-phone .notice-card .ni {
-  color: rgba(255,255,255,0.88);
-  font-size: 11px;
+  color: rgba(255,255,255,0.9);
+  font-size: 11.5px;
   font-weight: 500;
-  padding-right: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  padding-right: 46px;
+  display: inline;
+  overflow: visible;
 }
 #darsv44-phone .notice-card .nmore { color: rgba(255,255,255,0.6); font-size: 11px; }
 /* 히어로 인사문구를 notice-card 안으로 표현 */
@@ -2629,56 +2698,88 @@ body{
 #darsv44-phone .d1v44menu-ov.on { opacity: 1; }
 #darsv44-phone .d1v44menu-ov.on .d1menu-panel { transform: translateX(0); }
 #darsv44-phone .d1menu-panel {
-  border-radius: 0 0 20px 20px;
-  transform: translateX(-100%); transition: transform 0.25s cubic-bezier(.2,.7,.2,1);
-  box-shadow: none;
-}
-#darsv44-phone .d1menu-head { border-bottom: 1px solid var(--v44-line); }
-#darsv44-phone .d1menu-title { color: var(--v44-ink); }
-#darsv44-phone .d1m-cat {
-  color: var(--v44-ink-sub);
-  border-radius: 8px;
-  font-weight: 600;
-}
-#darsv44-phone .d1m-cat.on {
-  background: var(--v44-primary-soft);
-  color: var(--v44-primary);
-  font-weight: 800;
-}
-#darsv44-phone .d1m-t { color: var(--v44-ink); }
-#darsv44-phone .d1m-row.nav:hover { background: var(--v44-primary-soft); }
-#darsv44-phone .d1m-row.leaf:hover { background: var(--v44-primary-soft); }
-#darsv44-phone .d1m-arw svg { stroke: var(--v44-ink-muted); }
-/* ─ 계좌 키패드 ─ */
-#darsv44-phone .d1v44kp-ov {
-  position: absolute; inset: 0; z-index: 60;
-  background: oklch(0 0 0 / 0.45);
-  display: flex; align-items: flex-end;
-  opacity: 0; transition: opacity 0.22s;
-}
-#darsv44-phone .d1v44kp-ov.on { opacity: 1; }
-#darsv44-phone .d1kp-sheet {
-  border-radius: 24px 24px 0 0;
-  transform: translateY(100%); transition: transform 0.24s cubic-bezier(.2,.7,.2,1);
-}
-#darsv44-phone .d1v44kp-ov.on .d1kp-sheet { transform: translateY(0); }
-#darsv44-phone .d1kp-title { color: var(--v44-ink); font-weight: 800; }
-#darsv44-phone .d1kp-acct { background: var(--v44-primary-soft); border-radius: 12px; }
-#darsv44-phone .ka-nm { color: var(--v44-primary); font-weight: 700; }
-#darsv44-phone .ka-no { color: var(--v44-ink-sub); }
-#darsv44-phone .ka-chev { color: var(--v44-ink-muted); }
-#darsv44-phone .d1kp-key {
+  position: absolute; top: 0; left: 0; right: 0;
+  width: 100%; height: auto; max-height: 100%;
   background: var(--v44-surface);
-  border: 1px solid var(--v44-line);
-  border-radius: 12px;
-  color: var(--v44-ink);
-  font-weight: 700;
-  font-size: 18px;
+  display: flex; flex-direction: column;
+  border-radius: 0 0 20px 20px; overflow: hidden;
+  transform: translateX(-100%); transition: transform 0.25s cubic-bezier(.2,.7,.2,1);
+  box-shadow: 0 16px 40px oklch(0 0 0 / 0.15);
 }
-#darsv44-phone .d1kp-key:active { background: var(--v44-primary-soft); color: var(--v44-primary); }
-#darsv44-phone .d1kp-key.back { color: var(--v44-ink-sub); }
-#darsv44-phone .d1kp-done { background: var(--v44-primary); color: var(--v44-on-primary); border-radius: 14px; font-weight: 800; }
-#darsv44-phone .d1kp-cancel { color: var(--v44-ink-sub); }
+#darsv44-phone .d1menu-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 14px 12px; flex: none;
+  border-bottom: 1px solid var(--v44-line);
+}
+#darsv44-phone .d1menu-home {
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--v44-line); border-radius: 10px;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--v44-surface);
+}
+#darsv44-phone .d1menu-home svg {
+  width: 18px; height: 18px;
+  stroke: var(--v44-primary); fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+#darsv44-phone .d1menu-title {
+  flex: 1; font-size: 17px; font-weight: 800;
+  color: var(--v44-ink); letter-spacing: -0.4px;
+}
+#darsv44-phone .d1menu-x {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  cursor: pointer; color: var(--v44-ink-sub); font-size: 21px; line-height: 1;
+}
+#darsv44-phone .d1menu-body { flex: 1; display: flex; min-height: 0; }
+#darsv44-phone .d1menu-left{width:106px;flex:none;background:var(--v44-bg);overflow-y:auto;border-right:1px solid var(--v44-line);scrollbar-width:none}
+#darsv44-phone .d1menu-left::-webkit-scrollbar{display:none}
+#darsv44-phone .d1m-cat{padding:15px 12px;font-size:13.5px;font-weight:700;color:var(--v44-ink-sub);cursor:pointer;border-left:3px solid transparent;line-height:1.3;white-space:nowrap;border-radius:0}
+#darsv44-phone .d1m-cat.on{background:var(--v44-surface);color:var(--v44-primary);font-weight:800;border-left-color:var(--v44-primary)}
+#darsv44-phone .d1m-cat:active{background:var(--v44-primary-soft)}
+#darsv44-phone .d1menu-right{flex:1;overflow-y:auto;padding:6px 12px 24px;scrollbar-width:none}
+#darsv44-phone .d1menu-right::-webkit-scrollbar{display:none}
+#darsv44-phone .d1m-row{display:flex;align-items:center;gap:8px;padding:13px 8px;cursor:pointer}
+#darsv44-phone .d1m-row .d1m-t{flex:1;font-size:14px;font-weight:700;color:var(--v44-ink);line-height:1.35}
+#darsv44-phone .d1m-row.leaf .d1m-t{font-weight:600;color:var(--v44-ink-sub)}
+#darsv44-phone .d1m-row.nav{border-bottom:1px solid var(--v44-line)}
+#darsv44-phone .d1m-row.leaf{border-bottom:1px solid var(--v44-line)}
+#darsv44-phone .d1m-row:active{background:var(--v44-primary-soft)}
+#darsv44-phone .d1m-row.nav:hover{background:var(--v44-primary-soft)}
+#darsv44-phone .d1m-row.leaf:hover{background:var(--v44-primary-soft)}
+#darsv44-phone .d1m-arw{flex:none;display:flex;align-items:center}
+#darsv44-phone .d1m-row.nav .d1m-arw svg{width:17px;height:17px;stroke:var(--v44-primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+#darsv44-phone .d1m-node.open > .d1m-row.nav .d1m-arw svg{transform:rotate(180deg)}
+#darsv44-phone .d1m-row.leaf .d1m-arw{color:var(--v44-ink-muted);font-size:16px}
+#darsv44-phone .d1m-sub{padding-left:10px}
+/* ─ 계좌 키패드 ─ */
+/* ─ 키패드 오버레이 ─ */
+#darsv44-phone .d1v44kp-ov{position:absolute;inset:0;z-index:60;background:oklch(0 0 0/.45);display:flex;align-items:flex-end;opacity:0;transition:opacity .22s}
+#darsv44-phone .d1v44kp-ov.on{opacity:1}
+#darsv44-phone .d1kp-sheet{width:100%;background:var(--v44-surface);border-radius:24px 24px 0 0;padding:12px 16px 20px;box-shadow:0 -12px 34px oklch(0 0 0/.15);transform:translateY(100%);transition:transform .24s cubic-bezier(.2,.7,.2,1)}
+#darsv44-phone .d1v44kp-ov.on .d1kp-sheet{transform:translateY(0)}
+#darsv44-phone .d1kp-grab{width:40px;height:4px;border-radius:2px;background:var(--v44-line);margin:0 auto 12px}
+#darsv44-phone .d1kp-title{font-size:15px;font-weight:800;color:var(--v44-ink);text-align:center;margin-bottom:10px}
+#darsv44-phone .d1kp-pw{padding:10px 2px;border-bottom:2px solid var(--v44-primary);margin:0 0 14px;text-align:center;min-height:24px}
+#darsv44-phone .d1kp-pw .d1pw-dots{font-size:20px;letter-spacing:6px;color:var(--v44-ink);font-weight:800}
+#darsv44-phone .d1kp-pw .d1pw-dots:empty::before{content:attr(data-ph);color:var(--v44-ink-muted);letter-spacing:0;font-size:14px;font-weight:600}
+#darsv44-phone .d1kp-acct{display:flex;align-items:center;gap:8px;background:var(--v44-primary-soft);border:1px solid var(--v44-line);border-radius:12px;padding:11px 13px;margin-bottom:12px;cursor:pointer}
+#darsv44-phone .d1kp-acct:active{opacity:.7}
+#darsv44-phone .ka-nm{font-size:13px;font-weight:800;color:var(--v44-primary)}
+#darsv44-phone .ka-no{flex:1;font-size:12.5px;font-weight:600;color:var(--v44-ink-sub)}
+#darsv44-phone .ka-chev{font-size:12px;font-weight:800;color:var(--v44-primary)}
+#darsv44-phone .d1kp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#darsv44-phone .d1kp-key{height:50px;display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--v44-ink);background:var(--v44-surface);border:1px solid var(--v44-line);border-radius:12px;cursor:pointer;transition:.1s;user-select:none}
+#darsv44-phone .d1kp-key:active{background:var(--v44-primary-soft);color:var(--v44-primary)}
+#darsv44-phone .d1kp-key.blank{background:transparent;border-color:transparent;pointer-events:none}
+#darsv44-phone .d1kp-key.back{background:var(--v44-bg);border-color:var(--v44-line);color:var(--v44-ink-sub);font-size:22px}
+#darsv44-phone .d1kp-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-top:10px}
+#darsv44-phone .d1kp-cancel,#darsv44-phone .d1kp-done{height:50px;display:grid;place-items:center;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer}
+#darsv44-phone .d1kp-cancel{background:var(--v44-bg);color:var(--v44-ink-sub)}
+#darsv44-phone .d1kp-done{background:var(--v44-primary);color:var(--v44-on-primary)}
+#darsv44-phone .d1kp-cancel:active,#darsv44-phone .d1kp-done:active{opacity:.9}
+/* ─ 계좌 선택 리스트 (authpw 뷰) ─ */
+#darsv44-phone .d1acct-list .listrow.sel{border-color:var(--v44-primary);background:var(--v44-primary-soft)}
 /* ─ 데이터 테이블 공통 (d1sec, d1ipo, d1hold 등) ─ */
 #darsv44-phone .d1sec { font-size: 13px; font-weight: 700; color: var(--v44-ink); padding: 10px 0 6px; }
 #darsv44-phone .d1ipo-row { border-bottom-color: var(--v44-line); }
@@ -3425,23 +3526,23 @@ body{
   <!-- 시안 탭: 폰 왼쪽 시안 선택 리스트 (시안 스킴 활성 시에만 표시) -->
   <div class="ref-list sian-list" id="sianList">
     <div class="ref-title">시안 · 디지털 ARS</div>
-    <div class="ref-item" data-sian="s1" data-ver="v40"><span class="rf-nm">Ver 4.0</span><span class="rf-tel">디지털 ARS · 토스 스타일 디자인 (9카테고리 / 포인트 마젠타·네이비)</span></div>
-    <div class="ref-item" data-sian="dform2"><span class="rf-nm">Ver 4.3</span><span class="rf-tel">Digital Form 복사본 · 서류 제출 폼 (독립 편집용)</span></div>
+    <div class="ref-item" data-sian="s1" data-ver="v45"><span class="rf-nm">Ver 4.5</span><span class="rf-tel">인디고 디자인 · s1 기반 · 탭(공통/국내/그외상품)·글라스 아이콘·리퀴드 탭·하단 네비 (메인)</span></div>
     <div class="ref-item" data-sian="dform"><span class="rf-nm">Digital Form</span><span class="rf-tel">키움증권 로고만 있는 빈 화면 (작업용 템플릿)</span></div>
     <div class="ref-item" data-sian="dform3"><span class="rf-nm">Digital Form_v0.1</span><span class="rf-tel">서류제출 엔진 흐름 재현 · 5단계(인증→서류준비→첨부→제출→완료) · 업무 11종·상태머신</span></div>
     <div class="ref-item" data-sian="dform4"><span class="rf-nm">Digital Form_v0.2</span><span class="rf-tel">iOS HIG 디자인 · SF Pro·8pt 그리드·시맨틱 컬러·다크모드 · 서류제출 엔진 5단계</span></div>
-    <div class="ref-item" data-sian="dars1v44"><span class="rf-nm">Ver 4.4</span><span class="rf-tel">인디고 계열 완전 새 디자인 · oklch 토큰 · pill 탭 · underline 입력 · 바텀시트</span></div>
-    <div class="ref-item" data-sian="s1" data-ver="v45"><span class="rf-nm">Ver 4.5</span><span class="rf-tel">인디고 디자인 · s1 기반 · Ver 4.0 레이아웃 + 인디고 팔레트</span></div>
     <!-- 시안 · 이전버전 (접이식 · 우측 [+] 토글) -->
     <div class="ref-title prev-title" data-prevtoggle>시안 · 이전버전<span class="prev-plus" aria-hidden="true">+</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v1"><span class="rf-nm">Ver 1.0</span><span class="rf-tel">디지털 ARS + 보이는 ARS (화면구현)</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v11"><span class="rf-nm">Ver 1.1</span><span class="rf-tel">디지털 ARS + 보이는 ARS (화면구현) + 상담원연결 (해당 스킬로 연결)</span></div>
+    <div class="ref-item prev-item" data-sian="dars2"><span class="rf-nm">Ver 1.2.1</span><span class="rf-tel">큰 카드 + 인라인</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v2"><span class="rf-nm">Ver 2.0</span><span class="rf-tel">디지털 ARS + 보이는 ARS (단순메뉴연결)</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v21"><span class="rf-nm">Ver 2.1</span><span class="rf-tel">디지털 ARS + 보이는 ARS (단순메뉴연결, 현행과 동일) 메인화면에 모든 탭 추가, 전체메뉴 수정</span></div>
+    <div class="ref-item prev-item" data-sian="dars1"><span class="rf-nm">Ver 3.0</span><span class="rf-tel">Ver 2 에서 UI/UX만 변경</span></div>
+    <div class="ref-item prev-item" data-sian="s1" data-ver="v40"><span class="rf-nm">Ver 4.0</span><span class="rf-tel">디지털 ARS · 토스 스타일 디자인 (9카테고리 / 포인트 마젠타·네이비)</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v41"><span class="rf-nm">Ver 4.1</span><span class="rf-tel">Ver 4.0 · 메인 9 대메뉴를 3×3 그리드로 변경</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v42"><span class="rf-nm">Ver 4.2</span><span class="rf-tel">Ver 4.0 복사본 · 리스트형 (추가 작업용)</span></div>
-    <div class="ref-item prev-item" data-sian="dars1"><span class="rf-nm">Ver 3.0</span><span class="rf-tel">Ver 2 에서 UI/UX만 변경</span></div>
-    <div class="ref-item prev-item" data-sian="dars2"><span class="rf-nm">Ver 1.2.1</span><span class="rf-tel">큰 카드 + 인라인</span></div>
+    <div class="ref-item prev-item" data-sian="dform2"><span class="rf-nm">Ver 4.3</span><span class="rf-tel">Digital Form 복사본 · 서류 제출 폼 (독립 편집용)</span></div>
+    <div class="ref-item prev-item" data-sian="dars1v44"><span class="rf-nm">Ver 4.4</span><span class="rf-tel">인디고 계열 완전 새 디자인 · oklch 토큰 · pill 탭 · underline 입력 · 바텀시트</span></div>
     <div class="ref-title func-title">시연 · 기능</div>
     <div class="func-item" data-skipauth><span class="rf-nm">본인인증 생략</span><span class="rf-tel">클릭 시 이후 인증 생략 (시연용)</span></div>
     <div class="sp-qr" id="spQrWrap">
@@ -5211,9 +5312,9 @@ body{
     // 상담원 연결 화면 진입 (선택한 상담 분야 → 담당 부서 실데이터 반영) — Ver 2.1 상담원연결 참고, Ver 3.0 디자인
     function d1openAgent(field){
       field = field || '';
-      var descEl = d1.querySelector('#d1agentDesc');
-      var infoEl = d1.querySelector('#d1agentInfo');
-      var btnEl  = d1.querySelector('#d1agentBtn');
+      var descEl = d1.querySelector('#d1v44agentDesc');
+      var infoEl = d1.querySelector('#d1v44agentInfo');
+      var btnEl  = d1.querySelector('#d1v44agentBtn');
       var info = d1staffDeskFor(field);
       var d = info.desk;
       var rows = '';
@@ -5890,7 +5991,9 @@ body{
 
     // 외부(왼쪽 패널 탭 클릭)에서 시안2 메인 뷰로 복귀 — 탭·드릴다운 상태도 초기화
     window.__darsHome1 = function(){ d1arsPath = []; d1staffPath = []; d1setTab('self'); d1show('main', false); };
+  }
   // Ver 4.4 · 단일 화면 내 뷰 전환 (dars1 동일 구조 · v44 전용 ID)
+  (function(){
   var d1 = document.getElementById('darsv44-phone');
   if(d1){
     var d1views = d1.querySelectorAll('.darsv44-view');
@@ -5982,9 +6085,9 @@ body{
     // 상담원 연결 화면 진입 (선택한 상담 분야 → 담당 부서 실데이터 반영) — Ver 2.1 상담원연결 참고, Ver 3.0 디자인
     function d1openAgent(field){
       field = field || '';
-      var descEl = d1.querySelector('#d1agentDesc');
-      var infoEl = d1.querySelector('#d1agentInfo');
-      var btnEl  = d1.querySelector('#d1agentBtn');
+      var descEl = d1.querySelector('#d1v44agentDesc');
+      var infoEl = d1.querySelector('#d1v44agentInfo');
+      var btnEl  = d1.querySelector('#d1v44agentBtn');
       var info = d1staffDeskFor(field);
       var d = info.desk;
       var rows = '';
@@ -6662,6 +6765,7 @@ body{
     // 외부(왼쪽 패널 탭 클릭)에서 Ver 4.4 메인 뷰로 복귀 — 탭·드릴다운 상태도 초기화
     window.__darsHome1v44 = function(){ d1arsPath = []; d1staffPath = []; d1setTab('self'); d1show('main', false); };
   }
+  })();
 
   // 시안3 · 단일 화면 내 뷰 전환 (메인 → 인라인 리스트 항목 → 상세)
   var d2 = document.getElementById('dars2-phone');
