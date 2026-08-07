@@ -1430,7 +1430,7 @@ body{
 .find-ov.v45 .fir-acct:active{border-color:#1A1A4E;background:#fff}
 .find-ov.v45 .fir-acct .fa-t{font-size:calc(15px*var(--scale));font-weight:700;color:#1A1A4E}
 .find-ov.v45 .fir-acct .fa-sep{font-size:calc(15px*var(--scale));color:#8B95A1;font-weight:400}
-.find-ov.v45 .fir-acct .fa-no{font-size:calc(15px*var(--scale));color:#8B95A1;font-weight:500}
+.find-ov.v45 .fir-acct .fa-no{font-size:calc(15px*var(--scale));color:#1A1A4E;font-weight:700}
 /* 비밀번호 도움말 바텀시트 */
 .pw-help-sheet .pw-help-desc{font-size:15px;line-height:1.65;color:#3A3A42;margin-bottom:20px}
 .pw-help-sheet .pw-help-cta{display:flex;align-items:center;justify-content:center;gap:8px;background:#1A1A4E;color:#fff;border-radius:999px;height:46px;padding:0 20px;font-size:calc(15px*var(--scale));font-weight:700;cursor:pointer;margin-bottom:10px;box-shadow:0 6px 16px rgba(26,26,78,.22);transition:background .2s,box-shadow .2s,opacity .15s}
