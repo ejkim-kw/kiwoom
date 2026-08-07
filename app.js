@@ -4036,7 +4036,6 @@ function openPwHelpSheet(){
     <div class="cs-head"><div class="cs-title">증권계좌 비밀번호</div></div>
     <div class="pw-help-desc">증권계좌 비밀번호는 <b>숫자 4~8자리</b>예요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서<br>다시 설정할 수 있어요.</div>
     <div class="pw-help-cta" data-pwhelpgo><img src="assets/ys-icon.png" alt="S#" class="pw-help-ic">영웅문S# 바로가기</div>
-    <div class="cs-cancel" data-pwhelpclose>닫기</div>
   </div>`;
   screen.appendChild(el);
   requestAnimationFrame(()=>el.classList.add('on'));
@@ -4094,7 +4093,7 @@ function findAcctSheet(step){
         <input class="find-input" placeholder="휴대폰번호 ('-' 없이 입력)" inputmode="numeric" maxlength="11">
       </div>
       <div class="find-agree${s1state.findAgree?' on':''}" data-findagree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></div>
-      <div class="cs-cta is-off" data-findotp>인증요청</div>
+      <div class="cs-cta is-off" data-findotp>인증받기</div>
     </div>`;
   }
   if(step===2){
@@ -5429,6 +5428,7 @@ document.addEventListener('input', (e)=>{
       const raw = el.value.replace(/\D/g, '').slice(0, 8);
       el.value = raw.length > 4 ? raw.slice(0,4) + '-' + raw.slice(4) : raw;
       v45AuthBtnSync();
+      if(raw.length === 8 && !(s1state.acctPw||'').length){ openPwKeypad(false); }
     }
     const link = document.querySelector('.iod-findlink[data-iodfind], .iod-findlink[data-cheacctfind]');
     if(link) link.textContent = (el.value.trim() ? '계좌비밀번호를 모르겠어요' : '계좌번호를 모르겠어요') + ' ›';
