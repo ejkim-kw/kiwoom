@@ -4008,9 +4008,9 @@ function closeMethodSheet(){
 
 /* Ver 4.0 전용 · '계좌번호를 모르겠어요' → 3단계 계좌찾기 플로팅 (①정보입력 ②인증번호 ③계좌리스트) */
 const FIND_ACCTS = [
-  {t:'종합위탁 계좌', no:'12345678'},
-  {t:'CMA(RP형) 계좌', no:'23456789'},
-  {t:'연금저축 계좌', no:'34567890'},
+  {t:'위탁종합', no:'12345678'},
+  {t:'연금저축', no:'23456789'},
+  {t:'선물옵션', no:'34567890'},
 ];
 const FIND_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>';
 function fmtAcct(no){ return no.replace(/(\d{4})(\d{4})/, '$1-$2'); }
