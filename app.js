@@ -2685,13 +2685,16 @@ function authStep(method){
     ${chealt}
   </div>`;
 }
-/* Ver 4.5 자가해결 계좌인증: 상단 세그먼트 스텝퍼 (뒤로가기 라인 · stepper 이미지 참고). 계좌 인증=1단계 */
-function v45AuthTop(){
+/* Ver 4.5 세그먼트 스텝퍼 헤더 — cur: 0=계좌인증 1=계좌조회 2=결과안내. s1state.noBack으로 뒤로가기 제어 */
+function v45AuthTop(cur){
+  cur = (cur !== undefined && cur !== null) ? cur : 0;
   const steps = iodStepsFor();
-  const cur = 0;
   const seg = steps.map((s,i)=>`<span class="v45-step${i<=cur?' on':''}"></span>`).join('');
+  const back = s1state.noBack
+    ? `<div class="v45-step-spacer" aria-hidden="true"></div>`
+    : `<div class="back" data-s1back>${I.back}</div>`;
   return `<div class="page-top iod-top v45-authtop">`
-    + `<div class="back" data-s1back>${I.back}</div>`
+    + back
     + `<div class="v45-stepper" title="${cur+1}/${steps.length} · ${steps[cur]}">${seg}</div>`
     + `<div class="v45-step-spacer" aria-hidden="true"></div>`
     + `</div>`;
@@ -3661,7 +3664,13 @@ function startIodCheck(){
   }, 5000);   // 계좌 조회 상태 5초 유지
 }
 function renderIodChecking(){
-  // 진행바 없음 / 타이틀·설명글은 첫페이지(계좌인증)와 동일 위치·스타일 / 스피너는 화면 세로 가운데
+  if(isV45()) return `<div class="iodload-screen">
+    ${v45AuthTop(1)}
+    <div class="iodload-body v45-iodload-body">
+      <div class="toss-dhead"><div class="td-title">계좌 상태를 확인하고 있어요</div><div class="td-desc">잠시만 기다려 주세요</div></div>
+      <div class="iodload-icon"><div class="iod-spinwrap"><div class="iod-spinner"></div><div class="iod-scan">${I.search||''}</div></div></div>
+    </div>
+  </div>`;
   return `<div class="iodload-screen">
     ${pageTop(s1state.title||'계좌 조회', true)}
     <div class="iodload-body">
@@ -3695,9 +3704,26 @@ function renderIodResult(){
       </div>
     </div>`;
   }
-  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'종합위탁'} ${authAcct.no}` : '종합위탁 123-45-678901';
-  const actBtns = `<div class="primary-btn" data-iodmethods>${r.btn}</div>`;   // 클릭 시 방법 선택 플로팅
-  // 결과 카드를 탭할 때마다 3가지 사유(계좌 상태)가 순환 — 토글 탭은 노출하지 않음
+  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${fmtAcct(authAcct.no)}` : '위탁종합 1234-5678';
+  if(isV45()) return `<div class="iodresult-screen v45-iodresult">
+    ${v45AuthTop(2)}
+    <div class="iod-v45-body">
+      <div class="toss-dhead">
+        <div class="td-title">${r.title}</div>
+        <div class="td-desc">${r.body}</div>
+      </div>
+      <div class="iod-v45-card" data-iodcycle>
+        <div class="iod-v45-acct">${acct}</div>
+        <span class="iod-badge ${r.badgeCls}">${r.badge}</span>
+        <div class="iod-release">${r.release}</div>
+      </div>
+      <div class="iod-v45-actions">
+        <div class="primary-btn v45-iod-btn" data-iodmethods>${r.btn}</div>
+      </div>
+      <div class="iod-note">※ 데모 화면이에요. 위 카드를 탭하면 다른 사유를 볼 수 있어요.</div>
+    </div>
+  </div>`;
+  const actBtns = `<div class="primary-btn" data-iodmethods>${r.btn}</div>`;
   return pageTop(s1state.title||'계좌 상태', true)
     + untactSteps(IOD_STEPS, 2)
     + `<div class="iod-card" data-iodcycle>
