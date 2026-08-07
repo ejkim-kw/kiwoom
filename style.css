@@ -1425,6 +1425,14 @@ body{
 .find-ov.v45 .fir-selchev{position:absolute;right:2px;top:50%;transform:translateY(-50%);pointer-events:none;color:#9AA1AC;display:flex}
 .find-ov.v45 .fir-selchev svg{width:15px;height:15px}
 .find-ov.v45 .fir-vdivider{width:1px;height:18px;background:#D8DBE6;flex:none;margin:0 4px}
+/* step 3 계좌 선택 항목 pill */
+.find-ov.v45 .fir-acct{height:auto;min-height:56px;padding:12px 18px;cursor:pointer;align-items:center}
+.find-ov.v45 .fir-acct:active{border-color:#1A1A4E;background:#fff}
+.find-ov.v45 .fir-acct .fa-info{flex:1;min-width:0}
+.find-ov.v45 .fir-acct .fa-t{font-size:calc(15px*var(--scale));font-weight:700;color:#1A1A4E}
+.find-ov.v45 .fir-acct .fa-no{font-size:calc(13px*var(--scale));color:#8B95A1;margin-top:3px}
+.find-ov.v45 .fir-acct .cs-arw{flex:none;color:#C4C4D2;display:flex}
+.find-ov.v45 .fir-acct .cs-arw svg{width:18px;height:18px}
 /* 비밀번호 도움말 바텀시트 */
 .pw-help-sheet .pw-help-desc{font-size:15px;line-height:1.65;color:#3A3A42;margin-bottom:20px}
 .pw-help-sheet .pw-help-cta{display:flex;align-items:center;justify-content:center;gap:8px;background:#1A1A4E;color:#fff;border-radius:999px;height:46px;padding:0 20px;font-size:calc(15px*var(--scale));font-weight:700;cursor:pointer;margin-bottom:10px;box-shadow:0 6px 16px rgba(26,26,78,.22);transition:background .2s,box-shadow .2s,opacity .15s}

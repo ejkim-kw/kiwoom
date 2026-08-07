@@ -4132,6 +4132,12 @@ function findAcctSheet(step){
       <div class="cs-cta is-off" data-finddone>인증완료</div>
     </div>`;
   }
+  if(isV45()) return `<div class="consult-sheet find-sheet">${head}
+    <div class="v45-fform">
+      ${FIND_ACCTS.map(a=>`<div class="fir fir-acct" data-findacct="${a.no}"><div class="fa-info"><div class="fa-t">${a.t}</div><div class="fa-no">${fmtAcct(a.no)}</div></div><div class="cs-arw">${I.chev}</div></div>`).join('')}
+    </div>
+    <div class="cs-cancel" data-findclose>닫기</div>
+  </div>`;
   return `<div class="consult-sheet find-sheet">${head}
     <div class="find-acctlist">
       ${FIND_ACCTS.map(a=>`<div class="find-acct" data-findacct="${a.no}"><div class="fa-info"><div class="fa-t">${a.t}</div><div class="fa-no">${fmtAcct(a.no)}</div></div><div class="cs-arw">${I.chev}</div></div>`).join('')}
