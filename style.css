@@ -1494,6 +1494,22 @@ body{
 .cs-cancel{margin-top:12px;text-align:center;padding:15px;border-radius:15px;
   background:#F1F2F6;color:#5A5A70;font-size:calc(15px*var(--scale));font-weight:800;cursor:pointer}
 .cs-cancel:active{transform:scale(.98)}
+/* Ver 4.5 · 매체 선택 플로팅 — 필 스타일 (method-ov.v45) */
+.method-ov.v45 .v45-msheet-head{padding:2px 0 16px}
+.method-ov.v45 .v45-msh-title{font-size:calc(19px*var(--scale));font-weight:800;color:#1A1A4E;line-height:1.3;letter-spacing:-.3px}
+.method-ov.v45 .v45-msh-sub{font-size:calc(13.5px*var(--scale));color:#8B95A1;margin-top:6px;line-height:1.45}
+.method-ov.v45 .v45-msheet-list{display:flex;flex-direction:column;gap:10px;margin:0 0 8px}
+.method-ov.v45 .v45-mrow{display:flex;align-items:center;gap:12px;height:52px;box-sizing:border-box;
+  background:#F5F6FA;border:1.5px solid #E4E7F0;border-radius:999px;padding:0 18px;cursor:pointer;transition:border-color .15s,background .15s}
+.method-ov.v45 .v45-mrow:active{border-color:#1A1A4E;background:#fff}
+.method-ov.v45 .v45-mrow-ic{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.method-ov.v45 .v45-mrow-ic img{width:28px;height:28px;object-fit:contain;border-radius:7px}
+.method-ov.v45 .v45-mrow-ic svg{width:24px;height:24px}
+.method-ov.v45 .v45-mrow-body{flex:1;min-width:0}
+.method-ov.v45 .v45-mrow-nm{font-size:calc(15px*var(--scale));font-weight:700;color:#1A1A4E}
+.method-ov.v45 .v45-mrow-desc{display:none}
+.method-ov.v45 .v45-mrow-arw{flex-shrink:0;color:#C4CAD4;display:flex}
+.method-ov.v45 .v45-mrow-arw svg{width:18px;height:18px}
 
 /* ===== Ver 4.0 · 입출금 안내 플로우 (계좌인증 → 상태확인 로딩 → 결과 3토글) ===== */
 /* 계좌번호 모름 링크 */
@@ -1507,8 +1523,16 @@ body{
 .iodload-screen .page-top{flex:none}
 .iodload-body{flex:1;display:flex;flex-direction:column;padding:6px 25px 26px;min-height:0}
 /* Ver 4.5 ② 계좌조회 로딩 */
-.flow.toss.v45 .v45-iodload-body{padding:6px 20px 20px}
-.flow.toss.v45 .v45-iodload-body .toss-dhead{padding-left:0;padding-right:0}
+.flow.toss.v45 .v45-iodload-body{padding:6px 25px 20px}
+.flow.toss.v45 .v45-iodload-body .toss-dhead{padding-left:20px;padding-right:20px}
+/* 스캔 애니메이션 */
+.flow.toss.v45 .v45-scan-anim{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.flow.toss.v45 .v45-scan-core{width:56px;height:56px;border-radius:50%;background:linear-gradient(145deg,#5C5CA8 0%,#1A1A4E 100%);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;box-shadow:0 8px 28px rgba(26,26,78,.35);color:#fff;flex-shrink:0}
+.flow.toss.v45 .v45-scan-ring{position:absolute;width:56px;height:56px;border-radius:50%;border:2px solid rgba(26,26,78,.5);animation:v45scanpulse 2.4s ease-out infinite}
+.flow.toss.v45 .v45-ring-1{animation-delay:0s}
+.flow.toss.v45 .v45-ring-2{animation-delay:.8s}
+.flow.toss.v45 .v45-ring-3{animation-delay:1.6s}
+@keyframes v45scanpulse{0%{transform:scale(1);opacity:.65}100%{transform:scale(4);opacity:0}}
 .iodload-body .toss-dhead{flex:none;padding:6px 0 16px 0}
 .iodload-body .td-desc{font-size:calc(14px*var(--scale));line-height:1.5;word-break:keep-all;margin-top:6px}   /* 설명글 14px · 타이틀→설명 6px(계좌인증과 동일) */
 .iodload-center{flex:1;display:flex;align-items:center;justify-content:center}
@@ -1576,16 +1600,16 @@ body{
 .primary-btn.ghost{background:#fff !important;color:var(--primary) !important;border:1.6px solid var(--primary) !important;box-shadow:none !important}
 .iod-note{margin:14px 24px 8px;font-size:calc(11.5px*var(--scale));color:var(--sub);line-height:1.5;text-align:center}
 /* Ver 4.5 ③ 결과안내 */
-.flow.toss.v45 .iod-v45-body{flex:1;display:flex;flex-direction:column;padding:6px 20px 16px;overflow-y:auto;min-height:0}
-.flow.toss.v45 .iod-v45-body .toss-dhead{padding-left:0;padding-right:0}
-.flow.toss.v45 .iod-v45-card{background:#fff;border:1.5px solid #E4E7F0;border-radius:20px;padding:18px 20px;margin:18px 0 0;cursor:pointer;transition:border-color .15s}
+.flow.toss.v45 .iod-v45-body{flex:1;display:flex;flex-direction:column;padding:6px 25px 16px;overflow-y:auto;min-height:0}
+.flow.toss.v45 .iod-v45-body .toss-dhead{padding-left:20px;padding-right:20px}
+.flow.toss.v45 .iod-v45-card{background:#fff;border:1.5px solid #E4E7F0;border-radius:20px;padding:18px 20px;margin:18px 20px 0;cursor:pointer;transition:border-color .15s}
 .flow.toss.v45 .iod-v45-card:active{border-color:#1A1A4E}
 .flow.toss.v45 .iod-v45-acct{font-size:calc(13px*var(--scale));font-weight:600;color:#8B95A1;margin-bottom:12px}
 .flow.toss.v45 .iod-v45-card .iod-badge{margin-bottom:14px}
 .flow.toss.v45 .iod-v45-card .iod-release{margin-top:0;background:#F0F0F8;border-radius:14px;color:#3A3A5E}
 .flow.toss.v45 .iod-v45-card .iod-release b{color:#1A1A4E}
 .flow.toss.v45 .iod-v45-actions{margin-top:16px}
-.flow.toss.v45 .v45-iod-btn{height:46px;margin:0;padding:0;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:999px;background:#1A1A4E;color:#fff;font-size:calc(15px*var(--scale));font-weight:700;box-shadow:0 6px 16px rgba(26,26,78,.22);transition:background .2s,box-shadow .2s}
+.flow.toss.v45 .v45-iod-btn{height:46px;margin:0 20px;padding:0;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:999px;background:#1A1A4E;color:#fff;font-size:calc(15px*var(--scale));font-weight:700;box-shadow:0 6px 16px rgba(26,26,78,.22);transition:background .2s,box-shadow .2s}
 .flow.toss.v45 .v45-iod-btn:active{background:#12124A;box-shadow:0 2px 8px rgba(26,26,78,.18)}
 /* 등록 완료 화면 (세로 중앙 정렬) */
 .iod-done-center{min-height:100%;display:flex;flex-direction:column;justify-content:center}

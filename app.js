@@ -3668,7 +3668,12 @@ function renderIodChecking(){
     ${v45AuthTop(1)}
     <div class="iodload-body v45-iodload-body">
       <div class="toss-dhead"><div class="td-title">계좌 상태를 확인하고 있어요</div><div class="td-desc">잠시만 기다려 주세요</div></div>
-      <div class="iodload-icon"><div class="iod-spinwrap"><div class="iod-spinner"></div><div class="iod-scan">${I.search||''}</div></div></div>
+      <div class="v45-scan-anim">
+        <div class="v45-scan-ring v45-ring-1"></div>
+        <div class="v45-scan-ring v45-ring-2"></div>
+        <div class="v45-scan-ring v45-ring-3"></div>
+        <div class="v45-scan-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+      </div>
     </div>
   </div>`;
   return `<div class="iodload-screen">
@@ -4000,30 +4005,53 @@ function openMethodSheet(cfg){
   const screen = document.getElementById('screen'); if(!screen || !cfg) return;
   const v40lite = (s1Ver==='v40');   // Ver 4.0: 간결 스타일(아이콘 없음·매체명 강조·짧은 설명)
   const el = document.createElement('div');
-  el.className = 'consult-ov method-ov' + (bigFont?' bigfont':'') + (v40lite?' v40lite':'') + (cfg.cls?' '+cfg.cls:''); el.id = 'methodPop';
+  el.className = 'consult-ov method-ov' + (bigFont?' bigfont':'') + (isV45()?' v45':'') + (v40lite?' v40lite':'') + (cfg.cls?' '+cfg.cls:''); el.id = 'methodPop';
   const noIcon = cfg.noIcon;   // 아이콘 열 없이(텍스트만) 렌더
   let methods = cfg.methods || [];
   if(s1Ver==='v42'){ methods = methods.filter(m => m.ic !== CS_ICON.web); }   // Ver 4.2: 매체 플로팅에서 '디지털 ARS'(CS_ICON.web) 항목 전부 숨김
   if(s1Ver!=='v40'){ methods = methods.filter(m => !m.v40only); }   // v40only 항목(예: 사고신고 시트 상담원 연결)은 Ver 4.0에서만 노출
-  const rows = methods.map(m=>{
-    if(v40lite){   // 주식주문 시트와 동일한 '제목+설명' 형식(아이콘·강조색 없음·전체 설명, 문구톤 통일)
-      return `<div class="cs-row no-ic" data-iodmethod="${m.kind}" data-mlabel="${m.nm}">
-        <div class="cs-body"><div class="cs-nm">${m.nm}</div>${m.desc?`<div class="cs-desc">${m.desc}</div>`:''}</div>
+  if(isV45()){
+    // v45 전용 아이콘: 상담원→인디고 헤드셋, 디지털ARS→인디고 모니터, 영웅문S#→브랜드 아이콘 유지
+    const V45_IC_HEADSET = `<svg viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5a9 9 0 0 1 18 0"/><path d="M3 11.5v3.5a2 2 0 0 0 2 2h1a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3z"/><path d="M21 11.5v3.5a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3z"/></svg>`;
+    const V45_IC_MONITOR = `<svg viewBox="0 0 24 24" fill="none" stroke="#1A1A4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;
+    const v45ic = m => {
+      if(noIcon || !m.ic) return '';
+      const CALL_KINDS = ['consult','idcardcs','acccs','pwmgmtcs','authidcs','creditcs'];
+      if(CALL_KINDS.indexOf(m.kind)>=0) return `<div class="v45-mrow-ic">${V45_IC_HEADSET}</div>`;
+      if(m.ic===CS_ICON.web) return `<div class="v45-mrow-ic">${V45_IC_MONITOR}</div>`;
+      return `<div class="v45-mrow-ic">${m.ic}</div>`;
+    };
+    const rows = methods.map(m=>`<div class="v45-mrow" data-iodmethod="${m.kind}" data-mlabel="${m.nm}">
+      ${v45ic(m)}
+      <div class="v45-mrow-body"><div class="v45-mrow-nm">${m.nm}</div></div>
+      <div class="v45-mrow-arw">${I.chev}</div>
+    </div>`).join('');
+    el.innerHTML = `<div class="consult-sheet v45-msheet">
+      <div class="cs-grip"></div>
+      <div class="v45-msheet-head"><div class="v45-msh-title">${cfg.title}</div>${cfg.sub?`<div class="v45-msh-sub">${cfg.sub}</div>`:''}</div>
+      <div class="v45-msheet-list">${rows}</div>
+    </div>`;
+  } else {
+    const rows = methods.map(m=>{
+      if(v40lite){   // 주식주문 시트와 동일한 '제목+설명' 형식(아이콘·강조색 없음·전체 설명, 문구톤 통일)
+        return `<div class="cs-row no-ic" data-iodmethod="${m.kind}" data-mlabel="${m.nm}">
+          <div class="cs-body"><div class="cs-nm">${m.nm}</div>${m.desc?`<div class="cs-desc">${m.desc}</div>`:''}</div>
+          <div class="cs-arw">${I.chev}</div>
+        </div>`;
+      }
+      return `<div class="cs-row${noIcon?' no-ic':''}" data-iodmethod="${m.kind}" data-mlabel="${m.nm}">
+        ${noIcon ? '' : `<div class="cs-ic">${m.ic}</div>`}
+        <div class="cs-body"><div class="cs-nm">${m.nm}</div><div class="cs-desc">${m.desc}</div></div>
         <div class="cs-arw">${I.chev}</div>
       </div>`;
-    }
-    return `<div class="cs-row${noIcon?' no-ic':''}" data-iodmethod="${m.kind}" data-mlabel="${m.nm}">
-      ${noIcon ? '' : `<div class="cs-ic">${m.ic}</div>`}
-      <div class="cs-body"><div class="cs-nm">${m.nm}</div><div class="cs-desc">${m.desc}</div></div>
-      <div class="cs-arw">${I.chev}</div>
+    }).join('');
+    el.innerHTML = `<div class="consult-sheet">
+      <div class="cs-grip"></div>
+      <div class="cs-head"><div class="cs-title">${cfg.title}</div>${(cfg.sub && !(s1Ver==='v40' && cfg.sub.indexOf('편하신 방법으로')===0))?`<div class="cs-sub">${cfg.sub}</div>`:''}</div>
+      <div class="cs-list">${rows}</div>
+      <div class="cs-cancel" data-msclose>닫기</div>
     </div>`;
-  }).join('');
-  el.innerHTML = `<div class="consult-sheet">
-    <div class="cs-grip"></div>
-    <div class="cs-head"><div class="cs-title">${cfg.title}</div>${(cfg.sub && !(s1Ver==='v40' && cfg.sub.indexOf('편하신 방법으로')===0))?`<div class="cs-sub">${cfg.sub}</div>`:''}</div>
-    <div class="cs-list">${rows}</div>
-    <div class="cs-cancel" data-msclose>닫기</div>
-  </div>`;
+  }
   screen.appendChild(el);
   requestAnimationFrame(()=>el.classList.add('on'));
 }
