@@ -4049,7 +4049,7 @@ function syncFindCtaBtn(){
   const pop = document.getElementById('findAcctPop'); if(!pop) return;
   const btn = pop.querySelector('.cs-cta'); if(!btn) return;
   if(pop.querySelector('[data-findotp]')){
-    const inputs = [...pop.querySelectorAll('.find-input')];
+    const inputs = [...pop.querySelectorAll('[data-findinput]')];
     const allFilled = inputs.every(inp => inp.tagName==='SELECT' ? inp.value!=='' : inp.value.trim()!=='');
     btn.classList.toggle('is-off', !(allFilled && !!pop.querySelector('.find-agree.on')));
   } else if(pop.querySelector('[data-finddone]')){
@@ -4080,6 +4080,33 @@ function findAcctSheet(step){
     <div class="cs-head"><div class="cs-title">${step===3?'계좌조회가 완료되었어요':'계좌번호를 잊으셨나요?'}</div>
       <div class="cs-sub">${step===3?'확인할 계좌를 선택해주세요':'본인명의 휴대폰 인증 후 계좌번호를 찾아드릴게요'}</div></div>`;
   if(step===1){
+    if(isV45()) return `<div class="consult-sheet find-sheet">${head}
+      <div class="v45-fform">
+        <div class="fir">
+          <span class="fir-k">이름</span>
+          <input class="fir-in" data-findinput placeholder="" autocomplete="off">
+        </div>
+        <div class="fir">
+          <span class="fir-k">주민번호</span>
+          <div class="fir-rrn">
+            <input class="fir-in" data-findinput inputmode="numeric" maxlength="6" placeholder="앞 6자리">
+            <span class="fir-dash">–</span>
+            <input class="fir-in fir-rrn2" data-findinput inputmode="numeric" maxlength="1">
+            <span class="fir-mask">●●●●●●</span>
+          </div>
+        </div>
+        <div class="fir fir-phone">
+          <div class="fir-sel-wrap">
+            <select class="fir-sel" data-findinput><option value="">통신사</option><option>SKT</option><option>KT</option><option>LG U+</option><option>알뜰폰</option></select>
+            <span class="fir-selchev">${I.down}</span>
+          </div>
+          <span class="fir-vdivider"></span>
+          <input class="fir-in" data-findinput placeholder="휴대폰번호" inputmode="numeric" maxlength="11">
+        </div>
+      </div>
+      <div class="find-agree${s1state.findAgree?' on':''}" data-findagree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></div>
+      <div class="cs-cta is-off" data-findotp>인증받기</div>
+    </div>`;
     return `<div class="consult-sheet find-sheet">${head}
       <div class="find-form">
         <input class="find-input" placeholder="이름" autocomplete="off">
@@ -4097,6 +4124,13 @@ function findAcctSheet(step){
     </div>`;
   }
   if(step===2){
+    if(isV45()) return `<div class="consult-sheet find-sheet">${head}
+      <div class="find-form">
+        <div class="find-otpguide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div>
+        <div class="fir fir-otp"><input class="fir-in find-otp" placeholder="인증번호 6자리" inputmode="numeric" maxlength="6" autocomplete="off"><span class="find-otptimer">02:59</span></div>
+      </div>
+      <div class="cs-cta is-off" data-finddone>인증완료</div>
+    </div>`;
     return `<div class="consult-sheet find-sheet">${head}
       <div class="find-form">
         <div class="find-otpguide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div>
@@ -5422,7 +5456,10 @@ function closeAiChat(){ const e=document.getElementById('aiChatOv'); if(e) e.rem
 document.addEventListener('input', (e)=>{
   const el = e.target;
   if(!el) return;
-  if(el.closest && el.closest('#findAcctPop')){ syncFindCtaBtn(); return; }
+  if(el.closest && el.closest('#findAcctPop')){
+    if(el.classList.contains('fir-sel')) el.classList.toggle('has-val', el.value !== '');
+    syncFindCtaBtn(); return;
+  }
   if(el.id === 'acctNo'){   // 계좌번호: v45에서 4-4 자동 포맷, 링크 문구 전환
     if(isV45()){
       const raw = el.value.replace(/\D/g, '').slice(0, 8);
