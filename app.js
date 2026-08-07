@@ -4134,9 +4134,8 @@ function findAcctSheet(step){
   }
   if(isV45()) return `<div class="consult-sheet find-sheet">${head}
     <div class="v45-fform">
-      ${FIND_ACCTS.map(a=>`<div class="fir fir-acct" data-findacct="${a.no}"><div class="fa-info"><div class="fa-t">${a.t}</div><div class="fa-no">${fmtAcct(a.no)}</div></div><div class="cs-arw">${I.chev}</div></div>`).join('')}
+      ${FIND_ACCTS.map(a=>`<div class="fir fir-acct" data-findacct="${a.no}"><span class="fa-t">${a.t}</span><span class="fa-sep"> : </span><span class="fa-no">${fmtAcct(a.no)}</span></div>`).join('')}
     </div>
-    <div class="cs-cancel" data-findclose>닫기</div>
   </div>`;
   return `<div class="consult-sheet find-sheet">${head}
     <div class="find-acctlist">
