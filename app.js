@@ -4124,13 +4124,6 @@ function findAcctSheet(step){
     </div>`;
   }
   if(step===2){
-    if(isV45()) return `<div class="consult-sheet find-sheet">${head}
-      <div class="find-form">
-        <div class="find-otpguide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div>
-        <div class="fir fir-otp"><input class="fir-in find-otp" placeholder="인증번호 6자리" inputmode="numeric" maxlength="6" autocomplete="off"><span class="find-otptimer">02:59</span></div>
-      </div>
-      <div class="cs-cta is-off" data-finddone>인증완료</div>
-    </div>`;
     return `<div class="consult-sheet find-sheet">${head}
       <div class="find-form">
         <div class="find-otpguide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div>
