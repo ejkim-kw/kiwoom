@@ -4019,7 +4019,7 @@ function openFindAcct(){
   const prev = document.getElementById('findAcctPop'); if(prev) prev.remove();
   s1state.findAgree = false;
   const el = document.createElement('div');
-  el.className = 'consult-ov find-ov'; el.id = 'findAcctPop';
+  el.className = 'consult-ov find-ov' + (isV45() ? ' v45' : ''); el.id = 'findAcctPop';
   el.innerHTML = findAcctSheet(1);
   screen.appendChild(el);
   requestAnimationFrame(()=>el.classList.add('on'));
@@ -4044,6 +4044,19 @@ function openPwHelpSheet(){
 function closePwHelpSheet(){
   const el = document.getElementById('pwHelpSheet');
   if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); }
+}
+function syncFindCtaBtn(){
+  if(!isV45()) return;
+  const pop = document.getElementById('findAcctPop'); if(!pop) return;
+  const btn = pop.querySelector('.cs-cta'); if(!btn) return;
+  if(pop.querySelector('[data-findotp]')){
+    const inputs = [...pop.querySelectorAll('.find-input')];
+    const allFilled = inputs.every(inp => inp.tagName==='SELECT' ? inp.value!=='' : inp.value.trim()!=='');
+    btn.classList.toggle('is-off', !(allFilled && !!pop.querySelector('.find-agree.on')));
+  } else if(pop.querySelector('[data-finddone]')){
+    const otp = pop.querySelector('.find-otp');
+    btn.classList.toggle('is-off', !(otp && otp.value.length===6));
+  }
 }
 /* 결과안내 '왜 진위확인이 되지 않았나요?' 배지 → 사유 안내 플로팅 */
 function openBadgeInfo(){
@@ -4081,7 +4094,7 @@ function findAcctSheet(step){
         <input class="find-input" placeholder="휴대폰번호 ('-' 없이 입력)" inputmode="numeric" maxlength="11">
       </div>
       <div class="find-agree${s1state.findAgree?' on':''}" data-findagree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></div>
-      <div class="cs-cta" data-findotp>인증요청</div>
+      <div class="cs-cta is-off" data-findotp>인증요청</div>
     </div>`;
   }
   if(step===2){
@@ -4090,7 +4103,7 @@ function findAcctSheet(step){
         <div class="find-otpguide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div>
         <div class="find-row find-otprow"><input class="find-input find-otp" placeholder="인증번호 6자리" inputmode="numeric" maxlength="6" autocomplete="off"><span class="find-otptimer">02:59</span></div>
       </div>
-      <div class="cs-cta" data-finddone>인증완료</div>
+      <div class="cs-cta is-off" data-finddone>인증완료</div>
     </div>`;
   }
   return `<div class="consult-sheet find-sheet">${head}
@@ -5410,6 +5423,7 @@ function closeAiChat(){ const e=document.getElementById('aiChatOv'); if(e) e.rem
 document.addEventListener('input', (e)=>{
   const el = e.target;
   if(!el) return;
+  if(el.closest && el.closest('#findAcctPop')){ syncFindCtaBtn(); return; }
   if(el.id === 'acctNo'){   // 계좌번호: v45에서 4-4 자동 포맷, 링크 문구 전환
     if(isV45()){
       const raw = el.value.replace(/\D/g, '').slice(0, 8);
@@ -5682,7 +5696,7 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-msclose]') || (t.classList && t.classList.contains('method-ov'))){ closeMethodSheet(); return; }
 
   // 계좌찾기 플로팅(3단계) — consult-ov 클래스를 공유하므로 아래 일반 consult-ov 핸들러보다 먼저 처리
-  if(t.closest('[data-findagree]')){ s1state.findAgree=!s1state.findAgree; const a=document.querySelector('#findAcctPop .find-agree'); if(a) a.classList.toggle('on', s1state.findAgree); return; }
+  if(t.closest('[data-findagree]')){ s1state.findAgree=!s1state.findAgree; const a=document.querySelector('#findAcctPop .find-agree'); if(a) a.classList.toggle('on', s1state.findAgree); syncFindCtaBtn(); return; }
   if(t.closest('[data-findotp]')){ if(!s1state.findAgree){ flash('휴대폰 인증 약관에 동의해 주세요. (시연용)'); return; } findAcctStep(2); return; }
   if(t.closest('[data-finddone]')){ findAcctStep(3); return; }
   if(t.closest('[data-findclose]')){ closeFindAcct(); return; }
