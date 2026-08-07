@@ -3664,7 +3664,7 @@ function startIodCheck(){
   }, 5000);   // 계좌 조회 상태 5초 유지
 }
 function renderIodChecking(){
-  if(isV45()) return `<div class="iodload-screen">
+  if(isV45()) return `<div class="iodload-screen v45-authpage">
     ${v45AuthTop(1)}
     <div class="iodload-body v45-iodload-body">
       <div class="toss-dhead"><div class="td-title">계좌 상태를 확인하고 있어요</div><div class="td-desc">잠시만 기다려 주세요</div></div>
@@ -3705,7 +3705,7 @@ function renderIodResult(){
     </div>`;
   }
   const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${fmtAcct(authAcct.no)}` : '위탁종합 1234-5678';
-  if(isV45()) return `<div class="iodresult-screen v45-iodresult">
+  if(isV45()) return `<div class="iodresult-screen v45-iodresult v45-authpage">
     ${v45AuthTop(2)}
     <div class="iod-v45-body">
       <div class="toss-dhead">
