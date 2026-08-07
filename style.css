@@ -493,7 +493,7 @@ body{
 .flow.toss.v45 .auth-wrap .auth-info .ir:focus-within{border-color:#1A1A4E;background:#fff}
 .flow.toss.v45 .auth-wrap .auth-info .ir .k{min-width:76px;flex:none;color:#8B95A1;font-size:calc(13.5px*var(--scale));font-weight:600}
 .flow.toss.v45 .auth-wrap .auth-info .ir-input{flex:1;border:none;background:transparent;padding:0;font-size:calc(15px*var(--scale));font-weight:600;color:#1A1A4E}
-.flow.toss.v45 .auth-wrap .auth-info .ir-pw{flex:1;min-height:auto;border:none;background:transparent;padding:0}
+.flow.toss.v45 .auth-wrap .auth-info .ir-pw{flex:1;align-self:stretch;display:flex;align-items:center;border:none;background:transparent;padding:0;cursor:pointer;touch-action:manipulation}
 /* 플레이스홀더 자리에 물음표(도움말) 아이콘 */
 .flow.toss.v45 .auth-wrap .auth-info .ir-qmark{flex:none;width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:#B4BAC6;cursor:pointer}
 .flow.toss.v45 .auth-wrap .auth-info .ir-qmark svg{width:20px;height:20px}
@@ -1409,8 +1409,6 @@ body{
 .pw-help-sheet .pw-help-cta{display:flex;align-items:center;justify-content:center;gap:8px;background:#1A1A4E;color:#fff;border-radius:999px;height:46px;padding:0 20px;font-size:calc(15px*var(--scale));font-weight:700;cursor:pointer;margin-bottom:10px;box-shadow:0 6px 16px rgba(26,26,78,.22);transition:background .2s,box-shadow .2s,opacity .15s}
 .pw-help-sheet .pw-help-cta:active{opacity:.82}
 .pw-help-sheet .pw-help-ic{width:22px;height:22px;border-radius:6px;object-fit:cover;flex:none}
-/* Ver 4.5 모바일: 비밀번호 영역 터치 응답 개선 */
-.flow.toss.v45 .auth-wrap .auth-info .ir-pw{cursor:pointer;touch-action:manipulation}
 /* 키패드 키 모바일 터치 응답 개선 (300ms 지연 제거) */
 .key,.kp-akey{touch-action:manipulation}
 .find-otpguide{font-size:calc(13px*var(--scale));color:#7A7A8C;line-height:1.55;padding:14px 2px 6px}
