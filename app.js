@@ -2273,25 +2273,25 @@ function tossCatGrid(){
    각 대메뉴: {id(전역번호), t(대메뉴명), ic(아이콘), subs[중메뉴명...]}. subs 비면 대메뉴 자체가 최종(중메뉴 없음). 중메뉴 클릭 이후 절차는 추후 정의. */
 const V45_MENU_TABS = [
   {k:'common', nm:'공통', cats:[
-    {id:1, t:'MTS/HTS 화면',   ic:'order',  d:'HTS·MTS 화면 사용을 문의해요',              subs:['HTS 화면 문의','MTS 화면 문의']},
-    {id:2, t:'ID/PW/인증서',   ic:'shield', d:'ID·비밀번호·인증서를 조회하고 관리해요',    subs:['ID조회/PW초기화','장기미사용ID 제한 해지','간편인증/공동인증서']},
-    {id:3, t:'비대면 업무',     ic:'idcard', d:'계좌개설·비밀번호·출금계좌 등을 비대면으로 처리해요', subs:['계좌개설 및 1원입금인증','증권계좌번호확인','계좌비밀번호 재설정','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
-    {id:4, t:'계좌정보/뱅킹',   ic:'wallet', d:'계좌정보 조회·변경과 이체·대체를 이용해요', subs:['계좌정보 조회 및 변경','은행이체','주식대체']},
-    {id:6, t:'사고 등록/해지',  ic:'bell',   d:'계좌 사고를 등록하거나 해지해요',           subs:[]},
-    {id:8, t:'서류발급',        ic:'cert',   d:'필요한 증명서·서류를 발급받아요',           subs:[]},
+    {id:1, t:'MTS/HTS 화면',   fi:12, d:'HTS·MTS 화면 사용을 문의해요',              subs:['HTS 화면 문의','MTS 화면 문의']},
+    {id:2, t:'ID/PW/인증서',   fi:2,  d:'ID·비밀번호·인증서를 조회하고 관리해요',    subs:['ID조회/PW초기화','장기미사용ID 제한 해지','간편인증/공동인증서']},
+    {id:3, t:'비대면 업무',     fi:4,  d:'계좌개설·비밀번호·출금계좌 등을 비대면으로 처리해요', subs:['계좌개설 및 1원입금인증','증권계좌번호확인','계좌비밀번호 재설정','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
+    {id:4, t:'계좌정보/뱅킹',   fi:1,  d:'계좌정보 조회·변경과 이체·대체를 이용해요', subs:['계좌정보 조회 및 변경','은행이체','주식대체']},
+    {id:6, t:'사고 등록/해지',  fi:9,  d:'계좌 사고를 등록하거나 해지해요',           subs:[]},
+    {id:8, t:'서류발급',        fi:6,  d:'필요한 증명서·서류를 발급받아요',           subs:[]},
   ]},
   {k:'domestic', nm:'국내', cats:[
-    {id:5, t:'미수금 및 신용/대출',       ic:'wallet', d:'미수·반대매매와 신용·대출을 확인·신청해요',   subs:['미수 및 반대매매','신용/대출 약정 안내','신용/대출 신청 및 상환']},
-    {id:7, t:'국내주식 주문 및 잔고조회', ic:'order',  d:'시세·주문·체결·잔고조회까지 이용해요',         subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
-    {id:9, t:'유상청약 및 공모주청약',    ic:'ipo',    d:'유상·공모주 청약과 권리업무를 신청해요',       subs:['유상청약','공모주청약','반대의사 및 매수청구','그외 권리업무']},
+    {id:5, t:'미수금 및 신용/대출',       fi:1, d:'미수·반대매매와 신용·대출을 확인·신청해요',   subs:['미수 및 반대매매','신용/대출 약정 안내','신용/대출 신청 및 상환']},
+    {id:7, t:'국내주식 주문 및 잔고조회', fi:4, d:'시세·주문·체결·잔고조회까지 이용해요',         subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
+    {id:9, t:'유상청약 및 공모주청약',    fi:6, d:'유상·공모주 청약과 권리업무를 신청해요',       subs:['유상청약','공모주청약','반대의사 및 매수청구','그외 권리업무']},
   ]},
   {k:'etc', nm:'그외상품', cats:[
-    {id:10, t:'해외주식',            ic:'ipo',    d:'해외주식과 RIA계좌 업무를 이용해요',            subs:['해외주식 관련','RIA계좌']},
-    {id:11, t:'금융상품',            ic:'wallet', d:'ISA·연금·펀드 등 금융상품에 가입·관리해요',     subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
-    {id:12, t:'국내선물옵션',        ic:'order',  d:'국내 선물·옵션 거래를 문의해요',                subs:[]},
-    {id:13, t:'CFD 및 상품선물옵션', ic:'order',  d:'CFD·상품선물옵션 거래를 문의해요',              subs:['해외CFD 및 상품선물옵션','국내CFD']},
-    {id:14, t:'부가서비스',          ic:'doc',    d:'ARS 주문이용·비밀번호·퀵넘버를 신청해요',       subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스']},
-    {id:15, t:'금융센터 전화번호 안내', ic:'phone', d:'금융센터 대표 전화번호를 안내해요',            subs:[]},
+    {id:10, t:'해외주식',            fi:8, d:'해외주식과 RIA계좌 업무를 이용해요',            subs:['해외주식 관련','RIA계좌']},
+    {id:11, t:'금융상품',            fi:8, d:'ISA·연금·펀드 등 금융상품에 가입·관리해요',     subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
+    {id:12, t:'국내선물옵션',        fi:8, d:'국내 선물·옵션 거래를 문의해요',                subs:[]},
+    {id:13, t:'CFD 및 상품선물옵션', fi:8, d:'CFD·상품선물옵션 거래를 문의해요',              subs:['해외CFD 및 상품선물옵션','국내CFD']},
+    {id:14, t:'부가서비스',          fi:5, d:'ARS 주문이용·비밀번호·퀵넘버를 신청해요',       subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스']},
+    {id:15, t:'금융센터 전화번호 안내', fi:7, d:'금융센터 대표 전화번호를 안내해요',            subs:[]},
   ]},
 ];
 function v45CatById(id){ for(const tab of V45_MENU_TABS){ const c=tab.cats.find(x=>x.id===id); if(c) return c; } return null; }
@@ -2308,9 +2308,10 @@ function v45Menu(){
   const cur = s1state.v45Tab || 'common';
   const tab = V45_MENU_TABS.find(t=>t.k===cur) || V45_MENU_TABS[0];
   // 대메뉴 리스트(아이콘+대메뉴명+화살표). 클릭 → 중메뉴 있으면 드릴다운 / 없으면 최종(추후 절차)
-  return `<div class="toss-list">` + tab.cats.map(c=>
-    `<div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic">${I[c.ic]||I.order}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw">${I.chev}</div></div>`
-  ).join('') + `</div>`;
+  return `<div class="toss-list">` + tab.cats.map(c=>{
+    const icon = c.fi ? `<img src="assets/finance-${c.fi}.png" alt="">` : (I[c.ic]||I.order);
+    return `<div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic${c.fi?' tc-ic-fin':''}">${icon}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw">${I.chev}</div></div>`;
+  }).join('') + `</div>`;
 }
 /* 대메뉴 드릴다운: 중메뉴 리스트 (뒤로가기 + 대메뉴명 타이틀). 중메뉴 클릭 이후 절차는 추후 정의 */
 function renderV45Sub(){
@@ -2665,19 +2666,45 @@ function authStep(method){
     ? `<div class="iod-findlink" data-iodfind>${(acctVal && acctVal.trim()) ? '계좌비밀번호를 모르겠어요' : '계좌번호를 모르겠어요'} ›</div>`
     : (che ? `<div class="iod-findlink" data-cheacctfind>${(acctVal && acctVal.trim()) ? '계좌비밀번호를 모르겠어요' : '계좌번호를 모르겠어요'} ›</div>` : '');
   const chealt = '';   // 체결·주문내역 흐름을 매체 플로팅 먼저로 되돌림 → 인증화면 '다른 방법' 링크 불필요(매체 시트가 이미 첫 단계)
+  // Ver 4.5: 플레이스홀더(숫자 8자리/4~8자리) 대신 우측에 물음표(도움말) 아이콘, findlink는 숨김.
+  // 계좌번호 물음표=계좌찾기 플로팅 / 비밀번호 물음표=비밀번호 안내 팝업
+  const qSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.4 2.4 0 1 1 3.4 2.2c-.9.4-1.2 1-1.2 1.8"/><path d="M12 16.7h.01"/></svg>`;
+  const qmarkAcct = isV45() ? `<div class="ir-qmark" data-acctfind role="button" title="계좌번호 찾기">${qSvg}</div>` : '';
+  const qmarkPw   = isV45() ? `<div class="ir-qmark" data-pwhelp role="button" title="비밀번호 안내">${qSvg}</div>` : '';
   return `<div class="auth-wrap${che?' cheauth':''}${simple?' iodauth':''}">
     ${heading}
     <div class="auth-info">
       <div class="ir"><span class="k">계좌번호</span>
-        <input class="ir-input" id="acctNo" type="text" inputmode="numeric" autocomplete="off" ${simple?'maxlength="8" ':''}placeholder="${simple?'숫자 8자리':'계좌번호 입력'}" value="${acctVal}"></div>
+        <input class="ir-input" id="acctNo" type="text" inputmode="numeric" autocomplete="off" ${isV45()?'maxlength="9" ':(simple?'maxlength="8" ':'')}placeholder="${isV45()?'':(simple?'숫자 8자리':'계좌번호 입력')}" value="${isV45()&&acctVal?acctVal.replace(/-/g,'').slice(0,8).replace(/(\d{4})(\d{4})/,'$1-$2'):acctVal}">${qmarkAcct}</div>
       <div class="ir"><span class="k">비밀번호</span>
-        <div class="ir-input ir-pw" data-pwopen><span id="acctPwDisp" class="acct-dots" data-ph="${simple?'숫자 4~8자리':'비밀번호 입력 (4~8자리)'}">${'●'.repeat((s1state.acctPw||'').length)}</span></div></div>
+        <div class="ir-input ir-pw" data-pwopen><span id="acctPwDisp" class="acct-dots" data-ph="${isV45()?'':(simple?'숫자 4~8자리':'비밀번호 입력 (4~8자리)')}">${'●'.repeat((s1state.acctPw||'').length)}</span></div>${qmarkPw}</div>
     </div>
     ${simple ? '' : `<div class="auth-note">${note}</div>`}
-    <div class="primary-btn" data-authdone>확인</div>
-    ${findlink}
+    <div class="primary-btn${isV45()?' v45-authbtn'+(((acctVal||'').trim() && (s1state.acctPw||'').length)?'':' is-off'):''}" data-authdone>확인</div>
+    ${isV45()?'':findlink}
     ${chealt}
   </div>`;
+}
+/* Ver 4.5 자가해결 계좌인증: 상단 세그먼트 스텝퍼 (뒤로가기 라인 · stepper 이미지 참고). 계좌 인증=1단계 */
+function v45AuthTop(){
+  const steps = iodStepsFor();
+  const cur = 0;
+  const seg = steps.map((s,i)=>`<span class="v45-step${i<=cur?' on':''}"></span>`).join('');
+  return `<div class="page-top iod-top v45-authtop">`
+    + `<div class="back" data-s1back>${I.back}</div>`
+    + `<div class="v45-stepper" title="${cur+1}/${steps.length} · ${steps[cur]}">${seg}</div>`
+    + `<div class="v45-step-spacer" aria-hidden="true"></div>`
+    + `</div>`;
+}
+/* Ver 4.5 계좌인증 '확인' 버튼 활성/비활성 동기화 (계좌번호·계좌비밀번호 모두 입력 시 남색 활성) */
+function v45AuthBtnSync(){
+  if(!isV45()) return;
+  const btn = document.querySelector('.auth-wrap .primary-btn[data-authdone]');
+  if(!btn) return;
+  const a = document.getElementById('acctNo');
+  const acctOk = a && a.value.replace(/-/g,'').trim().length === 8;
+  const pwOk = (s1state.acctPw||'').length > 0;
+  btn.classList.toggle('is-off', !(acctOk && pwOk));
 }
 
 /* 일반주문 주문화면 (디자인 참고: 영웅문 간편모드 계좌조회) */
@@ -3131,6 +3158,8 @@ const APP_LINK = {
   iodpurpose: {title:'금융거래목적확인서 등록'},
   iodpw: {title:'계좌 비밀번호 재설정'},
   pwresetacct: {title:'증권계좌 비밀번호 재설정', popDesc:'<b>증권계좌 비밀번호</b>는<br>영웅문S#에서 재설정할 수 있어요.'},   // 증권계좌 비밀번호 재설정 안내
+  pwhelp: {title:'증권계좌 비밀번호', popTitle:'증권계좌 비밀번호를 잊으셨나요?', popBtn:'영웅문S# 바로가기',
+    popDesc:'증권계좌 비밀번호는 <b>숫자 4~8자리</b>예요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서<br>다시 설정할 수 있어요.'},   // Ver 4.5 계좌인증 · 비밀번호 물음표 안내
   pwresetcert: {title:'공동인증서 비밀번호 재설정', popDesc:'<b>공동인증서 비밀번호</b>는<br>영웅문S#에서 재설정할 수 있어요.'},   // 공동인증서 비밀번호 재설정 안내
   chefilled: {title:'체결내역 조회'},
   sisequote: {title:'시세 조회'},
@@ -3997,6 +4026,25 @@ function openFindAcct(){
 }
 function findAcctStep(n){ const el = document.getElementById('findAcctPop'); if(el) el.innerHTML = findAcctSheet(n); }
 function closeFindAcct(){ const el = document.getElementById('findAcctPop'); if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); } }
+function openPwHelpSheet(){
+  const screen = document.getElementById('screen'); if(!screen) return;
+  const prev = document.getElementById('pwHelpSheet'); if(prev) prev.remove();
+  const el = document.createElement('div');
+  el.className = 'consult-ov pw-help-sheet'; el.id = 'pwHelpSheet';
+  el.innerHTML = `<div class="consult-sheet">
+    <div class="cs-grip"></div>
+    <div class="cs-head"><div class="cs-title">증권계좌 비밀번호</div></div>
+    <div class="pw-help-desc">증권계좌 비밀번호는 <b>숫자 4~8자리</b>예요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서<br>다시 설정할 수 있어요.</div>
+    <div class="pw-help-cta" data-pwhelpgo><img src="assets/ys-icon.png" alt="S#" class="pw-help-ic">영웅문S# 바로가기</div>
+    <div class="cs-cancel" data-pwhelpclose>닫기</div>
+  </div>`;
+  screen.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('on'));
+}
+function closePwHelpSheet(){
+  const el = document.getElementById('pwHelpSheet');
+  if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); }
+}
 /* 결과안내 '왜 진위확인이 되지 않았나요?' 배지 → 사유 안내 플로팅 */
 function openBadgeInfo(){
   const key = IOD_RESULTS[s1state.iodResult] ? s1state.iodResult : 'multi';
@@ -4851,9 +4899,14 @@ function renderS1(){
       : pageTop(s1state.title||'본인인증', isIodFlow()) + (isIodFlow()?untactSteps(iodStepsFor(),0):'') + authSelect();
   }
   else if(s1state.page==='authstep'){
-    html = isCheAuth()
-      ? `<div class="acv-wrap"><div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>` + authStep(s1state.authMethod) + `</div>`
-      : pageTop(s1state.title||'본인인증', isIodFlow() || (isCertFlow()&&s1Ver==='v40')) + (((isIsaFlow()&&s1Ver!=='v40')||(isCertFlow()&&s1Ver!=='v40'))?untactSteps(iodStepsFor(),0):'') + authStep(s1state.authMethod);   // 순수 '입출금'·v40 서류발급현황·v40 ISA는 진행바 없음(v41·v42 ISA/증명서만 표시), v40 cert/isa는 iod-top(25px 정렬)
+    if(isV45() && !isCheAuth() && s1state.authMethod==='account'){
+      // Ver 4.5 자가해결 계좌인증: 세그먼트 스텝퍼 상단바 + 계좌인증(기존 untactSteps 대체). 메인·드릴다운과 동일 그라데이션 배경(.v45-authpage)
+      html = `<div class="v45-authpage">` + v45AuthTop() + authStep(s1state.authMethod) + `</div>`;
+    } else {
+      html = isCheAuth()
+        ? `<div class="acv-wrap"><div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>` + authStep(s1state.authMethod) + `</div>`
+        : pageTop(s1state.title||'본인인증', isIodFlow() || (isCertFlow()&&s1Ver==='v40')) + (((isIsaFlow()&&s1Ver!=='v40')||(isCertFlow()&&s1Ver!=='v40'))?untactSteps(iodStepsFor(),0):'') + authStep(s1state.authMethod);   // 순수 '입출금'·v40 서류발급현황·v40 ISA는 진행바 없음(v41·v42 ISA/증명서만 표시), v40 cert/isa는 iod-top(25px 정렬)
+    }
   }
   else if(s1state.page==='iodacctsel'){
     html = renderIodAcctSel();
@@ -5044,6 +5097,12 @@ function renderS1(){
   setTab('s1', s1state.page==='home'?'home':'');
   // 휴대폰 인증번호 화면이면 카운트다운 시작
   if(s1state.page==='authstep' && s1state.authMethod==='phone' && s1state.otpSent){ startOtpTimer(180); }
+  // Ver 4.5 계좌인증: 계좌번호 입력 시 확인버튼 활성/비활성 실시간 동기화
+  if(s1state.page==='authstep' && isV45() && s1state.authMethod==='account'){
+    const a = document.getElementById('acctNo');
+    if(a) a.addEventListener('input', v45AuthBtnSync);
+    v45AuthBtnSync();
+  }
 }
 
 function indexResult(){
@@ -5351,7 +5410,12 @@ function closeAiChat(){ const e=document.getElementById('aiChatOv'); if(e) e.rem
 document.addEventListener('input', (e)=>{
   const el = e.target;
   if(!el) return;
-  if(el.id === 'acctNo'){   // 계좌인증(입출금·체결내역): 계좌번호 입력 여부에 따라 하단 링크 문구 전환
+  if(el.id === 'acctNo'){   // 계좌번호: v45에서 4-4 자동 포맷, 링크 문구 전환
+    if(isV45()){
+      const raw = el.value.replace(/\D/g, '').slice(0, 8);
+      el.value = raw.length > 4 ? raw.slice(0,4) + '-' + raw.slice(4) : raw;
+      v45AuthBtnSync();
+    }
     const link = document.querySelector('.iod-findlink[data-iodfind], .iod-findlink[data-cheacctfind]');
     if(link) link.textContent = (el.value.trim() ? '계좌비밀번호를 모르겠어요' : '계좌번호를 모르겠어요') + ' ›';
     return;
@@ -5623,8 +5687,11 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-finddone]')){ findAcctStep(3); return; }
   if(t.closest('[data-findclose]')){ closeFindAcct(); return; }
   const findAcctRow = t.closest('[data-findacct]');
-  if(findAcctRow){ const inp=document.getElementById('acctNo'); const no=findAcctRow.dataset.findacct; if(inp) inp.value=no; s1state.iodAcctNo=no; closeFindAcct(); flash('계좌번호가 입력되었어요. (시연용)'); return; }
+  if(findAcctRow){ const inp=document.getElementById('acctNo'); const no=findAcctRow.dataset.findacct; if(inp){ inp.value=no.length===8?no.slice(0,4)+'-'+no.slice(4):no; v45AuthBtnSync(); } s1state.iodAcctNo=no; closeFindAcct(); flash('계좌번호가 입력되었어요. (시연용)'); return; }
   if(t.classList && t.classList.contains('find-ov')){ closeFindAcct(); return; }
+  // 비밀번호 도움말 바텀시트
+  if(t.closest('[data-pwhelpclose]') || t.classList.contains('pw-help-sheet')){ closePwHelpSheet(); return; }
+  if(t.closest('[data-pwhelpgo]')){ closePwHelpSheet(); flash('영웅문S# 앱으로 이동합니다. (시연용)'); return; }
   // 결과안내 '왜 진위확인이 되지 않았나요?' 배지 플로팅 — consult-ov 공유이므로 일반 핸들러보다 먼저
   if(t.closest('[data-idbadge]')){ openBadgeInfo(); return; }
   if(t.closest('[data-badgeclose]') || (t.classList && t.classList.contains('badge-ov'))){ closeBadgeInfo(); return; }
@@ -5687,6 +5754,10 @@ document.addEventListener('click', (e)=>{
     flash('발급번호가 제출되었어요. 확인 후 알림톡으로 안내해 드릴게요. (시연용)');
     return;
   }
+  // Ver 4.5 계좌번호 물음표 → 계좌찾기 플로팅(화면 이동 X)
+  if(t.closest('[data-acctfind]')){ openFindAcct(); return; }
+  // Ver 4.5 비밀번호 물음표 → 증권계좌 비밀번호 안내 바텀시트
+  if(t.closest('[data-pwhelp]')){ openPwHelpSheet(); return; }
   if(t.closest('[data-iodfind]')){
     const acctNo = (document.getElementById('acctNo')||{}).value || '';
     if(acctNo.trim()){ openMethodSheet(IOD_PW_SHEET); return; }   // 계좌번호 입력됨 → 비밀번호 재설정 방법 선택 플로팅
@@ -5795,11 +5866,13 @@ document.addEventListener('click', (e)=>{
     else if(s1state.acctPw.length < 8) s1state.acctPw += k;
     const dots = '●'.repeat(s1state.acctPw.length);
     ['acctPwDisp','kpDots'].forEach(id=>{ const d=document.getElementById(id); if(d) d.textContent = dots; });
+    v45AuthBtnSync();   // Ver 4.5 계좌인증 확인버튼 활성/비활성 동기화
     return;
   }
   // 키패드 취소 → 입력 취소 후 닫기
   if(t.closest('[data-kpcancel]')){
     s1state.acctPw = ''; const d=document.getElementById('acctPwDisp'); if(d) d.textContent='';
+    v45AuthBtnSync();
     closePwKeypad(); return;
   }
   // 키패드 입력완료 → 비밀번호 확정 후 닫기 (휴대폰 인증은 바로 조회화면으로)
@@ -5827,7 +5900,7 @@ document.addEventListener('click', (e)=>{
   const done = t.closest('[data-authdone]');
   if(done){
     if(s1state.authMethod==='account'){
-      const acctNo = (document.getElementById('acctNo')||{}).value || '';
+      const acctNo = ((document.getElementById('acctNo')||{}).value || '').replace(/-/g,'');
       if(!acctNo.trim()){ flash('계좌번호를 입력해주세요.'); return; }
       if((s1state.acctPw||'').length < 4){ flash('계좌 비밀번호를 입력해주세요. (4자리 이상)'); return; }
       const foundAcct = ACCOUNTS.find(a=>a.no===acctNo.trim());   // 등록 계좌면 종류(위탁종합/ISA) 반영
