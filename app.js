@@ -2457,12 +2457,10 @@ function v45SsBannerCard(it){
   return `<div class="v45ss-card" ${it.act} role="button">
     <img class="v45ss-img" src="${it.img}" alt="">
     <div class="v45ss-overlay"></div>
-    <div class="v45ss-content">
-      <div class="v45ss-tag">자가해결</div>
+    <div class="v45ss-txt">
       <div class="v45ss-nm">${it.t}</div>
       <div class="v45ss-sub">${it.sub}</div>
     </div>
-    <div class="v45ss-arw">${SS_CHEV_R}</div>
   </div>`;
 }
 
