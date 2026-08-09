@@ -420,33 +420,36 @@ body{
 .v45-selfsolve{margin:0 0 4px}
 .v45ss-toprow{display:flex;align-items:center;justify-content:space-between;padding:0 22px;margin:8px 0 10px}
 .v45ss-headtxt{font-size:calc(15px*var(--scale));font-weight:400;color:#111;letter-spacing:-.2px}
-.v45ss-more{font-size:calc(12.5px*var(--scale));font-weight:600;color:#1A1A4E;cursor:pointer;padding:2px 0}
-/* 슬라이더 영역 */
-.v45ss-wrap{overflow:hidden;border-radius:20px;margin:0 20px;cursor:grab;position:relative}
+.v45ss-more{font-size:calc(12.5px*var(--scale));font-weight:600;color:#5C5CA8;cursor:pointer;padding:2px 0}
+/* 슬라이더 래퍼 */
+.v45ss-wrap{overflow:hidden;border-radius:20px;margin:0 20px;cursor:grab}
 .v45ss-wrap:active{cursor:grabbing}
 .v45ss-track{display:flex;will-change:transform}
-.v45ss-slide{flex:none;position:relative;height:152px;overflow:hidden;display:flex;align-items:flex-end;user-select:none}
-.v45ss-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center right;pointer-events:none;display:block}
-.v45ss-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(20,20,60,.9) 0%,rgba(20,20,60,.75) 38%,rgba(20,20,60,.45) 62%,transparent 100%);pointer-events:none}
-.v45ss-txt{position:relative;z-index:1;padding:0 0 18px 18px;max-width:58%}
-.v45ss-nm{font-size:calc(15px*var(--scale));font-weight:800;color:#fff;line-height:1.3;letter-spacing:-.3px}
-.v45ss-sub{font-size:calc(11.5px*var(--scale));color:rgba(255,255,255,.75);margin-top:5px;line-height:1.4}
+/* 배너 카드 (슬라이더·리스트 공용) */
+.v45ss-card{flex:none;position:relative;height:162px;overflow:hidden;display:flex;align-items:center;user-select:none;transition:filter .15s}
+.v45ss-card:active{filter:brightness(.92)}
+.v45ss-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% center;pointer-events:none;display:block}
+/* 대각 그라데이션 오버레이 — 좌측 진하게, 우측으로 갈수록 이미지 노출 */
+.v45ss-overlay{position:absolute;inset:0;background:linear-gradient(108deg,rgba(14,14,52,.96) 0%,rgba(14,14,52,.88) 22%,rgba(14,14,52,.68) 44%,rgba(14,14,52,.32) 65%,rgba(14,14,52,.06) 82%,transparent 100%);pointer-events:none}
+/* 좌측 텍스트 영역 */
+.v45ss-content{position:relative;z-index:1;padding:0 0 0 20px;flex:1;max-width:62%;display:flex;flex-direction:column;justify-content:center}
+.v45ss-tag{display:inline-flex;align-items:center;font-size:calc(9.5px*var(--scale));font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:rgba(255,255,255,.82);background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:2px 9px;margin-bottom:9px;width:fit-content;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.v45ss-nm{font-size:calc(16.5px*var(--scale));font-weight:900;color:#fff;letter-spacing:-.5px;line-height:1.26}
+.v45ss-sub{font-size:calc(11px*var(--scale));color:rgba(255,255,255,.72);margin-top:7px;line-height:1.5;word-break:keep-all}
+/* 우측 원형 화살표 버튼 */
+.v45ss-arw{position:absolute;bottom:15px;right:15px;z-index:1;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);flex-shrink:0}
+.v45ss-arw svg{width:15px;height:15px;stroke-width:2.5}
 /* 점 인디케이터 */
-.v45ss-dots{display:flex;justify-content:center;gap:5px;margin:10px 0 14px}
-.v45ss-dot{width:6px;height:6px;border-radius:50%;background:rgba(26,26,78,.18);transition:background .25s,width .25s;cursor:pointer}
-.v45ss-dot.on{width:18px;border-radius:999px;background:#1A1A4E}
-/* 더보기 시트 */
-.ss-more-ov.on{opacity:1;pointer-events:auto}
-.ss-more-sheet{}
-.ss-mhead{font-size:calc(17px*var(--scale));font-weight:800;color:#1A1A4E;padding:2px 0 16px;letter-spacing:-.3px}
-.ss-mlist{display:flex;flex-direction:column;gap:0}
-.ss-mrow{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F1F5;cursor:pointer}
-.ss-mrow:last-child{border-bottom:none}
-.ss-mrow-body{flex:1;min-width:0}
-.ss-mrow-nm{font-size:calc(15px*var(--scale));font-weight:700;color:#1A1A4E}
-.ss-mrow-sub{font-size:calc(12px*var(--scale));color:#8B95A1;margin-top:3px;line-height:1.4}
-.ss-mrow-arw{flex-shrink:0;color:#C4CAD4;display:flex}
-.ss-mrow-arw svg{width:18px;height:18px}
+.v45ss-dots{display:flex;justify-content:center;gap:5px;margin:9px 0 12px}
+.v45ss-dot{width:6px;height:6px;border-radius:50%;background:rgba(26,26,78,.16);transition:background .3s,width .3s;cursor:pointer}
+.v45ss-dot.on{width:20px;border-radius:999px;background:#1A1A4E}
+/* 더보기 전체 리스트 페이지 */
+.v45-ssmore-page{min-height:100%;background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#fff 420px);display:flex;flex-direction:column}
+.v45ss-more-dhead{padding:2px 22px 16px}
+.v45ss-list{padding:4px 20px 28px;display:flex;flex-direction:column;gap:14px}
+.v45ss-list .v45ss-card{width:100%;border-radius:20px;height:158px}
+/* 슬라이더 내 카드는 래퍼가 radius 담당 → 개별 card는 radius 없음 */
+.v45ss-track .v45ss-card{border-radius:0}
 
 /* ===== Ver 4.5 · 배경 그라데이션 (상단 자가해결 존=인디고 틴트 → 대메뉴 그리드 존=흰색 자연스럽게 블렌드) ===== */
 .flow.toss.v45 .toss-home{background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#FFFFFF 420px)}

@@ -2445,24 +2445,29 @@ function v45Banner(){
 }
 /* Ver 4.5 · 자가해결 배너 슬라이더 (1장씩 자동 슬라이딩 + 점 인디케이터 + 더보기) */
 const SS_ITEMS = [
-  {t:'입출금이 안돼요',           sub:'한도제한·출금불가 원인을 즉시 확인해요',         act:'data-iodstart',  img:'assets/glass3.png'},
-  {t:'서류 발급현황이 궁금해요',   sub:'신청 서류의 발급 상태를 바로 확인해요',          act:'data-certstart', img:'assets/glass5.png'},
-  {t:'ISA 가입서류를 내고 싶어요', sub:'소득확인 서류를 제출하고 가입을 완료해요',        act:'data-isastart',  img:'assets/glass4.png'},
-  {t:'비밀번호를 모르겠어요',      sub:'계좌 비밀번호를 안전하게 재설정해요',             act:'data-pwreset',   img:'assets/glass2.jpeg'},
+  {t:'입출금이 안돼요',           sub:'한도제한·출금불가 원인을 즉시 확인해요',   act:'data-iodstart',  img:'assets/glass3.png'},
+  {t:'서류 발급현황이 궁금해요',   sub:'신청 서류의 발급 상태를 바로 확인해요',   act:'data-certstart', img:'assets/glass5.png'},
+  {t:'ISA 가입서류를 내고 싶어요', sub:'소득확인 서류를 제출하고 가입을 완료해요', act:'data-isastart',  img:'assets/glass4.png'},
+  {t:'비밀번호를 모르겠어요',      sub:'계좌 비밀번호를 안전하게 재설정해요',     act:'data-pwreset',   img:'assets/glass2.jpeg'},
 ];
 let ssBannerTimer = null;
+const SS_CHEV_R = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+
+function v45SsBannerCard(it){
+  return `<div class="v45ss-card" ${it.act} role="button">
+    <img class="v45ss-img" src="${it.img}" alt="">
+    <div class="v45ss-overlay"></div>
+    <div class="v45ss-content">
+      <div class="v45ss-tag">자가해결</div>
+      <div class="v45ss-nm">${it.t}</div>
+      <div class="v45ss-sub">${it.sub}</div>
+    </div>
+    <div class="v45ss-arw">${SS_CHEV_R}</div>
+  </div>`;
+}
 
 function v45SelfSolve(){
-  const slides = SS_ITEMS.map((it, i) =>
-    `<div class="v45ss-slide" ${it.act} role="button">
-      <img class="v45ss-img" src="${it.img}" alt="">
-      <div class="v45ss-overlay"></div>
-      <div class="v45ss-txt">
-        <div class="v45ss-nm">${it.t}</div>
-        <div class="v45ss-sub">${it.sub}</div>
-      </div>
-    </div>`
-  ).join('');
+  const slides = SS_ITEMS.map(it => v45SsBannerCard(it)).join('');
   const dots = SS_ITEMS.map((_, i) =>
     `<span class="v45ss-dot${i===0?' on':''}" data-ssdot="${i}"></span>`
   ).join('');
@@ -2476,18 +2481,27 @@ function v45SelfSolve(){
   </div>`;
 }
 
+function renderSsMore(){
+  const cards = SS_ITEMS.map(it => v45SsBannerCard(it)).join('');
+  return `<div class="v45-ssmore-page">
+    <div class="toss-top"><div class="toss-back" data-s1back>${I.chev}</div><div class="head-spacer"></div></div>
+    <div class="toss-dhead v45ss-more-dhead"><div class="td-title">자가해결 메뉴</div><div class="td-desc">원하시는 항목을 선택해 주세요</div></div>
+    <div class="v45ss-list">${cards}</div>
+  </div>`;
+}
+
 function initSsBanner(){
   clearTimeout(ssBannerTimer);
   const track = document.getElementById('ssBannerTrack');
   if(!track) return;
   const wrap = track.parentElement;
-  const slides = [...track.querySelectorAll('.v45ss-slide')];
-  const n = slides.length;
+  const cards = [...track.querySelectorAll('.v45ss-card')];
+  const n = cards.length;
   if(n < 2) return;
   let cur = 0;
   let slideW = 0;
 
-  function measure(){ slideW = wrap.offsetWidth; slides.forEach(s => { s.style.width = slideW + 'px'; }); }
+  function measure(){ slideW = wrap.offsetWidth; cards.forEach(c => { c.style.width = slideW + 'px'; }); }
   function getDots(){ return [...document.querySelectorAll('.v45ss-dot')]; }
   function goTo(idx){
     cur = ((idx % n) + n) % n;
@@ -2518,28 +2532,7 @@ function initSsBanner(){
   reschedule();
 }
 
-function openSsMore(){
-  const screen = document.getElementById('screen'); if(!screen) return;
-  const prev = document.getElementById('ssMorePop'); if(prev) prev.remove();
-  const rows = SS_ITEMS.map(it =>
-    `<div class="ss-mrow" ${it.act} role="button">
-      <div class="ss-mrow-body"><div class="ss-mrow-nm">${it.t}</div><div class="ss-mrow-sub">${it.sub}</div></div>
-      <div class="ss-mrow-arw">${I.chev}</div>
-    </div>`).join('');
-  const el = document.createElement('div');
-  el.className = 'consult-ov ss-more-ov'; el.id = 'ssMorePop';
-  el.innerHTML = `<div class="consult-sheet ss-more-sheet">
-    <div class="cs-grip"></div>
-    <div class="ss-mhead">자가해결 메뉴</div>
-    <div class="ss-mlist">${rows}</div>
-  </div>`;
-  screen.appendChild(el);
-  requestAnimationFrame(()=>el.classList.add('on'));
-}
-function closeSsMore(){
-  const el = document.getElementById('ssMorePop');
-  if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); }
-}
+function openSsMore(){ s1nav({page:'ssmore', title:'자가해결 메뉴', noHome:true}); }
 function banner(){
   return `<div class="banner">
     <div class="big">최대 551<small>만원</small></div>
@@ -2586,7 +2579,6 @@ function s1nav(patch){
   closeConsult();                  // 상담연결 팝업 열려있으면 닫기
   closeMethodSheet();              // 방법 선택 플로팅 열려있으면 닫기
   closeStkSheet();                 // 주식주문 계단식 플로팅 열려있으면 닫기
-  closeSsMore();                   // 자가해결 더보기 시트 열려있으면 닫기
   s1state.history.push({page:s1state.page, title:s1state.title, listKey:s1state.listKey, resultKey:s1state.resultKey, fromFav:s1state.fromFav, authNext:s1state.authNext, authMethod:s1state.authMethod, otpSent:s1state.otpSent, noBack:s1state.noBack, noHome:s1state.noHome});
   s1state.noBack = false;          // 기본은 뒤로가기 표시, 진입 화면만 patch로 숨김
   s1state.noHome = false;          // 기본은 홈/메뉴 표시, 세부페이지만 patch로 숨김
@@ -5204,6 +5196,9 @@ function renderS1(){
       html += `</div>`;
     }
   }
+  else if(s1state.page==='ssmore'){
+    html = renderSsMore();
+  }
   else if(s1state.page==='authsel'){
     html = isCheAuth()
       ? `<div class="acv-wrap"><div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>` + authSelect() + `</div>`
@@ -6016,7 +6011,6 @@ document.addEventListener('click', (e)=>{
 
   if(t.closest('[data-csclose]') || (t.classList && t.classList.contains('consult-ov'))){ closeConsult(); return; }
   if(t.closest('[data-ssmore]')){ openSsMore(); return; }
-  if(t.classList && t.classList.contains('ss-more-ov')){ closeSsMore(); return; }
 
   // 입출금 안내 플로우: 진입(계좌 인증) / 계좌번호 모름(본인인증 선택) / 결과 사유 토글
   if(t.closest('[data-iodstart]')){
@@ -6784,7 +6778,7 @@ function selectRefFirm(firm){ refFirm = firm; switchScheme('ref'); }
 /* 시안 리스트: 시안 선택 → 해당 시안의 '메인(home) 화면'으로 띄움 (ver 지정 시 시안1 버전 전환) */
 function selectSian(v, ver){
   // 탭 전환 시 #screen에 떠 있던 오버레이(챗봇·매체시트·상담팝업·앱연결·안내팝업·계단주문·계좌시트 등) 모두 닫고 해당 탭 메인화면으로 진입
-  closeAiChat(); closeMethodSheet(); closeConsult(); closeAppLink(); closeModal(); closeStkSheet(); closeAcctSheet(); closeCertSheet(); closeCalendar(); closeMenuDrawer(); closeSsMore();
+  closeAiChat(); closeMethodSheet(); closeConsult(); closeAppLink(); closeModal(); closeStkSheet(); closeAcctSheet(); closeCertSheet(); closeCalendar(); closeMenuDrawer();
   sianScheme = v;
   if(v==='s1'){
     if(ver) s1Ver = ver;
