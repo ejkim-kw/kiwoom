@@ -469,7 +469,7 @@ body{
 
 /* 플랫 스타일: 연한 회색 트랙 + 흰 배경 pill + 테두리 없음 */
 .v45-tabs{background:#EEEEF2}
-.v45-tab-bubble{background:#ffffff;top:8px;left:5px;height:calc(100% - 16px);width:calc((100% - 10px) / 3)}
+.v45-tab-bubble{background:#ffffff}
 .v45-tab-bubble::before{display:none}
 .v45-tab{color:#9EA6B4}
 .v45-tab.on{color:#111}
