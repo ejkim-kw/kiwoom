@@ -416,24 +416,42 @@ body{
 .bigfont-switch.on .bfs-off{opacity:0}
 .bigfont-switch:active .bfs-track{filter:brightness(.96)}
 
-/* ===== Ver 4.5 · '혹시 이런 내용이 궁금하신가요?' 자가해결 2×2 그리드 (대메뉴 그리드 카드 스타일 재사용) ===== */
+/* ===== Ver 4.5 · 자가해결 배너 슬라이더 ===== */
 .v45-selfsolve{margin:0 0 4px}
-.v45ss-head{font-size:calc(15px*var(--scale));font-weight:400;color:#111;padding:0 22px;margin:8px 0 12px;letter-spacing:-.2px}   /* 인사말 아래 간격 두고 문구 섹션 헤더 — 검정 얇은 글씨, 좌 22px(=안녕하세요 라인) */
-.v45ss-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 20px 18px}   /* 2×2, 좌우 20px 여백 */
-/* 아이콘 왼쪽 · 메뉴명 오른쪽(가로 배치). ※.flow.toss.v45 접두사로 기본 .toss-gcell(column) 명시도 상회 */
-.flow.toss.v45 .v45ss-grid .toss-gcell{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;min-height:72px;padding:12px}
-.flow.toss.v45 .v45ss-grid .tg-ic{width:38px;height:38px;overflow:hidden}
-.flow.toss.v45 .v45ss-grid .tg-ic svg{width:20px;height:20px}
-.flow.toss.v45 .v45ss-grid .tg-ic img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
-/* 이미지 아이콘(glass 등)은 사각 칩 없이 아이콘 자체를 크게 → 흰 배경이 흰 카드와 merge되어 아이콘만 꽉 차게 보임 */
-.flow.toss.v45 .v45ss-grid .tg-ic:has(img){width:48px;height:48px;background:transparent;border-radius:0;overflow:visible}
-.flow.toss.v45 .v45ss-grid .tg-nm{font-size:calc(12.5px*var(--scale));text-align:left;flex:1;min-width:0;line-height:1.3}
+.v45ss-toprow{display:flex;align-items:center;justify-content:space-between;padding:0 22px;margin:8px 0 10px}
+.v45ss-headtxt{font-size:calc(15px*var(--scale));font-weight:400;color:#111;letter-spacing:-.2px}
+.v45ss-more{font-size:calc(12.5px*var(--scale));font-weight:600;color:#1A1A4E;cursor:pointer;padding:2px 0}
+/* 슬라이더 영역 */
+.v45ss-wrap{overflow:hidden;border-radius:20px;margin:0 20px;cursor:grab;position:relative}
+.v45ss-wrap:active{cursor:grabbing}
+.v45ss-track{display:flex;will-change:transform}
+.v45ss-slide{flex:none;position:relative;height:152px;overflow:hidden;display:flex;align-items:flex-end;user-select:none}
+.v45ss-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center right;pointer-events:none;display:block}
+.v45ss-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(20,20,60,.9) 0%,rgba(20,20,60,.75) 38%,rgba(20,20,60,.45) 62%,transparent 100%);pointer-events:none}
+.v45ss-txt{position:relative;z-index:1;padding:0 0 18px 18px;max-width:58%}
+.v45ss-nm{font-size:calc(15px*var(--scale));font-weight:800;color:#fff;line-height:1.3;letter-spacing:-.3px}
+.v45ss-sub{font-size:calc(11.5px*var(--scale));color:rgba(255,255,255,.75);margin-top:5px;line-height:1.4}
+/* 점 인디케이터 */
+.v45ss-dots{display:flex;justify-content:center;gap:5px;margin:10px 0 14px}
+.v45ss-dot{width:6px;height:6px;border-radius:50%;background:rgba(26,26,78,.18);transition:background .25s,width .25s;cursor:pointer}
+.v45ss-dot.on{width:18px;border-radius:999px;background:#1A1A4E}
+/* 더보기 시트 */
+.ss-more-ov.on{opacity:1;pointer-events:auto}
+.ss-more-sheet{}
+.ss-mhead{font-size:calc(17px*var(--scale));font-weight:800;color:#1A1A4E;padding:2px 0 16px;letter-spacing:-.3px}
+.ss-mlist{display:flex;flex-direction:column;gap:0}
+.ss-mrow{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F1F5;cursor:pointer}
+.ss-mrow:last-child{border-bottom:none}
+.ss-mrow-body{flex:1;min-width:0}
+.ss-mrow-nm{font-size:calc(15px*var(--scale));font-weight:700;color:#1A1A4E}
+.ss-mrow-sub{font-size:calc(12px*var(--scale));color:#8B95A1;margin-top:3px;line-height:1.4}
+.ss-mrow-arw{flex-shrink:0;color:#C4CAD4;display:flex}
+.ss-mrow-arw svg{width:18px;height:18px}
 
 /* ===== Ver 4.5 · 배경 그라데이션 (상단 자가해결 존=인디고 틴트 → 대메뉴 그리드 존=흰색 자연스럽게 블렌드) ===== */
 .flow.toss.v45 .toss-home{background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#FFFFFF 420px)}
 .flow.toss.v45 .toss-stick{background:#EBEDFF}   /* 고정 헤더(로고~인사말)를 그라데이션 상단색과 동일하게 → 스크롤 시 이음새 없음 */
 .flow.toss.v45 .statusbar{background:#EBEDFF}   /* 상단 상태바(시계)부터 인디고 틴트 → 시계~인사말~자가해결 배경 일체화 */
-.flow.toss.v45 .v45-selfsolve .toss-gcell{background:#fff}   /* 인디고 틴트 배경 위에서 흰 카드가 도드라지도록 명확히 흰색 유지 */
 
 /* ===== Ver 4.5 · 대메뉴 상단 탭 (공통/국내/그외상품) — 세그먼트 + 슬라이딩 버블 ===== */
 /* 구조(공통): 위치·크기·슬라이딩 전환 (스타일과 분리 — 스타일만 교체 가능) */

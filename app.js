@@ -2443,26 +2443,102 @@ function v45Banner(){
     <div class="v45-bn-ic">${ic}</div>
   </div>`;
 }
-/* Ver 4.5 · '상담 없이 직접 해결해요' 자가해결 가로 스크롤 카드 (FAQ 4항목을 카드배너화). 각 카드는 실제 셀프서비스 플로우로 진입(핸들러는 tossFaqCard와 동일: data-iodstart/certstart/isastart/pwreset) */
+/* Ver 4.5 · 자가해결 배너 슬라이더 (1장씩 자동 슬라이딩 + 점 인디케이터 + 더보기) */
+const SS_ITEMS = [
+  {t:'입출금이 안돼요',           sub:'한도제한·출금불가 원인을 즉시 확인해요',         act:'data-iodstart',  img:'assets/glass3.png'},
+  {t:'서류 발급현황이 궁금해요',   sub:'신청 서류의 발급 상태를 바로 확인해요',          act:'data-certstart', img:'assets/glass5.png'},
+  {t:'ISA 가입서류를 내고 싶어요', sub:'소득확인 서류를 제출하고 가입을 완료해요',        act:'data-isastart',  img:'assets/glass4.png'},
+  {t:'비밀번호를 모르겠어요',      sub:'계좌 비밀번호를 안전하게 재설정해요',             act:'data-pwreset',   img:'assets/glass2.jpeg'},
+];
+let ssBannerTimer = null;
+
 function v45SelfSolve(){
-  const IC = {
-    io:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M21 7H7"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h14"/></svg>',
-    doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>',
-    up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 18v-5"/><path d="M9.6 15.4 12 13l2.4 2.4"/></svg>',
-    lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
-  };
-  const items = [
-    {t:'입출금이 안돼요',              act:'data-iodstart',  svg:'<img src="assets/glass3.png" alt="입출금이 안돼요">'},
-    {t:'서류 발급현황이 궁금해요',     act:'data-certstart', svg:'<img src="assets/glass5.png" alt="서류 발급현황">'},
-    {t:'ISA 가입서류를 내고 싶어요',   act:'data-isastart',  svg:'<img src="assets/glass4.png" alt="ISA 가입서류">'},
-    {t:'비밀번호를 모르겠어요',       act:'data-pwreset',   svg:'<img src="assets/glass2.jpeg" alt="비밀번호를 모르겠어요">'},
-  ];
-  // 카드 스타일 = 대메뉴 그리드와 동일(.toss-gcell/.tg-ic/.tg-nm 재사용), 2×2 배치
-  const cards = items.map(it =>
-    `<div class="toss-gcell" ${it.act} role="button"><div class="tg-ic">${it.svg}</div><div class="tg-nm">${it.t}</div></div>`
+  const slides = SS_ITEMS.map((it, i) =>
+    `<div class="v45ss-slide" ${it.act} role="button">
+      <img class="v45ss-img" src="${it.img}" alt="">
+      <div class="v45ss-overlay"></div>
+      <div class="v45ss-txt">
+        <div class="v45ss-nm">${it.t}</div>
+        <div class="v45ss-sub">${it.sub}</div>
+      </div>
+    </div>`
   ).join('');
-  // 섹션 헤더는 문구('혹시 이런 내용이 궁금하신가요?') + 아래 2×2 그리드
-  return `<div class="v45-selfsolve"><div class="v45ss-head">혹시 이런 내용이 궁금하신가요?</div><div class="v45ss-grid">${cards}</div></div>`;
+  const dots = SS_ITEMS.map((_, i) =>
+    `<span class="v45ss-dot${i===0?' on':''}" data-ssdot="${i}"></span>`
+  ).join('');
+  return `<div class="v45-selfsolve">
+    <div class="v45ss-toprow">
+      <span class="v45ss-headtxt">혹시 이런 내용이 궁금하신가요?</span>
+      <span class="v45ss-more" data-ssmore>더보기</span>
+    </div>
+    <div class="v45ss-wrap"><div class="v45ss-track" id="ssBannerTrack">${slides}</div></div>
+    <div class="v45ss-dots">${dots}</div>
+  </div>`;
+}
+
+function initSsBanner(){
+  clearTimeout(ssBannerTimer);
+  const track = document.getElementById('ssBannerTrack');
+  if(!track) return;
+  const wrap = track.parentElement;
+  const slides = [...track.querySelectorAll('.v45ss-slide')];
+  const n = slides.length;
+  if(n < 2) return;
+  let cur = 0;
+  let slideW = 0;
+
+  function measure(){ slideW = wrap.offsetWidth; slides.forEach(s => { s.style.width = slideW + 'px'; }); }
+  function getDots(){ return [...document.querySelectorAll('.v45ss-dot')]; }
+  function goTo(idx){
+    cur = ((idx % n) + n) % n;
+    track.style.transform = `translateX(${-cur * slideW}px)`;
+    getDots().forEach((d, i) => d.classList.toggle('on', i === cur));
+  }
+  measure();
+  track.style.transition = 'none';
+  goTo(0);
+  requestAnimationFrame(() => { track.style.transition = 'transform .45s cubic-bezier(.25,.46,.45,.94)'; });
+
+  let touchX = 0, touchY = 0;
+  wrap.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, {passive:true});
+  wrap.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    const dy = e.changedTouches[0].clientY - touchY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 36){ goTo(dx < 0 ? cur+1 : cur-1); reschedule(); }
+  });
+
+  const ssRoot = wrap.closest('.v45-selfsolve');
+  if(ssRoot) ssRoot.addEventListener('click', e => {
+    const dot = e.target.closest('[data-ssdot]');
+    if(dot){ goTo(parseInt(dot.dataset.ssdot)); reschedule(); }
+  });
+
+  function tick(){ if(!document.getElementById('ssBannerTrack')) return; goTo(cur+1); reschedule(); }
+  function reschedule(){ clearTimeout(ssBannerTimer); ssBannerTimer = setTimeout(tick, 3500); }
+  reschedule();
+}
+
+function openSsMore(){
+  const screen = document.getElementById('screen'); if(!screen) return;
+  const prev = document.getElementById('ssMorePop'); if(prev) prev.remove();
+  const rows = SS_ITEMS.map(it =>
+    `<div class="ss-mrow" ${it.act} role="button">
+      <div class="ss-mrow-body"><div class="ss-mrow-nm">${it.t}</div><div class="ss-mrow-sub">${it.sub}</div></div>
+      <div class="ss-mrow-arw">${I.chev}</div>
+    </div>`).join('');
+  const el = document.createElement('div');
+  el.className = 'consult-ov ss-more-ov'; el.id = 'ssMorePop';
+  el.innerHTML = `<div class="consult-sheet ss-more-sheet">
+    <div class="cs-grip"></div>
+    <div class="ss-mhead">자가해결 메뉴</div>
+    <div class="ss-mlist">${rows}</div>
+  </div>`;
+  screen.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('on'));
+}
+function closeSsMore(){
+  const el = document.getElementById('ssMorePop');
+  if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); }
 }
 function banner(){
   return `<div class="banner">
@@ -2510,6 +2586,7 @@ function s1nav(patch){
   closeConsult();                  // 상담연결 팝업 열려있으면 닫기
   closeMethodSheet();              // 방법 선택 플로팅 열려있으면 닫기
   closeStkSheet();                 // 주식주문 계단식 플로팅 열려있으면 닫기
+  closeSsMore();                   // 자가해결 더보기 시트 열려있으면 닫기
   s1state.history.push({page:s1state.page, title:s1state.title, listKey:s1state.listKey, resultKey:s1state.resultKey, fromFav:s1state.fromFav, authNext:s1state.authNext, authMethod:s1state.authMethod, otpSent:s1state.otpSent, noBack:s1state.noBack, noHome:s1state.noHome});
   s1state.noBack = false;          // 기본은 뒤로가기 표시, 진입 화면만 patch로 숨김
   s1state.noHome = false;          // 기본은 홈/메뉴 표시, 세부페이지만 patch로 숨김
@@ -5329,6 +5406,7 @@ function renderS1(){
   }
   v.innerHTML = html;
   setTab('s1', s1state.page==='home'?'home':'');
+  if(isV45() && s1state.page==='home') requestAnimationFrame(initSsBanner);
   // 휴대폰 인증번호 화면이면 카운트다운 시작
   if(s1state.page==='authstep' && s1state.authMethod==='phone' && s1state.otpSent){ startOtpTimer(180); }
   // Ver 4.5 계좌인증: 계좌번호 입력 시 확인버튼 활성/비활성 실시간 동기화
@@ -5937,6 +6015,8 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-idurl]')){ s1nav({page:'iddone', title:'재요청 URL 발송', noBack:true, noHome:true}); return; }   // 신분증 재요청 URL 받기 → 발송 완료 화면
 
   if(t.closest('[data-csclose]') || (t.classList && t.classList.contains('consult-ov'))){ closeConsult(); return; }
+  if(t.closest('[data-ssmore]')){ openSsMore(); return; }
+  if(t.classList && t.classList.contains('ss-more-ov')){ closeSsMore(); return; }
 
   // 입출금 안내 플로우: 진입(계좌 인증) / 계좌번호 모름(본인인증 선택) / 결과 사유 토글
   if(t.closest('[data-iodstart]')){
@@ -6704,7 +6784,7 @@ function selectRefFirm(firm){ refFirm = firm; switchScheme('ref'); }
 /* 시안 리스트: 시안 선택 → 해당 시안의 '메인(home) 화면'으로 띄움 (ver 지정 시 시안1 버전 전환) */
 function selectSian(v, ver){
   // 탭 전환 시 #screen에 떠 있던 오버레이(챗봇·매체시트·상담팝업·앱연결·안내팝업·계단주문·계좌시트 등) 모두 닫고 해당 탭 메인화면으로 진입
-  closeAiChat(); closeMethodSheet(); closeConsult(); closeAppLink(); closeModal(); closeStkSheet(); closeAcctSheet(); closeCertSheet(); closeCalendar(); closeMenuDrawer();
+  closeAiChat(); closeMethodSheet(); closeConsult(); closeAppLink(); closeModal(); closeStkSheet(); closeAcctSheet(); closeCertSheet(); closeCalendar(); closeMenuDrawer(); closeSsMore();
   sianScheme = v;
   if(v==='s1'){
     if(ver) s1Ver = ver;
