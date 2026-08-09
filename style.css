@@ -456,7 +456,7 @@ body{
 .v45-tabs{position:relative;display:flex;gap:0;padding:5px;margin:8px 20px 14px;border-radius:999px}
 .v45-tab-bubble{position:absolute;z-index:0;top:5px;left:5px;height:calc(100% - 10px);width:calc((100% - 10px) / 3);border-radius:999px;transition:transform .34s cubic-bezier(.34,1.12,.46,1)}
 .v45-tab-bubble::before{content:'';position:absolute;border-radius:999px;pointer-events:none}
-.v45-tab{flex:1;position:relative;z-index:1;text-align:center;padding:9px 0;border-radius:999px;font-size:calc(13.5px*var(--scale));font-weight:700;cursor:pointer;white-space:nowrap;transition:color .28s}
+.v45-tab{flex:1;position:relative;z-index:1;text-align:center;padding:9px 0;border-radius:999px;font-size:calc(15px*var(--scale));font-weight:400;letter-spacing:-.2px;cursor:pointer;white-space:nowrap;transition:color .28s}
 
 /* [보존] 조약돌 리퀴드 글라스 스타일(이전) — 삭제 금지. 복원: 이 블록 주석 해제 + 아래 tab2 블록 주석 처리
 .v45-tabs{background:#E2E9F7;box-shadow:inset 0 1px 2.5px rgba(52,96,220,.15)}
@@ -467,13 +467,13 @@ body{
 .v45-tab:not(.on):active{color:#4848D8}
 */
 
-/* 플랫 스타일(3D 효과 없음): 연한 회색 트랙 + 흰 배경 pill + 하늘색 테두리만 */
-.v45-tabs{background:#F0F1F4}
-.v45-tab-bubble{background:#ffffff;border:2.5px solid #5DA8F5;box-sizing:border-box}
+/* 플랫 스타일: 연한 회색 트랙 + 흰 배경 pill + 테두리 없음 */
+.v45-tabs{background:#EEEEF2}
+.v45-tab-bubble{background:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .v45-tab-bubble::before{display:none}
-.v45-tab{color:#8A93A3}
-.v45-tab.on{color:#3A86D9}
-.v45-tab:not(.on):active{color:#3A86D9}
+.v45-tab{color:#9EA6B4}
+.v45-tab.on{color:#111;font-weight:500}
+.v45-tab:not(.on):active{color:#555}
 
 /* ===== Ver 4.5 · 하단 네비게이터 (bottom.jpg 참고: 흰 플로팅 바 + 중앙 챗봇 구 버튼) ===== */
 .flow.toss.v45 .tabbar{position:relative;margin:0;padding:15px 42px calc(15px + env(safe-area-inset-bottom));background:#fff;border:none;border-top:1px solid #E9ECF4;border-radius:24px 24px 0 0;box-shadow:0 -6px 20px rgba(40,50,110,.10);display:flex;align-items:center;justify-content:space-between;overflow:visible}
