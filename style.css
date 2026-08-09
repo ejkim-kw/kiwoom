@@ -1611,6 +1611,48 @@ body{
 .flow.toss.v45 .iod-v45-actions{margin-top:16px}
 .flow.toss.v45 .v45-iod-btn{height:46px;margin:0 20px;padding:0;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:999px;background:#1A1A4E;color:#fff;font-size:calc(15px*var(--scale));font-weight:700;box-shadow:0 6px 16px rgba(26,26,78,.22);transition:background .2s,box-shadow .2s}
 .flow.toss.v45 .v45-iod-btn:active{background:#12124A;box-shadow:0 2px 8px rgba(26,26,78,.18)}
+/* ===== Ver 4.5 · 서류 발급현황(cert) 카드 ===== */
+.flow.toss.v45 .v45-cert-item{cursor:pointer}
+.flow.toss.v45 .v45-ci-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.flow.toss.v45 .v45-ci-nm{font-size:calc(14.5px*var(--scale));font-weight:700;color:#1A1A4E;flex:1;min-width:0}
+.flow.toss.v45 .iod-badge{display:inline-flex;align-items:center;font-size:calc(11px*var(--scale));font-weight:700;padding:3px 9px;border-radius:999px;flex-shrink:0}
+.flow.toss.v45 .iod-badge.done{background:#E3F2FD;color:#1565C0}
+.flow.toss.v45 .iod-badge.wait{background:#FFF3E0;color:#E65100}
+.flow.toss.v45 .v45-ci-date{font-size:calc(12px*var(--scale));color:#8B95A1;margin-top:6px;line-height:1.45}
+.flow.toss.v45 .v45-ci-foot{margin-top:12px;padding-top:12px;border-top:1px solid #EDEEF5}
+.flow.toss.v45 .v45-ci-rebtn{display:inline-flex;align-items:center;font-size:calc(12.5px*var(--scale));font-weight:600;color:#1A1A4E;padding:5px 14px;background:#ECEDF7;border-radius:999px;cursor:pointer;transition:background .15s}
+.flow.toss.v45 .v45-ci-rebtn:active{background:#D8D9EF}
+/* ===== Ver 4.5 · 서류 재발급 폼 — info 행 ===== */
+.flow.toss.v45 .v45-ir{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F1F5}
+.flow.toss.v45 .v45-ir:last-child{border-bottom:none}
+.flow.toss.v45 .v45-ik{font-size:calc(13px*var(--scale));color:#8B95A1}
+.flow.toss.v45 .v45-iv{font-size:calc(13.5px*var(--scale));font-weight:600;color:#1A1A4E}
+.flow.toss.v45 .v45-iv.sel{cursor:pointer}
+/* ===== Ver 4.5 · ISA 신청현황 결과 ===== */
+.flow.toss.v45 .v45-isa-head{display:flex;align-items:flex-start;gap:8px;padding:0}
+.flow.toss.v45 .v45-isa-head .toss-dhead{flex:1;padding-left:20px;padding-right:0}
+.flow.toss.v45 .v45-cycle-btn{flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#ECEDF7;color:#1A1A4E;cursor:pointer;margin-top:6px;transition:background .15s}
+.flow.toss.v45 .v45-cycle-btn:active{background:#D8D9EF}
+.flow.toss.v45 .v45-cycle-btn svg{width:18px;height:18px}
+.flow.toss.v45 .v45-kv-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #F0F1F5}
+.flow.toss.v45 .v45-kv-row:last-child{border-bottom:none}
+.flow.toss.v45 .v45-kv-k{font-size:calc(12.5px*var(--scale));color:#8B95A1;flex:1}
+.flow.toss.v45 .v45-kv-v{font-size:calc(12.5px*var(--scale));font-weight:600;color:#1A1A4E;text-align:right;flex:1}
+.flow.toss.v45 .v45-kv-v.up{color:#1565C0}
+/* ===== Ver 4.5 · ISA 서류 제출 카드 ===== */
+.flow.toss.v45 .v45-doc-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px 20px}
+.flow.toss.v45 .v45-doc-ic{width:48px;height:48px;border-radius:50%;background:linear-gradient(145deg,#5C5CA8,#1A1A4E);display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:12px}
+.flow.toss.v45 .v45-doc-ic svg{width:24px;height:24px}
+.flow.toss.v45 .v45-doc-h{font-size:calc(15px*var(--scale));font-weight:700;color:#1A1A4E}
+.flow.toss.v45 .v45-doc-d{font-size:calc(12.5px*var(--scale));color:#8B95A1;margin-top:6px;line-height:1.5}
+.flow.toss.v45 .v45-doc-btn{margin-top:16px;padding:10px 24px;background:#1A1A4E;color:#fff;font-size:calc(13.5px*var(--scale));font-weight:700;border-radius:999px;cursor:pointer;transition:background .15s}
+.flow.toss.v45 .v45-doc-btn:active{background:#12124A}
+/* ===== Ver 4.5 · ISA 발급번호 입력 ===== */
+.flow.toss.v45 .v45-issue-card{padding:18px 20px}
+.flow.toss.v45 .v45-issue-label{font-size:calc(12px*var(--scale));font-weight:600;color:#8B95A1;margin-bottom:10px}
+.flow.toss.v45 .v45-issue-row{margin:0}
+/* ===== Ver 4.5 · 완료 화면 gradient 오버레이 ===== */
+.iod-done-center.v45-authpage .iod-done-btnwrap .v45-iod-btn{margin:0}
 /* 등록 완료 화면 (세로 중앙 정렬) */
 .iod-done-center{min-height:100%;display:flex;flex-direction:column;justify-content:center}
 .iod-done-center .iod-done{padding:0 24px 4px}

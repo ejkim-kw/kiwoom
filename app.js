@@ -3747,6 +3747,16 @@ function renderIodResult(){
 const ISA_TABS = [['new','신규가입'],['transfer','계좌이전'],['renew','만기연장']];
 /* 1) 신청현황 조회 로딩 */
 function renderIsaChecking(){
+  if(isV45()) return `<div class="iodload-screen v45-authpage">
+    ${v45AuthTop(1)}
+    <div class="iodload-body v45-iodload-body">
+      <div class="toss-dhead"><div class="td-title">신청현황을 조회하고 있어요</div><div class="td-desc">잠시만 기다려 주세요</div></div>
+      <div class="v45-scan-anim">
+        <div class="v45-scan-ring v45-ring-1"></div><div class="v45-scan-ring v45-ring-2"></div><div class="v45-scan-ring v45-ring-3"></div>
+        <div class="v45-scan-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></div>
+      </div>
+    </div>
+  </div>`;
   if(s1Ver==='v40'){   // FAQ 로딩 스타일(iodload-screen): 진행바·스피너 없음, 타이틀+'잠시만 기다려 주세요'(6px), 마젠타 GIF
     return `<div class="iodload-screen">
       ${pageTop(s1state.title||'신청현황 조회', true)}
@@ -3785,6 +3795,41 @@ function renderIsaResult(){
   ]);
   const misuText = '만기연장 신청은 <b>평일 08:00~17:00</b>, <b>만기 3개월 이전~만기일 전 영업일</b>까지 가능해요.';   // 노란 박스(유의사항) 글
   const renewBody = renewFields + `<div class="misu-note">${misuText}</div>`;   // v41/v42: 카드 아래 노란 박스 유지
+  if(isV45()){
+    const st = ISA_RESULT_STATES.indexOf(s1state.isaTab) >= 0 ? s1state.isaTab : 'new';
+    const rfs = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>';
+    const kv45 = rows => `<div class="iod-v45-card">` + rows.map(r=>`<div class="v45-kv-row"><span class="v45-kv-k">${r[0]}</span><span class="v45-kv-v${r[2]?' '+r[2]:''}">${r[1]}</span></div>`).join('') + `</div>`;
+    const newCard = kv45([
+      ['상품명','중개형ISA'],['신청일자','2026.07.03'],['귀속년도','2026'],['가입유형','서민형'],
+      ['신청방법','온라인'],['소득증빙서류','발급번호 확인 필요'],['접수상태','적격','up'],
+    ]);
+    const xferCard = kv45([
+      ['이전신청일','2026.07.01'],['이전상태','처리중','up'],['이전의사 확인방법','전화통화'],
+      ['이전사','기업은행 원동동'],['기존계좌','2581-3216-824011'],
+    ]);
+    const renewCard = kv45([
+      ['상품','중개형ISA'],['가입자 분류','서민형'],['현재 만기일자','2026.09.21'],['연장후 만기일자','2029.09.21'],
+    ]);
+    const M45 = {
+      new:      {title:'ISA 신규가입 신청내역이 조회되었어요', desc:'접수상태가 적격이면 ISA 상품에 가입할 수 있어요.', body:newCard,   cta:'가입서류 제출하기',   ctaAttr:'data-isamethod'},
+      transfer: {title:'ISA 계좌이전 신청내역이 조회되었어요', desc:'타사 → 키움 중개형ISA 계좌이전 신청내역이에요.',  body:xferCard,  cta:'계좌이전 서류 제출하기', ctaAttr:'data-isamethod'},
+      renew:    {title:'ISA 만기연장 신청내역이 조회되었어요', desc:'중개형ISA 만기연장 신청내역이에요.',             body:renewCard, cta:'만기연장 서류 제출하기', ctaAttr:'data-isamethod'},
+      none:     {title:'ISA 가입·이전 신청내역이 없어요',     desc:'ISA 가입·계좌이전은 영웅문S# 또는 키움증권 홈페이지에서 신청할 수 있어요.', body:'', cta:'상담원 연결', ctaAttr:'data-staffconnect="ISA 가입·계좌이전"'},
+    };
+    const s = M45[st];
+    return `<div class="iodresult-screen v45-authpage">
+      ${v45AuthTop(1)}
+      <div class="iod-v45-body">
+        <div class="v45-isa-head">
+          <div class="toss-dhead"><div class="td-title">${s.title}</div><div class="td-desc">${s.desc}</div></div>
+          <div class="v45-cycle-btn" data-isacycle title="다른 결과 보기">${rfs}</div>
+        </div>
+        ${s.body}
+        <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" ${s.ctaAttr}>${s.cta}</div></div>
+        <div class="iod-note">※ 데모 화면이에요. 새로고침 버튼으로 다른 상태를 확인해요.</div>
+      </div>
+    </div>`;
+  }
   if(v40){
     // 4상태(신규가입/계좌이전/만기연장/없음) — 상단 새로고침 아이콘(data-isacycle)으로 순환. 계좌번호·탭 삭제, 결과만 깔끔히 표기
     const st = ISA_RESULT_STATES.indexOf(s1state.isaTab) >= 0 ? s1state.isaTab : 'new';
@@ -3834,6 +3879,22 @@ const ISA_METHOD_SHEET = { title:'가입서류를 어떻게 제출할까요?', s
 ]};
 /* 5) 서류 제출 화면 — 업로드폼 + 심사시간 안내 + 알림톡 안내 + 신청내역 확인 */
 function renderIsaSubmit(){
+  if(isV45()){
+    return `<div class="iodresult-screen v45-authpage">
+      ${v45AuthTop(2)}
+      <div class="iod-v45-body">
+        <div class="toss-dhead"><div class="td-title">가입서류 제출</div><div class="td-desc">서민형 가입서류를 촬영하거나 파일로 제출해요</div></div>
+        <div class="iod-v45-card v45-doc-card">
+          <div class="v45-doc-ic">${I.doc}</div>
+          <div class="v45-doc-h">가입서류 제출</div>
+          <div class="v45-doc-d">소득확인증명서 등 서민형 가입서류를<br>촬영하거나 파일로 첨부해 제출해요</div>
+          <div class="v45-doc-btn" data-flash="가입서류 제출이 접수되었어요. 심사 후 알림톡으로 안내해 드릴게요. (시연용)">서류 촬영·첨부하기</div>
+        </div>
+        <div class="iod-note">제출 후 심사에 <b>2~3 영업일</b>이 걸릴 수 있어요.<br>심사 반려 또는 완료 시 알림톡으로 안내해 드려요.</div>
+        <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-isahistory>신청내역 확인</div></div>
+      </div>
+    </div>`;
+  }
   const v40 = s1Ver==='v40';   // FAQ 결과안내 스타일: 진행바 삭제 + 타이틀/설명 result 스타일 + 25px(certstat-v40)
   return `<div class="fv-wrap${v40?' certstat-v40':''}">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
@@ -3852,6 +3913,20 @@ function renderIsaSubmit(){
 /* 6) 온라인 발급번호 입력 화면 */
 function renderIsaIssue(){
   const seg = (id,len)=>`<input class="isa-seg" id="${id}" inputmode="numeric" maxlength="${len}" placeholder="${'0'.repeat(len)}" oninput="isaSegInput(this)">`;
+  if(isV45()){
+    return `<div class="iodresult-screen v45-authpage">
+      ${v45AuthTop(2)}
+      <div class="iod-v45-body">
+        <div class="toss-dhead"><div class="td-title">온라인 발급번호 입력</div><div class="td-desc">홈택스에서 발급받은 소득확인증명서 번호를 입력해요</div></div>
+        <div class="iod-v45-card v45-issue-card">
+          <div class="v45-issue-label">홈택스 발급번호 (14자리)</div>
+          <div class="isa-issue-row v45-issue-row">${seg('isaIssue1',4)}<span class="isa-seg-dash">-</span>${seg('isaIssue2',4)}<span class="isa-seg-dash">-</span>${seg('isaIssue3',3)}<span class="isa-seg-dash">-</span>${seg('isaIssue4',3)}</div>
+        </div>
+        <div class="iod-note">소득확인증명서(개인종합자산관리계좌 가입용)의 온라인 발급번호 14자리를 입력해 주세요. 확인되면 별도 서류 제출 없이 처리돼요.</div>
+        <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-isaissuedone>발급번호 제출하기</div></div>
+      </div>
+    </div>`;
+  }
   const v40 = s1Ver==='v40';   // FAQ 결과안내 스타일: 진행바 삭제 + 타이틀/설명 result 스타일 + 25px(certstat-v40)
   return `<div class="fv-wrap${v40?' certstat-v40':''}">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
@@ -3908,6 +3983,16 @@ function startCertCheck(){
   }, 2500);
 }
 function renderCertChecking(){
+  if(isV45()) return `<div class="iodload-screen v45-authpage">
+    ${v45AuthTop(1)}
+    <div class="iodload-body v45-iodload-body">
+      <div class="toss-dhead"><div class="td-title">서류 신청내역을 확인하고 있어요</div><div class="td-desc">잠시만 기다려 주세요</div></div>
+      <div class="v45-scan-anim">
+        <div class="v45-scan-ring v45-ring-1"></div><div class="v45-scan-ring v45-ring-2"></div><div class="v45-scan-ring v45-ring-3"></div>
+        <div class="v45-scan-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      </div>
+    </div>
+  </div>`;
   // v40: 계좌조회 로딩(iodload-screen)과 동일 디자인 — 진행바 없음·설명글 16px·설명글 아래 좌측 search GIF
   if(s1Ver==='v40'){
     return `<div class="iodload-screen">
@@ -3933,6 +4018,29 @@ function renderCertStatus(){
       <div class="fv-it"><div class="fv-nm">${x.n} <span class="fv-tag ${x.stc}">${x.st}</span></div><div class="fv-sub">${x.d}</div></div>
       ${x.re ? `<div class="fv-issue" data-certreissue="${x.n}">재발급</div>` : ''}
     </div>`).join('');
+  if(isV45()){
+    const has = s1state.certHasRecords !== false;
+    const title = has ? '서류 신청내역이 조회되었어요' : '서류 신청내역이 없어요';
+    const desc  = has ? '최근 1개월 내 신청하신 서류 내역이에요.' : '최근 1개월 내 신청하신 서류가 없어요.';
+    const items = has ? CERT_STATUS.map(x=>`
+      <div class="iod-v45-card v45-cert-item" data-certstatustoggle>
+        <div class="v45-ci-head">
+          <div class="v45-ci-nm">${x.n}</div>
+          <span class="iod-badge ${x.stc}">${x.st}</span>
+        </div>
+        <div class="v45-ci-date">${x.d}</div>
+        ${x.re ? `<div class="v45-ci-foot"><div class="v45-ci-rebtn" data-certreissue="${x.n}">재발급</div></div>` : ''}
+      </div>`).join('') : '';
+    return `<div class="iodresult-screen v45-authpage">
+      ${v45AuthTop(1)}
+      <div class="iod-v45-body">
+        <div class="toss-dhead"><div class="td-title">${title}</div><div class="td-desc">${desc}</div></div>
+        ${items}
+        ${!has ? `<div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-certapply>서류 발급·신청</div></div>` : ''}
+        <div class="iod-note">※ 데모 화면이에요. 카드를 탭하면 결과를 전환해요.</div>
+      </div>
+    </div>`;
+  }
   if(v40){
     // 결과 2종: 조회됨(신청내역 표기) / 없음. 데모 토글(data-certstatustoggle)로 전환. 계좌번호·'발급현황' 타이틀 없음. 각 항목은 개별 회색테두리 카드.
     const has = s1state.certHasRecords !== false;   // 기본 = 조회됨
@@ -3965,6 +4073,24 @@ function renderCertReissue(){
   const nm = s1state.certName || '증명서';
   const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${authAcct.no}` : '위탁종합 5257-5602';
   const D = key=>`<div class="ir"><span class="k">${CERT_OPTS[key].t}</span><span class="v sel" data-certsel="${key}">${certVal(key)} ${I.down}</span></div>`;   // 실제 선택 바텀시트(CERT_OPTS/openCertSheet 재사용)
+  if(isV45()){
+    const Dv45 = key=>`<div class="v45-ir"><span class="v45-ik">${CERT_OPTS[key].t}</span><span class="v45-iv sel" data-certsel="${key}">${certVal(key)} ${I.down}</span></div>`;
+    return `<div class="iodresult-screen v45-authpage">
+      ${v45AuthTop(2)}
+      <div class="iod-v45-body">
+        <div class="toss-dhead"><div class="td-title">${nm} 재발급</div><div class="td-desc">발급 조건을 확인하고 재발급받아요</div></div>
+        <div class="iod-v45-card">
+          <div class="v45-ir"><span class="v45-ik">서류 종류</span><span class="v45-iv">${nm}</span></div>
+          ${Dv45('reDate')}
+          ${Dv45('reUse')}
+          ${Dv45('reCopies')}
+          <div class="v45-ir"><span class="v45-ik">수령 방법</span><span class="v45-iv">등록 이메일 발송</span></div>
+        </div>
+        <div class="iod-note">재발급 수수료는 없어요. 등록된 이메일로 즉시 발송돼요.</div>
+        <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-certreissuedone="${nm}">재발급 신청하기</div></div>
+      </div>
+    </div>`;
+  }
   const v40 = s1Ver==='v40';   // v40: 재설계 흐름과 통일 — 진행바 삭제·'증명서'→'서류' 용어·좌우 25px 정렬(certstat-v40 스코프)
   return `<div class="fv-wrap${v40?' certstat-v40':''}">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
@@ -3986,6 +4112,16 @@ function renderCertReissue(){
 /* 서류 재발급 신청 완료 화면 (v40) — [입출금] 완료화면(iod-done-center) 디자인 재사용: 체크 아이콘·타이틀·설명·확인 버튼 */
 function renderCertReissueDone(){
   const nm = s1state.certName || '서류';
+  if(isV45()){
+    return `<div class="iod-done-center v45-authpage">
+      <div class="iod-done">
+        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-t">재발급이 완료됐어요</div>
+        <div class="iod-done-d">${nm}를 등록된 이메일로<br>보내드렸어요.</div>
+      </div>
+      <div class="iod-done-btnwrap"><div class="primary-btn v45-iod-btn" data-iodhome>확인</div></div>
+    </div>`;
+  }
   return `<div class="iod-done-center">
       <div class="iod-done">
         <div class="iod-done-ic">${I.check}</div>
