@@ -2027,7 +2027,7 @@ function agentConnectScreen(label){
 
 /* Ver 4.0 · 상담원 연결 화면 — 토스 헤더(뒤로가기만, 타이틀·햄버거 없음) + 중앙정렬 본문(헤드셋 아이콘 포함, 기존 .agent-connect 재사용) */
 function renderAgentV40(label){
-  const nm = (label && label!==’직원연결’) ? stripNum(label) : ‘’;
+  const nm = (label && label!=='직원연결') ? stripNum(label) : '';
   const desc = nm ? `’${nm}’ 관련 상담부서로<br>상담원에게 연결해 드려요.` : `상담원에게 바로 연결해 드려요.<br>아래 버튼을 눌러 상담을 시작하세요.`;
   if(isV45()){
     return `<div class="iodresult-screen v45-authpage">
@@ -2038,7 +2038,7 @@ function renderAgentV40(label){
           <div class="td-desc">${desc}</div>
         </div>
         <div class="iod-v45-card">
-          ${nm ? `<div class="v45-ir"><span class="v45-ik">상담 분야</span><span class="v45-iv">${nm}</span></div>` : ‘’}
+          ${nm ? `<div class="v45-ir"><span class="v45-ik">상담 분야</span><span class="v45-iv">${nm}</span></div>` : ''}
           <div class="v45-ir"><span class="v45-ik">상담 가능 시간</span><span class="v45-iv">평일 08:00~18:00</span></div>
           <div class="v45-ir"><span class="v45-ik">상담 대기</span><span class="v45-iv">3명</span></div>
         </div>
@@ -2046,7 +2046,7 @@ function renderAgentV40(label){
       </div>
     </div>`;
   }
-  const v40 = (s1Ver===’v40’);   // Ver 4.0만: ‘상담 대기’·설명글 삭제·카드=버튼 동일폭·연결 후 홈 이동(v41/v42는 기존 유지)
+  const v40 = (s1Ver==='v40');   // Ver 4.0만: '상담 대기'·설명글 삭제·카드=버튼 동일폭·연결 후 홈 이동(v41/v42는 기존 유지)
   const waitRow = v40
     ? `<div class="ac-row"><span class="k">상담 대기</span><span class="v">3명</span></div>`
     : `<div class="ac-row"><span class="k">예상 대기</span><span class="v">약 1분</span></div>`;
