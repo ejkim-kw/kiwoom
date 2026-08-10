@@ -451,29 +451,12 @@ body{
 .flow.toss.v45 .toss-stick{background:#EBEDFF}   /* 고정 헤더(로고~인사말)를 그라데이션 상단색과 동일하게 → 스크롤 시 이음새 없음 */
 .flow.toss.v45 .statusbar{background:#EBEDFF}   /* 상단 상태바(시계)부터 인디고 틴트 → 시계~인사말~자가해결 배경 일체화 */
 
-/* ===== Ver 4.5 · 대메뉴 상단 탭 (공통/국내/그외상품) — 세그먼트 + 슬라이딩 버블 ===== */
-/* 구조(공통): 위치·크기·슬라이딩 전환 (스타일과 분리 — 스타일만 교체 가능) */
-.v45-tabs{position:relative;display:flex;gap:0;padding:5px;margin:8px 20px 14px;border-radius:999px}
-.v45-tab-bubble{position:absolute;z-index:0;top:5px;left:5px;height:calc(100% - 10px);width:calc((100% - 10px) / 3);border-radius:999px;transition:transform .34s cubic-bezier(.34,1.12,.46,1)}
-.v45-tab-bubble::before{content:'';position:absolute;border-radius:999px;pointer-events:none}
-.v45-tab{flex:1;position:relative;z-index:1;text-align:center;padding:7px 0;border-radius:999px;font-size:calc(15px*var(--scale));font-weight:700;letter-spacing:-.2px;cursor:pointer;white-space:nowrap;transition:color .28s}
-
-/* [보존] 조약돌 리퀴드 글라스 스타일(이전) — 삭제 금지. 복원: 이 블록 주석 해제 + 아래 tab2 블록 주석 처리
-.v45-tabs{background:#E2E9F7;box-shadow:inset 0 1px 2.5px rgba(52,96,220,.15)}
-.v45-tab-bubble{background:linear-gradient(178deg,rgba(251,253,255,.98) 0%,rgba(220,236,255,.95) 46%,rgba(170,206,255,.93) 100%);box-shadow:0 8px 18px rgba(52,96,220,.20),0 3px 7px rgba(52,96,220,.15),0 1px 1px rgba(52,96,220,.12),inset 0 2px 2px rgba(255,255,255,.96),inset 0 -4px 7px rgba(96,138,238,.34);-webkit-backdrop-filter:blur(8px) saturate(1.4);backdrop-filter:blur(8px) saturate(1.4)}
-.v45-tab-bubble::before{left:6px;right:6px;top:2px;height:52%;background:linear-gradient(180deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.22) 68%,rgba(255,255,255,0) 100%)}
-.v45-tab{color:#8090AE}
-.v45-tab.on{color:#1E419A}
-.v45-tab:not(.on):active{color:#4848D8}
-*/
-
-/* 플랫 스타일: 연한 회색 트랙 + 흰 배경 pill + 테두리 없음 */
-.v45-tabs{background:#EEEEF2}
-.v45-tab-bubble{background:#ffffff}
-.v45-tab-bubble::before{display:none}
-.v45-tab{color:#9EA6B4}
-.v45-tab.on{color:#111}
-.v45-tab:not(.on):active{color:#555}
+/* ===== Ver 4.5 · 대메뉴 상단 탭 (공통/국내/그외상품) — 개별 타원형 pill 버튼 ===== */
+.v45-tabs{display:flex;gap:8px;padding:0;margin:8px 20px 14px}
+.v45-tab-bubble{display:none}
+.v45-tab{flex:none;padding:7px 16px;border-radius:999px;font-size:calc(14px*var(--scale));font-weight:700;letter-spacing:-.2px;cursor:pointer;white-space:nowrap;transition:.18s;background:#EEEEF2;color:#8B95A1}
+.v45-tab.on{background:#1A1A4E;color:#fff}
+.v45-tab:not(.on):active{background:#E0E0EA;color:#555}
 
 /* ===== Ver 4.5 · 하단 네비게이터 (bottom.jpg 참고: 흰 플로팅 바 + 중앙 챗봇 구 버튼) ===== */
 .flow.toss.v45 .tabbar{position:relative;margin:0;padding:22px 42px calc(22px + env(safe-area-inset-bottom));background:#fff;border:none;border-top:1px solid #E9ECF4;border-radius:24px 24px 0 0;box-shadow:0 -6px 20px rgba(40,50,110,.10);display:flex;align-items:center;justify-content:space-between;overflow:visible}

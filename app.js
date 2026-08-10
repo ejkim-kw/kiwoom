@@ -2314,12 +2314,10 @@ const V45_MENU_TABS = [
 function v45CatById(id){ for(const tab of V45_MENU_TABS){ const c=tab.cats.find(x=>x.id===id); if(c) return c; } return null; }
 function v45MenuTabs(){
   const cur = s1state.v45Tab || 'common';
-  const idx = Math.max(0, V45_MENU_TABS.findIndex(t=>t.k===cur));
   const tabs = V45_MENU_TABS.map(t=>
     `<div class="v45-tab ${t.k===cur?'on':''}" data-v45tab="${t.k}">${t.nm}</div>`
   ).join('');
-  // 슬라이딩 버블 + 탭들. 버블은 활성 인덱스 위치로 초기 배치(transform), 클릭 시 이동 애니메이션
-  return `<div class="v45-tabs"><div class="v45-tab-bubble" style="transform:translateX(${idx*100}%)"></div>${tabs}</div>`;
+  return `<div class="v45-tabs">${tabs}</div>`;
 }
 function v45Menu(){
   const cur = s1state.v45Tab || 'common';
@@ -6328,10 +6326,7 @@ document.addEventListener('click', (e)=>{
     if(k !== s1state.v45Tab){
       s1state.v45Tab = k;
       s1state.v45Cat = null;   // 탭 전환 시 드릴다운 초기화
-      const idx = Math.max(0, V45_MENU_TABS.findIndex(x=>x.k===k));
       const tabsEl = v45t.closest('.v45-tabs');
-      const bubble = tabsEl && tabsEl.querySelector('.v45-tab-bubble');
-      if(bubble) bubble.style.transform = `translateX(${idx*100}%)`;   // 버블 슬라이딩
       if(tabsEl) tabsEl.querySelectorAll('.v45-tab').forEach(el=>el.classList.toggle('on', el.dataset.v45tab===k));
       const menuEl = tabsEl && tabsEl.nextElementSibling;   // 탭 바로 뒤 = 메뉴 리스트
       if(menuEl){ const tmp=document.createElement('div'); tmp.innerHTML=v45Menu(); const fresh=tmp.firstElementChild; if(fresh) menuEl.replaceWith(fresh); else renderS1(); }
