@@ -1546,13 +1546,18 @@ body{
 .flow.toss.v45 .v45-iodload-body{padding:6px 25px 20px}
 .flow.toss.v45 .v45-iodload-body .toss-dhead{padding-left:20px;padding-right:20px}
 /* 스캔 애니메이션 */
-.flow.toss.v45 .v45-scan-anim{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
-.flow.toss.v45 .v45-scan-core{width:56px;height:56px;border-radius:50%;background:linear-gradient(145deg,#5C5CA8 0%,#1A1A4E 100%);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;box-shadow:0 8px 28px rgba(26,26,78,.35);color:#fff;flex-shrink:0}
-.flow.toss.v45 .v45-scan-ring{position:absolute;width:56px;height:56px;border-radius:50%;border:2px solid rgba(26,26,78,.5);animation:v45scanpulse 2.4s ease-out infinite}
-.flow.toss.v45 .v45-ring-1{animation-delay:0s}
-.flow.toss.v45 .v45-ring-2{animation-delay:.8s}
-.flow.toss.v45 .v45-ring-3{animation-delay:1.6s}
-@keyframes v45scanpulse{0%{transform:scale(1);opacity:.65}100%{transform:scale(4);opacity:0}}
+.flow.toss.v45 .v45-scan-anim{flex:1;display:flex;align-items:center;justify-content:center}
+.flow.toss.v45 .v45-dot-spinner{position:relative;width:72px;height:72px}
+.flow.toss.v45 .v45-ds-dot{position:absolute;top:50%;left:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:#1A1A4E;animation:v45dsfade 1.2s linear infinite}
+.flow.toss.v45 .v45-ds-dot:nth-child(1){transform:rotate(0deg) translateY(-28px);animation-delay:0s}
+.flow.toss.v45 .v45-ds-dot:nth-child(2){transform:rotate(45deg) translateY(-28px);animation-delay:-.15s}
+.flow.toss.v45 .v45-ds-dot:nth-child(3){transform:rotate(90deg) translateY(-28px);animation-delay:-.3s}
+.flow.toss.v45 .v45-ds-dot:nth-child(4){transform:rotate(135deg) translateY(-28px);animation-delay:-.45s}
+.flow.toss.v45 .v45-ds-dot:nth-child(5){transform:rotate(180deg) translateY(-28px);animation-delay:-.6s}
+.flow.toss.v45 .v45-ds-dot:nth-child(6){transform:rotate(225deg) translateY(-28px);animation-delay:-.75s}
+.flow.toss.v45 .v45-ds-dot:nth-child(7){transform:rotate(270deg) translateY(-28px);animation-delay:-.9s}
+.flow.toss.v45 .v45-ds-dot:nth-child(8){transform:rotate(315deg) translateY(-28px);animation-delay:-1.05s}
+@keyframes v45dsfade{0%{opacity:1}100%{opacity:.12}}
 .iodload-body .toss-dhead{flex:none;padding:6px 0 16px 0}
 .iodload-body .td-desc{font-size:calc(14px*var(--scale));line-height:1.5;word-break:keep-all;margin-top:6px}   /* 설명글 14px · 타이틀→설명 6px(계좌인증과 동일) */
 .iodload-center{flex:1;display:flex;align-items:center;justify-content:center}
