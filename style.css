@@ -477,14 +477,23 @@ body{
 
 /* ===== Ver 4.5 · 대메뉴 목록 너비 = 카드 배너(margin:0 20px)와 동일 ===== */
 .flow.toss.v45 .toss-list{padding-left:20px;padding-right:20px}
-/* ===== Ver 4.5 · 대메뉴 아코디언 ===== */
-.flow.toss.v45 .v45-acc-item{border-radius:16px;overflow:hidden}
-.flow.toss.v45 .v45-acc-item.open{background:#EEEEFF}
+/* ===== Ver 4.5 · 대메뉴 아코디언 — glass card ===== */
+.flow.toss.v45 .v45-acc-item{border-radius:20px;overflow:hidden}
+.flow.toss.v45 .v45-acc-item.open{
+  background:rgba(255,255,255,0.48);
+  -webkit-backdrop-filter:blur(20px) saturate(1.6) brightness(1.04);
+  backdrop-filter:blur(20px) saturate(1.6) brightness(1.04);
+  border:1.5px solid rgba(255,255,255,0.78);
+  box-shadow:0 8px 28px rgba(72,72,216,.13),0 1.5px 6px rgba(72,72,216,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.flow.toss.v45 .v45-acc-item.open>.toss-cat{background:transparent}
+.flow.toss.v45 .v45-acc-item.open>.toss-cat:active{background:rgba(255,255,255,.3)}
 .flow.toss.v45 .v45-acc-item .tc-arw{transition:transform .2s ease}
 .flow.toss.v45 .v45-acc-item .tc-arw.open{transform:rotate(90deg)}
-.flow.toss.v45 .v45-acc-subs{background:#EEEEFF;padding:0 0 6px}
+.flow.toss.v45 .v45-acc-subs{background:rgba(255,255,255,.22);border-top:1px solid rgba(255,255,255,.55);padding:4px 0 8px}
 .flow.toss.v45 .v45-acc-sub{padding:9px 12px 9px 72px;border-radius:0}
-.flow.toss.v45 .v45-acc-sub .tc-nm{font-size:calc(14.5px*var(--scale));font-weight:600;color:#3A3A6E}
+.flow.toss.v45 .v45-acc-sub+.v45-acc-sub{border-top:1px solid rgba(200,210,240,.35)}
+.flow.toss.v45 .v45-acc-sub .tc-nm{font-size:calc(14.5px*var(--scale));font-weight:600;color:#2D2D6E}
+.flow.toss.v45 .v45-acc-sub .tc-arw{color:rgba(100,110,180,.5)}
 /* ===== Ver 4.5 · 자가해결 계좌인증 세부페이지 (stepper·login pill 입력·확인버튼 활성/비활성) ===== */
 /* 세부페이지 배경: 메인·드릴다운(.toss-home)과 동일한 인디고 틴트 → 흰색 그라데이션 */
 .flow.toss.v45 .v45-authpage{min-height:100%;background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#FFFFFF 420px)}
