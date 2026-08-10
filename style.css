@@ -1647,6 +1647,7 @@ body{
 .flow.toss.v45 .v45-ik{font-size:calc(13px*var(--scale));color:#8B95A1}
 .flow.toss.v45 .v45-iv{font-size:calc(13.5px*var(--scale));font-weight:600;color:#1A1A4E}
 .flow.toss.v45 .v45-iv.sel{cursor:pointer}
+.flow.toss.v45 .v45-iv svg{width:14px;height:14px;flex-shrink:0;vertical-align:-2px;color:#8B95A1}
 /* ===== Ver 4.5 · ISA 신청현황 결과 ===== */
 .flow.toss.v45 .v45-isa-head{display:flex;align-items:flex-start;gap:8px;padding:0}
 .flow.toss.v45 .v45-isa-head .toss-dhead{flex:1;padding-left:20px;padding-right:0}
