@@ -2027,9 +2027,26 @@ function agentConnectScreen(label){
 
 /* Ver 4.0 · 상담원 연결 화면 — 토스 헤더(뒤로가기만, 타이틀·햄버거 없음) + 중앙정렬 본문(헤드셋 아이콘 포함, 기존 .agent-connect 재사용) */
 function renderAgentV40(label){
-  const nm = (label && label!=='직원연결') ? stripNum(label) : '';
-  const desc = nm ? `‘${nm}’ 관련 상담부서로<br>상담원에게 연결해 드려요.` : `상담원에게 바로 연결해 드려요.<br>아래 버튼을 눌러 상담을 시작하세요.`;
-  const v40 = (s1Ver==='v40');   // Ver 4.0만: '상담 대기'·설명글 삭제·카드=버튼 동일폭·연결 후 홈 이동(v41/v42는 기존 유지)
+  const nm = (label && label!==’직원연결’) ? stripNum(label) : ‘’;
+  const desc = nm ? `’${nm}’ 관련 상담부서로<br>상담원에게 연결해 드려요.` : `상담원에게 바로 연결해 드려요.<br>아래 버튼을 눌러 상담을 시작하세요.`;
+  if(isV45()){
+    return `<div class="iodresult-screen v45-authpage">
+      <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
+      <div class="iod-v45-body">
+        <div class="toss-dhead">
+          <div class="td-title">상담원 연결</div>
+          <div class="td-desc">${desc}</div>
+        </div>
+        <div class="iod-v45-card">
+          ${nm ? `<div class="v45-ir"><span class="v45-ik">상담 분야</span><span class="v45-iv">${nm}</span></div>` : ‘’}
+          <div class="v45-ir"><span class="v45-ik">상담 가능 시간</span><span class="v45-iv">평일 08:00~18:00</span></div>
+          <div class="v45-ir"><span class="v45-ik">상담 대기</span><span class="v45-iv">3명</span></div>
+        </div>
+        <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-agentgo>상담원 연결하기</div></div>
+      </div>
+    </div>`;
+  }
+  const v40 = (s1Ver===’v40’);   // Ver 4.0만: ‘상담 대기’·설명글 삭제·카드=버튼 동일폭·연결 후 홈 이동(v41/v42는 기존 유지)
   const waitRow = v40
     ? `<div class="ac-row"><span class="k">상담 대기</span><span class="v">3명</span></div>`
     : `<div class="ac-row"><span class="k">예상 대기</span><span class="v">약 1분</span></div>`;
@@ -4522,6 +4539,25 @@ function renderIodAcctSel(){
 /* 금융거래목적확인서 등록 — [입출금] 플로우와 동일 디자인(iod-top 뒤로가기·auth-wrap 24px 정렬·Ver4.0 톤) */
 function renderIodPurpose(){
   const F = (k,v)=>`<div class="ir"><span class="k">${k}</span><span class="v">${v} ${I.down}</span></div>`;
+  if(isV45()){
+    const Dv45 = (k,v)=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv sel">${v} ${I.down}</span></div>`;
+    return `<div class="iodresult-screen v45-authpage">
+      ${v45AuthTop(2)}
+      <div class="iod-v45-body">
+        <div class="toss-dhead">
+          <div class="td-title">거래 목적을 확인하고<br>등록해 드릴게요</div>
+          <div class="td-desc">자금세탁방지(AML) 제도에 따라 거래 목적 확인이 필요해요</div>
+        </div>
+        <div class="iod-v45-card">
+          ${Dv45('거래 목적','자산운용·투자')}
+          ${Dv45('자금 원천','근로·사업 소득')}
+          ${Dv45('직업 구분','회사원')}
+        </div>
+        <div class="iod-note">등록하시면 장기미사용·다수계좌 거래제한이 바로 풀려요.</div>
+        <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-iodpurposedone>등록하기</div></div>
+      </div>
+    </div>`;
+  }
   return pageTop(s1state.title||'금융거래목적확인서', true)
     + `<div class="auth-wrap">
         <div class="auth-head">거래 목적을 확인하고<br>등록해 드릴게요</div>
@@ -4536,7 +4572,16 @@ function renderIodPurpose(){
 }
 /* 금융거래목적확인서 등록 완료 화면 — [입출금] 디자인(iod-top·24px·Ver4.0 톤), 스텝바 완료 */
 function renderIodPurposeDone(){
-  // 터미널(완료) 화면 — 상단바 없이 화면 세로 중앙 정렬
+  if(isV45()){
+    return `<div class="iod-done-center v45-authpage">
+      <div class="iod-done">
+        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-t">등록이 완료됐어요</div>
+        <div class="iod-done-d">거래 목적 확인이 등록되어<br>계좌의 거래제한이 바로 해제됐어요.<br>이제 정상적으로 입출금하실 수 있어요.</div>
+      </div>
+      <div class="iod-done-btnwrap"><div class="primary-btn v45-iod-btn" data-iodhome>확인</div></div>
+    </div>`;
+  }
   return `<div class="iod-done-center">
       <div class="iod-done">
         <div class="iod-done-ic">${I.check}</div>
