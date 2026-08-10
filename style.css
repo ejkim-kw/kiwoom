@@ -1672,7 +1672,7 @@ body{
 .flow.toss.v45 .v45-issue-label{font-size:calc(12px*var(--scale));font-weight:600;color:#8B95A1;margin-bottom:10px}
 .flow.toss.v45 .v45-issue-row{margin:0}
 /* ===== Ver 4.5 · 완료 화면 gradient 오버레이 ===== */
-.iod-done-center.v45-authpage .iod-done-btnwrap .v45-iod-btn{margin:0}
+.iod-done-center.v45-authpage .iod-done-btnwrap{padding-left:25px;padding-right:25px}
 /* 등록 완료 화면 (세로 중앙 정렬) */
 .iod-done-center{min-height:100%;display:flex;flex-direction:column;justify-content:center}
 .iod-done-center .iod-done{padding:0 24px 4px}
