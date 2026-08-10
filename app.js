@@ -2324,10 +2324,16 @@ function v45MenuTabs(){
 function v45Menu(){
   const cur = s1state.v45Tab || 'common';
   const tab = V45_MENU_TABS.find(t=>t.k===cur) || V45_MENU_TABS[0];
-  // 대메뉴 리스트(아이콘+대메뉴명+화살표). 클릭 → 중메뉴 있으면 드릴다운 / 없으면 최종(추후 절차)
+  const openId = s1state.v45Cat;
   return `<div class="toss-list">` + tab.cats.map(c=>{
     const icon = c.fi ? `<img src="assets/finance-${c.fi}.png" alt="">` : (I[c.ic]||I.order);
-    return `<div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic${c.fi?' tc-ic-fin':''}">${icon}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw">${I.chev}</div></div>`;
+    const isOpen = (openId === c.id) && c.subs && c.subs.length;
+    const subsHtml = isOpen
+      ? `<div class="v45-acc-subs">` + c.subs.map(s=>
+          `<div class="toss-cat v45-acc-sub" data-v45sub="${s}"><div class="tc-body"><div class="tc-nm">${s}</div></div><div class="tc-arw">${I.chev}</div></div>`
+        ).join('') + `</div>`
+      : '';
+    return `<div class="v45-acc-item${isOpen?' open':''}"><div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic${c.fi?' tc-ic-fin':''}">${icon}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw${isOpen?' open':''}">${I.chev}</div></div>${subsHtml}</div>`;
   }).join('') + `</div>`;
 }
 /* 대메뉴 드릴다운: 중메뉴 리스트 (뒤로가기 + 대메뉴명 타이틀). 중메뉴 클릭 이후 절차는 추후 정의 */
@@ -5181,9 +5187,6 @@ function renderS1(){
         + banner()
         + appFooter()
         + `</div>`;
-    } else if(isV45() && v45CatById(s1state.v45Cat) && v45CatById(s1state.v45Cat).subs.length){
-      // Ver 4.5 · 대메뉴 선택 시 중메뉴 드릴다운 페이지 (메뉴구조도 v0.2)
-      html = renderV45Sub();
     } else if(isV40()){
       /* Ver 4.0 계열 · 토스 스타일 디지털 ARS (포인트=키움 마젠타·네이비) — 9 카테고리(ARS_CAT6). v40=토스 리스트 / v41=3×3 그리드. 드릴다운·전체메뉴없음 공통. */
       const path = s1state.sarsPath || [];
@@ -6336,13 +6339,17 @@ document.addEventListener('click', (e)=>{
     }
     return;
   }
-  // Ver 4.5 대메뉴 클릭 → 중메뉴 드릴다운(subs 있으면) / 없으면 최종(추후 절차 정의)
+  // Ver 4.5 대메뉴 클릭 → 중메뉴 아코따언 인라인 토글
   const v45c = t.closest('[data-v45cat]');
   if(v45c){
     const cat = v45CatById(+v45c.dataset.v45cat);
     if(cat){
-      if(cat.subs.length){ s1state.v45Cat = cat.id; renderS1(); }
-      else { flash(`‘${cat.t}’ 메뉴입니다. (중메뉴 없음 · 이후 절차 정의 예정)`); }
+      if(cat.subs && cat.subs.length){
+        s1state.v45Cat = (s1state.v45Cat === cat.id) ? null : cat.id;
+        const menuEl = document.querySelector('.toss-list');
+        if(menuEl){ const tmp=document.createElement('div'); tmp.innerHTML=v45Menu(); const fresh=tmp.firstElementChild; if(fresh) menuEl.replaceWith(fresh); else renderS1(); }
+        else renderS1();
+      } else { flash(`‘${cat.t}’ 메뉴입니다. (중메뉴 없음 · 이후 절차 정의 예정)`); }
     }
     return;
   }
