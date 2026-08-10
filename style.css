@@ -440,6 +440,8 @@ body{
 .v45ss-dot.on{width:20px;border-radius:999px;background:#1A1A4E}
 /* 더보기 전체 리스트 페이지 */
 .v45-ssmore-page{min-height:100%;background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#fff 420px);display:flex;flex-direction:column}
+.v45ss-txtlist{padding-top:8px}
+.v45ss-txtrow+.v45ss-txtrow{border-top:1px solid #F0F1F5}
 .v45ss-more-dhead{padding:2px 22px 16px}
 .v45ss-list{padding:4px 20px 28px;display:flex;flex-direction:column;gap:14px}
 .v45ss-list .v45ss-card{width:100%;border-radius:20px;height:152px}

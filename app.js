@@ -2501,10 +2501,15 @@ function v45SelfSolve(){
 }
 
 function renderSsMore(){
-  const cards = SS_ITEMS.map(it => v45SsBannerCard(it)).join('');
+  const rows = SS_ITEMS.map(it=>
+    `<div class="toss-cat v45ss-txtrow" ${it.act}>
+      <div class="tc-body"><div class="tc-nm">${it.t}</div><div class="tc-desc">${it.sub}</div></div>
+      <div class="tc-arw">${I.chev}</div>
+    </div>`
+  ).join('');
   return `<div class="v45-ssmore-page">
     <div class="toss-top"><div class="toss-back" data-s1back>${I.chev}</div><div class="head-spacer"></div></div>
-    <div class="v45ss-list">${cards}</div>
+    <div class="toss-list v45ss-txtlist">${rows}</div>
   </div>`;
 }
 
