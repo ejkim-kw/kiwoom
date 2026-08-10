@@ -492,6 +492,8 @@ body{
 .flow.toss.v45 .toss-list .tc-ic-fin{overflow:hidden}
 .flow.toss.v45 .toss-list .tc-ic-fin img{width:32px;height:32px;object-fit:contain;display:block}
 
+/* ===== Ver 4.5 · 대메뉴 목록 너비 = 카드 배너(margin:0 20px)와 동일 ===== */
+.flow.toss.v45 .toss-list{padding-left:20px;padding-right:20px}
 /* ===== Ver 4.5 · 대메뉴 아코디언 ===== */
 .flow.toss.v45 .v45-acc-item{border-radius:16px;overflow:hidden}
 .flow.toss.v45 .v45-acc-item.open{background:#EEEEFF}
