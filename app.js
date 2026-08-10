@@ -2500,7 +2500,6 @@ function renderSsMore(){
   const cards = SS_ITEMS.map(it => v45SsBannerCard(it)).join('');
   return `<div class="v45-ssmore-page">
     <div class="toss-top"><div class="toss-back" data-s1back>${I.chev}</div><div class="head-spacer"></div></div>
-    <div class="toss-dhead v45ss-more-dhead"><div class="td-title">자가해결 메뉴</div><div class="td-desc">원하시는 항목을 선택해 주세요</div></div>
     <div class="v45ss-list">${cards}</div>
   </div>`;
 }
