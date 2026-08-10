@@ -2372,11 +2372,23 @@ const PWRESET_SHEET = { title:'어떤 비밀번호를 재설정할까요?', sub:
    본인인증(정보입력 → 인증번호) → 본인확인 완료 + 계좌인증 → ID 비밀번호 재설정 */
 const IDPW_ID = 'kiwoom0728';
 const IDPW_ACCTS = ['12**-**78','63**-**76','50**-**02'];
+const IDPW_STEPS = ['본인 인증','계좌 인증','비밀번호 재설정'];
+function v45IdpwTop(cur){
+  cur=(cur||0);
+  const seg=IDPW_STEPS.map((s,i)=>`<span class="v45-step${i<=cur?' on':''}"></span>`).join('');
+  const back=s1state.noBack?`<div class="v45-step-spacer" aria-hidden="true"></div>`:`<div class="back" data-s1back>${I.back}</div>`;
+  return `<div class="page-top iod-top v45-authtop">${back}<div class="v45-stepper" title="${cur+1}/${IDPW_STEPS.length} · ${IDPW_STEPS[cur]}">${seg}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>`;
+}
 function renderIdpwAuth(){
   // 1페이지: 정보입력(고객명/생년월일/휴대폰 + 필수동의 + 인증요청) → 인증번호(타이틀·설명 유지, 입력창 대신 인증번호 + 인증완료)
   const step = s1state.idpwStep || 'info';
-  const title = '본인인증 후 ID 비밀번호 재설정이 가능해요';
   const desc = '고객님 본인 확인을 위해 정보를 입력해 주세요.';
+  if(isV45()){
+    const otpBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">인증번호</span><input class="ir-input" id="idpwOtp" inputmode="numeric" maxlength="6" placeholder="숫자 6자리" autocomplete="off"></div></div><div class="idpw-guide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwotpdone>인증완료</div></div>`;
+    const infoBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">고객명</span><input class="ir-input" id="idpwName" placeholder="이름 입력" autocomplete="off"></div><div class="ir"><span class="k">생년월일</span><input class="ir-input" id="idpwDob" inputmode="numeric" maxlength="6" placeholder="6자리 (YYMMDD)" autocomplete="off"></div><div class="ir"><span class="k">본인명의 휴대폰</span><input class="ir-input" id="idpwPhone" inputmode="numeric" maxlength="11" placeholder="'-' 없이 입력" autocomplete="off"></div></div><div class="find-agree idpw-agree${s1state.idpwAgree?' on':''}" data-idpwagree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">개인(신용)정보 수집·이용 필수동의서 <b>(필수)</b></span></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwreq>인증요청</div></div>`;
+    return `<div class="iodresult-screen v45-authpage">${v45IdpwTop(0)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">본인인증 후<br>ID 비밀번호를 재설정해요</div><div class="td-desc">${desc}</div></div>${step==='otp'?otpBody:infoBody}</div></div>`;
+  }
+  const title = '본인인증 후 ID 비밀번호 재설정이 가능해요';
   const body = step==='otp'
     ? `<div class="auth-info">
         <div class="ir"><span class="k">인증번호</span><input class="ir-input" id="idpwOtp" inputmode="numeric" maxlength="6" placeholder="숫자 6자리" autocomplete="off"></div>
@@ -2398,6 +2410,13 @@ function renderIdpwAuth(){
 function renderIdpwDone(){
   // 본인확인 완료 → ID 표기 + 계좌 인증(콤보 마스킹 + 계좌비번) → 확인 시 같은 자리에 ID 비밀번호 재설정 입력칸
   const reset = !!s1state.idpwReset;
+  if(isV45()){
+    const acctBody = `<div class="iod-v45-card"><div class="v45-ir"><span class="v45-ik">회원님의 ID</span><span class="v45-iv">${IDPW_ID}</span></div></div><div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">증권계좌</span><div class="idpw-selwrap"><select class="idpw-sel" id="idpwAcctSel">${IDPW_ACCTS.map(a=>`<option>${a}</option>`).join('')}</select><span class="idpw-selchev">${I.down}</span></div></div><div class="ir"><span class="k">계좌 비밀번호</span><input class="ir-input" id="idpwAcctPw" type="password" inputmode="numeric" maxlength="8" placeholder="숫자 4~8자리" autocomplete="off"></div></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwacctdone>확인</div></div>`;
+    const resetBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">새 비밀번호</span><input class="ir-input" id="idpwNew" type="password" maxlength="8" placeholder="영문+숫자 5~8자리" autocomplete="off"></div><div class="ir"><span class="k">비밀번호 확인</span><input class="ir-input" id="idpwNew2" type="password" maxlength="8" placeholder="한 번 더 입력" autocomplete="off"></div></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwresetdone>재설정</div></div>`;
+    const title45 = reset ? '새 ID 비밀번호를<br>설정해요' : '본인 확인이<br>완료됐어요';
+    const desc45 = reset ? '새로 사용할 ID 비밀번호를 입력해 주세요.' : '계좌 정보를 인증하면 ID 비밀번호를 재설정할 수 있어요.';
+    return `<div class="iodresult-screen v45-authpage">${v45IdpwTop(reset?2:1)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">${title45}</div><div class="td-desc">${desc45}</div></div>${reset?resetBody:acctBody}</div></div>`;
+  }
   const title = '본인 확인이 완료되었어요';
   const desc = reset ? '새로 사용할 ID 비밀번호를 입력해 주세요.' : '계좌 정보를 인증하면 ID 비밀번호를 재설정할 수 있어요.';
   const idCard = `<div class="idpw-idcard"><div class="idpw-idlabel">회원님의 ID</div><div class="idpw-idval">${IDPW_ID}</div></div>`;
@@ -3226,7 +3245,7 @@ function openPwKeypad(showAcct, ctx){
   el.innerHTML = `<div class="kp-sheet">
     <div class="kp-grab"></div>
     <div class="kp-top">
-      <div class="kp-title">계좌 비밀번호 입력</div>
+      <div class="kp-title">${pwCtx==='pwreset1'?'증권계좌 비밀번호 확인':'계좌 비밀번호 입력'}</div>
       <div class="kp-toggle"><span>ABC</span><span class="on">123</span></div>
     </div>
     ${showAcct ? `<div class="kp-acct" data-acctsel>${acctLineHTML()}</div>` : ''}
@@ -3244,6 +3263,21 @@ function openPwKeypad(showAcct, ctx){
 }
 function closePwKeypad(){
   const el = document.getElementById('pwKeypad');
+  if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 220); }
+}
+/* 인증서 비밀번호 확인 바텀시트 (v45 전용) */
+function openCertPwSheet(){
+  closeCertPwSheet(); closePwKeypad();
+  const screen = document.getElementById('screen'); if(!screen) return;
+  const el = document.createElement('div');
+  el.className = 'kp-ov' + (isV45()?' v45':isV40()?' v40':'');
+  el.id = 'certPwSheet';
+  el.innerHTML = `<div class="kp-sheet"><div class="kp-grab"></div><div class="kp-top"><div class="kp-title">인증서 비밀번호 확인</div></div><div class="kp-cert-hint">영문·숫자·특수문자 포함 10자리 이상</div><div class="kp-cert-pw"><input class="kp-cert-input" type="password" id="certPwInput" placeholder="인증서 비밀번호 입력" autocomplete="new-password"></div><div class="kp-actions" style="grid-template-columns:1fr 2fr"><div class="kp-akey cancel" data-certpwcancel>취소</div><div class="kp-akey done" data-certpwconfirm>입력완료</div></div></div>`;
+  screen.appendChild(el);
+  requestAnimationFrame(()=>{ el.classList.add('on'); setTimeout(()=>{ const i=document.getElementById('certPwInput'); if(i) i.focus(); }, 250); });
+}
+function closeCertPwSheet(){
+  const el = document.getElementById('certPwSheet');
   if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 220); }
 }
 
@@ -4321,6 +4355,25 @@ function closePwHelpSheet(){
   const el = document.getElementById('pwHelpSheet');
   if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); }
 }
+/* 인증서 비밀번호 설명 바텀시트 (v45 전용) */
+function openCertInfoSheet(){
+  const screen = document.getElementById('screen'); if(!screen) return;
+  const prev = document.getElementById('certInfoSheet'); if(prev) prev.remove();
+  const el = document.createElement('div');
+  el.className = 'consult-ov pw-help-sheet'; el.id = 'certInfoSheet';
+  el.innerHTML = `<div class="consult-sheet">
+    <div class="cs-grip"></div>
+    <div class="cs-head"><div class="cs-title">공동인증서 비밀번호</div></div>
+    <div class="pw-help-desc">공동인증서 비밀번호는 <b>영문·숫자·특수문자를 모두 포함한<br>10자리 이상</b>이에요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서<br>다시 설정할 수 있어요.</div>
+    <div class="pw-help-cta" data-certinfogo><img src="assets/ys-icon.png" alt="S#" class="pw-help-ic">영웅문S# 바로가기</div>
+  </div>`;
+  screen.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('on'));
+}
+function closeCertInfoSheet(){
+  const el = document.getElementById('certInfoSheet');
+  if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); }
+}
 function syncFindCtaBtn(){
   if(!isV45()) return;
   const pop = document.getElementById('findAcctPop'); if(!pop) return;
@@ -5261,10 +5314,13 @@ function renderS1(){
     html = renderIodAcctSel();
   }
   else if(s1state.page==='idpwauth'){
-    html = pageTop(s1state.title||'본인인증', true) + renderIdpwAuth();
+    html = isV45() ? renderIdpwAuth() : pageTop(s1state.title||'본인인증', true) + renderIdpwAuth();
   }
   else if(s1state.page==='idpwdone'){
-    html = pageTop(s1state.title||'본인 확인', true) + renderIdpwDone();
+    html = isV45() ? renderIdpwDone() : pageTop(s1state.title||'본인 확인', true) + renderIdpwDone();
+  }
+  else if(s1state.page==='idpwfinish'){
+    html = `<div class="iod-done-center v45-authpage"><div class="iod-done"><div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div><div class="iod-done-t">재설정이 완료됐어요</div><div class="iod-done-d">ID 비밀번호가 재설정됐어요.<br>새 비밀번호로 로그인해 주세요.</div></div><div class="iod-done-btnwrap"><div class="primary-btn v45-iod-btn" data-iodhome>확인</div></div></div>`;
   }
   else if(s1state.page==='iodpurposedone'){
     html = renderIodPurposeDone();
@@ -5866,7 +5922,7 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-idpwreq]')){ if(!s1state.idpwAgree){ flash('개인(신용)정보 수집·이용에 동의해 주세요.'); return; } s1state.idpwStep='otp'; renderS1(); return; }   // 인증요청 → 인증번호 단계
   if(t.closest('[data-idpwotpdone]')){ s1state.idpwReset=false; s1nav({page:'idpwdone', title:'본인 확인', noHome:true}); return; }   // 인증완료 → 본인확인 완료 화면
   if(t.closest('[data-idpwacctdone]')){ s1state.idpwReset=true; renderS1(); return; }   // 계좌인증 확인 → 같은 자리에 ID 비밀번호 재설정 입력칸
-  if(t.closest('[data-idpwresetdone]')){ flash('ID 비밀번호가 재설정되었어요. 새 비밀번호로 로그인해 주세요. (시연용)'); s1state.page='home'; s1state.history=[]; s1state.authNext=null; renderS1(); return; }   // 재설정 완료 → 홈
+  if(t.closest('[data-idpwresetdone]')){ if(isV45()){ s1nav({page:'idpwfinish', noBack:true, noHome:true}); } else { flash('ID 비밀번호가 재설정되었어요. 새 비밀번호로 로그인해 주세요. (시연용)'); s1state.page='home'; s1state.history=[]; s1state.authNext=null; renderS1(); } return; }   // 재설정 완료 → 홈(v40) / 완료페이지(v45)
   const msh = t.closest('[data-mediasheet]');
   if(msh){ const cfg = MEDIA_SHEETS[msh.dataset.mediasheet]; if(cfg) openMethodSheet(cfg); return; }   // 입출금·이체 각 항목 → 2매체 플로팅
   const stkSel = t.closest('[data-stkpick]');
@@ -6022,8 +6078,8 @@ document.addEventListener('click', (e)=>{
     if(kind==='pwmv2'){ flash('음성 ARS 「ARS 이용신청」 메뉴로 연결해 드릴게요. (시연용)'); return; }
     if(kind==='pwmv3'){ flash('음성 ARS 「ARS 이용해지」 메뉴로 연결해 드릴게요. (시연용)'); return; }
     if(kind==='pwreset0'){ s1state.idpwStep='info'; s1state.idpwAgree=false; s1state.idpwReset=false; s1nav({page:'idpwauth', title:'본인인증', noHome:true}); return; }   // ID 비밀번호 재설정 플로우
-    if(kind==='pwreset1'){ openAppLink('pwresetacct'); return; }   // 증권계좌 비밀번호 → 영웅문S# 재설정 안내·연결 팝업
-    if(kind==='pwreset2'){ openAppLink('pwresetcert'); return; }   // 공동인증서 비밀번호 → 영웅문S# 재설정 안내·연결 팝업
+    if(kind==='pwreset1'){ if(isV45()){ openPwHelpSheet(); } else { openAppLink('pwresetacct'); } return; }   // 증권계좌 비밀번호 → v45: 설명 바텀시트 / 그외: 영웅문S# 팝업
+    if(kind==='pwreset2'){ if(isV45()){ openCertInfoSheet(); } else { openAppLink('pwresetcert'); } return; }   // 공동인증서 비밀번호 → v45: 설명 바텀시트 / 그외: 영웅문S# 팝업
     if(kind.indexOf('pwreset')===0){ flash(`「${mrow.dataset.mlabel}」 재설정 화면으로 이동합니다. (시연용)`); return; }   // 기타 pwreset — 시연용(폴백)
     if(kind==='authidapp'){ openAppLink('authidinfo'); return; }
     if(kind==='authidcs'){ s1nav({page:'agent', title:'상담원 연결', agentLabel:'인증·ID 관리', noHome:true}); return; }
@@ -6045,8 +6101,9 @@ document.addEventListener('click', (e)=>{
   if(findAcctRow){ const inp=document.getElementById('acctNo'); const no=findAcctRow.dataset.findacct; if(inp){ inp.value=no.length===8?no.slice(0,4)+'-'+no.slice(4):no; v45AuthBtnSync(); } s1state.iodAcctNo=no; closeFindAcct(); flash('계좌번호가 입력되었어요. (시연용)'); return; }
   if(t.classList && t.classList.contains('find-ov')){ closeFindAcct(); return; }
   // 비밀번호 도움말 바텀시트
-  if(t.closest('[data-pwhelpclose]') || t.classList.contains('pw-help-sheet')){ closePwHelpSheet(); return; }
+  if(t.closest('[data-pwhelpclose]') || t.classList.contains('pw-help-sheet')){ if(t.id==='certInfoSheet'){ closeCertInfoSheet(); } else { closePwHelpSheet(); } return; }
   if(t.closest('[data-pwhelpgo]')){ closePwHelpSheet(); flash('영웅문S# 앱으로 이동합니다. (시연용)'); return; }
+  if(t.closest('[data-certinfogo]')){ closeCertInfoSheet(); flash('영웅문S# 앱으로 이동합니다. (시연용)'); return; }
   // 결과안내 '왜 진위확인이 되지 않았나요?' 배지 플로팅 — consult-ov 공유이므로 일반 핸들러보다 먼저
   if(t.closest('[data-idbadge]')){ openBadgeInfo(); return; }
   if(t.closest('[data-badgeclose]') || (t.classList && t.classList.contains('badge-ov'))){ closeBadgeInfo(); return; }
@@ -6213,7 +6270,7 @@ document.addEventListener('click', (e)=>{
   // 계좌 비밀번호 입력란 터치 → 플로팅 키패드 (계좌번호 라인 없음)
   if(t.closest('[data-pwopen]')){ openPwKeypad(false); return; }
   // 키패드 바깥(backdrop) 터치 → 닫기
-  if(t.classList && t.classList.contains('kp-ov')){ closePwKeypad(); return; }
+  if(t.classList && t.classList.contains('kp-ov')){ if(t.id==='certPwSheet'){ closeCertPwSheet(); } else { closePwKeypad(); } return; }
   // 키패드 숫자 입력 / 지우기
   const key = t.closest('[data-key]');
   if(key){
@@ -6231,10 +6288,18 @@ document.addEventListener('click', (e)=>{
     v45AuthBtnSync();
     closePwKeypad(); return;
   }
+  // 인증서 비밀번호 시트 취소·확인
+  if(t.closest('[data-certpwcancel]')){ closeCertPwSheet(); return; }
+  if(t.closest('[data-certpwconfirm]')){
+    const inp = document.getElementById('certPwInput');
+    if(!inp || inp.value.length < 10){ flash('인증서 비밀번호는 10자리 이상이어야 해요.'); return; }
+    closeCertPwSheet(); flash('인증서 비밀번호 확인 완료. (시연용)'); return;
+  }
   // 키패드 입력완료 → 비밀번호 확정 후 닫기 (휴대폰 인증은 바로 조회화면으로)
   if(t.closest('[data-kpconfirm]')){
     if((s1state.acctPw||'').length < 4){ flash('비밀번호를 4자리 이상 입력해주세요.'); return; }
     closePwKeypad();
+    if(pwCtx==='pwreset1'){ s1state.acctPw=''; pwCtx=''; flash('증권계좌 비밀번호 확인 완료. (시연용)'); return; }   // 증권계좌 비밀번호 재설정: 확인 후 완료 안내
     if(pwCtx==='change'){           // 거래내역 계좌변경: 다른 계좌 선택 후 비번 확인 → 적용
       s1state.acctPw = '';
       pwCtx='';

@@ -3659,3 +3659,15 @@ body{
   .phone .notch{display:none}
   .phone .screen{border-radius:0}
 }
+
+/* ── idpw v45 플로우 ── */
+.flow.toss.v45 .iod-v45-body .auth-wrap{margin-top:16px}
+.flow.toss.v45 .iod-v45-body .auth-wrap .idpw-guide{margin:10px 20px 0}
+.flow.toss.v45 .iod-v45-body .auth-wrap .find-agree{margin:8px 20px 0;padding-bottom:4px}
+.flow.toss.v45 .iod-done-btnwrap .v45-iod-btn{margin:0}
+
+/* ── 인증서 비밀번호 시트 ── */
+.kp-cert-hint{font-size:calc(12.5px*var(--scale));color:var(--sub);margin:6px 2px 10px;word-break:keep-all}
+.kp-cert-pw{padding:8px 2px 12px;border-bottom:2px solid var(--ink);margin-bottom:4px}
+.kp-cert-input{width:100%;border:none;outline:none;background:transparent;font-size:calc(16px*var(--scale));font-weight:600;color:var(--ink);font-family:inherit;letter-spacing:1.5px;padding:0;display:block;box-sizing:border-box}
+.kp-cert-input::placeholder{color:#B4BAC6;letter-spacing:0;font-weight:500;font-size:calc(14px*var(--scale))}
