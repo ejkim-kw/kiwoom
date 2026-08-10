@@ -4364,7 +4364,7 @@ function openCertInfoSheet(){
   el.innerHTML = `<div class="consult-sheet">
     <div class="cs-grip"></div>
     <div class="cs-head"><div class="cs-title">공동인증서 비밀번호</div></div>
-    <div class="pw-help-desc">공동인증서 비밀번호는 <b>영문·숫자·특수문자를 모두 포함한<br>10자리 이상</b>이에요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서<br>다시 설정할 수 있어요.</div>
+    <div class="pw-help-desc">공동인증서 비밀번호는 <b>영문·숫자·특수문자를 모두 포함한 10자리 이상</b>이에요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서<br>다시 설정할 수 있어요.</div>
     <div class="pw-help-cta" data-certinfogo><img src="assets/ys-icon.png" alt="S#" class="pw-help-ic">영웅문S# 바로가기</div>
   </div>`;
   screen.appendChild(el);
