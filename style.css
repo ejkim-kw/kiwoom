@@ -446,13 +446,6 @@ body{
 /* 슬라이더 내 카드는 래퍼가 radius 담당 → 개별 card는 radius 없음 */
 .v45ss-track .v45ss-card{border-radius:0}
 
-/* ===== Ver 4.5 · 자가해결 배너 카드 glass effect ===== */
-.flow.toss.v45 .v45ss-wrap{border:1.5px solid rgba(255,255,255,.78);box-shadow:0 8px 28px rgba(72,72,216,.13),0 1.5px 6px rgba(72,72,216,.07),inset 0 1px 0 rgba(255,255,255,.9)}
-.flow.toss.v45 .v45ss-card{background:rgba(255,255,255,.48);-webkit-backdrop-filter:blur(20px) saturate(1.6) brightness(1.04);backdrop-filter:blur(20px) saturate(1.6) brightness(1.04)}
-.flow.toss.v45 .v45ss-img{opacity:.14;mix-blend-mode:luminosity}
-.flow.toss.v45 .v45ss-overlay{background:linear-gradient(to right,rgba(200,210,255,.35) 0%,rgba(220,230,255,.15) 60%,transparent 100%)}
-.flow.toss.v45 .v45ss-nm{color:#1A1A4E}
-.flow.toss.v45 .v45ss-sub{color:rgba(30,30,100,.62)}
 /* ===== Ver 4.5 · 배경 그라데이션 (상단 자가해결 존=인디고 틴트 → 대메뉴 그리드 존=흰색 자연스럽게 블렌드) ===== */
 .flow.toss.v45 .toss-home{background:linear-gradient(180deg,#EBEDFF 0px,#EDEFFF 150px,#F5F6FF 300px,#FFFFFF 420px)}
 .flow.toss.v45 .toss-stick{background:#EBEDFF}   /* 고정 헤더(로고~인사말)를 그라데이션 상단색과 동일하게 → 스크롤 시 이음새 없음 */
