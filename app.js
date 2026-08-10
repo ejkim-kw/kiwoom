@@ -6085,7 +6085,7 @@ document.addEventListener('click', (e)=>{
   // 재발급 신청 → 접수 안내
   const creisdone = t.closest('[data-certreissuedone]');
   if(creisdone){
-    if(s1Ver==='v40'){ s1nav({page:'certreissuedone', title:'재발급 완료', certName:creisdone.dataset.certreissuedone, noBack:true, noHome:true}); return; }
+    if(isV40()){ s1nav({page:'certreissuedone', title:'재발급 완료', certName:creisdone.dataset.certreissuedone, noBack:true, noHome:true}); return; }
     flash(`${creisdone.dataset.certreissuedone} 재발급이 접수되었어요. 등록된 이메일로 보내드릴게요. (시연용)`); return;
   }
   // 신청현황 → 가입서류 제출방법 선택 플로팅
