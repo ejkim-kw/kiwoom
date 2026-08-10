@@ -324,7 +324,7 @@ body{
 }
 .flow.toss.v45 .toss-top .toss-logo img,.flow.toss.v45 .toss-back,.flow.toss.v45 .toss-menu{color:var(--navy)}
 .flow.toss.v45 .toss-gcell:active{transform:scale(.96);box-shadow:0 1px 6px rgba(72,72,216,.12);background:#F5F5FF;border-color:#4848D8}
-.flow.toss.v45 .iod-done-ic{box-shadow:0 12px 26px rgba(72,72,216,.3)}
+.flow.toss.v45 .iod-done-ic{box-shadow:none}
 .flow.toss.v45 .fv-foot .primary-btn.accent:active{background:linear-gradient(135deg,#5E5EF0,#4848D8);filter:brightness(.95)}
 /* Ver 4.5 · 오버레이 인디고 토큰 (#screen 밖이라 직접 지정) */
 .tx-ov.v45{--primary:#4848D8}
@@ -1680,9 +1680,9 @@ body{
 .iod-done-btnwrap{padding:22px 24px 0}
 .iod-done-btnwrap .primary-btn{margin:0}
 .iod-done{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 24px 8px}
-.iod-done-ic{width:74px;height:74px;border-radius:50%;background:var(--primary-grad);color:#fff;
-  display:grid;place-items:center;margin-bottom:20px;box-shadow:0 12px 26px rgba(230,0,127,.3)}
-.iod-done-ic svg{width:38px;height:38px;stroke-width:2.6}
+.iod-done-ic{width:100px;height:100px;border-radius:50%;overflow:hidden;
+  display:grid;place-items:center;margin-bottom:20px}
+.iod-done-ic img{width:100%;height:100%;object-fit:cover}
 .iod-done-t{font-size:calc(21px*var(--scale));font-weight:800;color:var(--ink);letter-spacing:-.4px}
 .iod-done-d{margin-top:12px;font-size:calc(13.5px*var(--scale));color:var(--sub);line-height:1.65}
 .iod-done-d b{color:var(--primary);font-weight:800}

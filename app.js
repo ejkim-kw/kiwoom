@@ -4199,7 +4199,7 @@ function renderCertReissueDone(){
   if(isV45()){
     return `<div class="iod-done-center v45-authpage">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">재발급이 완료됐어요</div>
         <div class="iod-done-d">${nm}를 등록된 이메일로<br>보내드렸어요.</div>
       </div>
@@ -4208,7 +4208,7 @@ function renderCertReissueDone(){
   }
   return `<div class="iod-done-center">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">재발급이 완료됐어요</div>
         <div class="iod-done-d">${nm}를 등록된 이메일로<br>보내드렸어요.<br>메일함을 확인해 주세요.</div>
       </div>
@@ -4575,7 +4575,7 @@ function renderIodPurposeDone(){
   if(isV45()){
     return `<div class="iod-done-center v45-authpage">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">등록이 완료됐어요</div>
         <div class="iod-done-d">거래 목적 확인이 등록되어<br>계좌의 거래제한이 바로 해제됐어요.<br>이제 정상적으로 입출금하실 수 있어요.</div>
       </div>
@@ -4584,7 +4584,7 @@ function renderIodPurposeDone(){
   }
   return `<div class="iod-done-center">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">등록이 완료됐어요</div>
         <div class="iod-done-d">거래 목적 확인이 등록되어<br>계좌의 거래제한이 바로 해제됐어요.<br>이제 정상적으로 입출금하실 수 있어요.</div>
       </div>
@@ -4629,7 +4629,7 @@ function renderVoiceDone(){
   const menuLine = label ? `선택하신 <b>${label}</b> 안내를<br>지금 시작할게요.` : `음성 안내를 지금 시작할게요.`;
   return `<div class="iod-done-center">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">음성 ARS로 연결됐어요</div>
         <div class="iod-done-d">${menuLine}<br>잠시만 기다려 주세요.</div>
       </div>
@@ -4644,7 +4644,7 @@ function renderHeroDone(){
   const acctLine = (sessionAuthed && !bigFont) ? '인증하신 계좌를 연동해서<br>' : '';   // 큰글씨: 본문 축약
   return `<div class="iod-done-center">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">${app} 앱으로 연결됐어요</div>
         <div class="iod-done-d">${acctLine}<b>${title}</b> 화면으로 이동했어요.</div>
       </div>
@@ -4656,7 +4656,7 @@ function renderHeroDone(){
 function renderIdDone(){
   return `<div class="iod-done-center">
       <div class="iod-done">
-        <div class="iod-done-ic">${I.check}</div>
+        <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">재요청 URL을 보내드렸어요</div>
         <div class="iod-done-d"><b>신분증 재요청 URL</b>을 알림톡으로 발송했어요.<br>링크에서 신분증을 재접수하시면,<br>진위확인 후 거래 제한이 풀려요.</div>
       </div>
