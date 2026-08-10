@@ -1539,7 +1539,7 @@ body{
 .iodload-screen .page-top{flex:none}
 .iodload-body{flex:1;display:flex;flex-direction:column;padding:6px 25px 26px;min-height:0}
 /* Ver 4.5 ② 계좌조회 로딩 */
-.flow.toss.v45 .v45-iodload-body{padding:6px 25px 20px}
+.flow.toss.v45 .v45-iodload-body{padding:6px 0 20px}
 .flow.toss.v45 .v45-iodload-body .toss-dhead{padding-left:20px;padding-right:20px}
 /* 스캔 애니메이션 */
 .flow.toss.v45 .v45-scan-anim{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
@@ -1616,7 +1616,7 @@ body{
 .primary-btn.ghost{background:#fff !important;color:var(--primary) !important;border:1.6px solid var(--primary) !important;box-shadow:none !important}
 .iod-note{margin:14px 24px 8px;font-size:calc(11.5px*var(--scale));color:var(--sub);line-height:1.5;text-align:center}
 /* Ver 4.5 ③ 결과안내 */
-.flow.toss.v45 .iod-v45-body{flex:1;display:flex;flex-direction:column;padding:6px 25px 16px;overflow-y:auto;min-height:0}
+.flow.toss.v45 .iod-v45-body{flex:1;display:flex;flex-direction:column;padding:6px 0 16px;overflow-y:auto;min-height:0}
 .flow.toss.v45 .iod-v45-body .toss-dhead{padding-left:20px;padding-right:20px}
 .flow.toss.v45 .iod-v45-card{background:#fff;border:1.5px solid #E4E7F0;border-radius:20px;padding:18px 20px;margin:18px 20px 0;cursor:pointer;transition:border-color .15s}
 .flow.toss.v45 .iod-v45-card:active{border-color:#1A1A4E}
@@ -1645,8 +1645,8 @@ body{
 .flow.toss.v45 .v45-iv{font-size:calc(13.5px*var(--scale));font-weight:600;color:#1A1A4E}
 .flow.toss.v45 .v45-iv.sel{cursor:pointer}
 /* ===== Ver 4.5 · ISA 신청현황 결과 ===== */
-.flow.toss.v45 .v45-isa-head{display:flex;align-items:flex-start;gap:8px;padding:0}
-.flow.toss.v45 .v45-isa-head .toss-dhead{flex:1;padding-left:20px;padding-right:0}
+.flow.toss.v45 .v45-isa-head{display:flex;align-items:flex-start;gap:8px;padding:0 20px}
+.flow.toss.v45 .v45-isa-head .toss-dhead{flex:1;padding-left:0;padding-right:0}
 .flow.toss.v45 .v45-cycle-btn{flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#ECEDF7;color:#1A1A4E;cursor:pointer;margin-top:6px;transition:background .15s}
 .flow.toss.v45 .v45-cycle-btn:active{background:#D8D9EF}
 .flow.toss.v45 .v45-cycle-btn svg{width:18px;height:18px}
