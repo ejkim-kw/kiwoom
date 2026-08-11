@@ -5205,6 +5205,7 @@ function pageTop(title, hideTitle, rightHtml){
 }
 
 function renderS1(){
+  const _savedVer = s1Ver; if(s1Ver==='v46') s1Ver='v45';   // v46 = v45 완전 복사
   const v = document.getElementById('s1view');
   const flowEl = v && v.closest('.flow'); if(flowEl) flowEl.classList.toggle('toss', isV40());   // Ver 4.0 계열 토스 스킨 (전 화면 var() 토큰 오버라이드)
   if(flowEl){ flowEl.classList.toggle('v45', isV45()); }   // Ver 4.5 인디고 팔레트 오버라이드
