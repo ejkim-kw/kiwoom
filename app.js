@@ -6423,7 +6423,7 @@ document.addEventListener('click', (e)=>{
       if(cat.subs && cat.subs.length){
         s1state.v45Cat = (s1state.v45Cat === cat.id) ? null : cat.id;
         const menuEl = document.querySelector('.toss-list');
-        if(menuEl){ const tmp=document.createElement('div'); tmp.innerHTML=v45Menu(); const fresh=tmp.firstElementChild; if(fresh) menuEl.replaceWith(fresh); else renderS1(); }
+        if(menuEl){ const tmp=document.createElement('div'); tmp.innerHTML=isV46()?v46FlatMenu():v45Menu(); const fresh=tmp.firstElementChild; if(fresh) menuEl.replaceWith(fresh); else renderS1(); }
         else renderS1();
       } else { flash(`‘${cat.t}’ 메뉴입니다. (중메뉴 없음 · 이후 절차 정의 예정)`); }
     }
