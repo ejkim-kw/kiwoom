@@ -2585,11 +2585,13 @@ function banner(){
 }
 function tabbar(active){
   if(isV45()){
-    // Ver 4.5 하단 네비(bottom.jpg): [홈 / 챗봇(중앙 구 버튼) / 서비스종료], 홈·서비스종료는 아이콘만(라벨 없음)
-    // 서비스종료는 .end(빨강) 미사용 → 전화기(음성ARS) 아이콘과 동일한 뮤트 그레이(v45nav-side)
-    return `<div class="tb v45nav-side" data-tab="home" title="홈">${I.home}</div>`
-      + `<div class="tb v45nav-chat" data-tab="chat" title="챗봇"><img src="assets/chat.jpg" alt="챗봇"></div>`
-      + `<div class="tb v45nav-side" data-tab="end" title="서비스종료">${I.power}</div>`;
+    // Ver 4.5 플로팅 필 네비(tab2.jpg): 흰색 알약 바 위에 [홈(활성:다크칩) / 채팅 / 종료]
+    const isHome = active==='home';
+    return `<div class="v45-nav-pill">`
+      + `<div class="tb v45nav-home${isHome?' on':''}" data-tab="home" title="홈">${I.home}<span>홈</span></div>`
+      + `<div class="tb v45nav-side" data-tab="chat" title="채팅">${I.chat}</div>`
+      + `<div class="tb v45nav-side" data-tab="end" title="서비스종료">${I.power}</div>`
+      + `</div>`;
   }
   return `<div class="tb" data-tab="voice">${I.phone}<span>음성ARS</span></div>
     <div class="tb" data-tab="chat">${I.chat}<span>챗봇</span></div>
