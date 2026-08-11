@@ -2286,7 +2286,7 @@ function tossCatGrid(){
     </div>`
   ).join('') + `</div>`;
 }
-/* Ver 4.5 · 대메뉴 상단 탭(공통/국내/그외상품) + 대메뉴/중메뉴 — 디지털ARS 메뉴구조도 v0.2 기준.
+/* Ver 4.5 · 대메뉴 상단 탭(공통/증권/금융상품) + 대메뉴/중메뉴 — 디지털ARS 메뉴구조도 v0.2 기준.
    각 대메뉴: {id(전역번호), t(대메뉴명), ic(아이콘), subs[중메뉴명...]}. subs 비면 대메뉴 자체가 최종(중메뉴 없음). 중메뉴 클릭 이후 절차는 추후 정의. */
 const V45_MENU_TABS = [
   {k:'common', nm:'공통', cats:[
@@ -2297,12 +2297,12 @@ const V45_MENU_TABS = [
     {id:6, t:'사고 등록/해지',  fi:9,  d:'계좌 사고를 등록하거나 해지해요',           subs:[]},
     {id:8, t:'서류발급',        fi:6,  d:'필요한 증명서·서류를 발급받아요',           subs:[]},
   ]},
-  {k:'domestic', nm:'국내', cats:[
+  {k:'domestic', nm:'증권', cats:[
     {id:5, t:'미수금 및 신용/대출',       fi:1, d:'미수·반대매매와 신용·대출을 확인·신청해요',   subs:['미수 및 반대매매','신용/대출 약정 안내','신용/대출 신청 및 상환']},
     {id:7, t:'국내주식 주문 및 잔고조회', fi:4, d:'시세·주문·체결·잔고조회까지 이용해요',         subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
     {id:9, t:'유상청약 및 공모주청약',    fi:6, d:'유상·공모주 청약과 권리업무를 신청해요',       subs:['유상청약','공모주청약','반대의사 및 매수청구','그외 권리업무']},
   ]},
-  {k:'etc', nm:'그외상품', cats:[
+  {k:'etc', nm:'금융상품', cats:[
     {id:10, t:'해외주식',            fi:8, d:'해외주식과 RIA계좌 업무를 이용해요',            subs:['해외주식 관련','RIA계좌']},
     {id:11, t:'금융상품',            fi:8, d:'ISA·연금·펀드 등 금융상품에 가입·관리해요',     subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
     {id:12, t:'국내선물옵션',        fi:8, d:'국내 선물·옵션 거래를 문의해요',                subs:[]},
@@ -5257,7 +5257,7 @@ function renderS1(){
         html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
           + `<div class="toss-hero"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div></div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
-          + (isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v45: 자가해결 2×2 + 탭(공통/국내/그외상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
+          + (isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v45: 자가해결 2×2 + 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
         // 드릴다운 헤더: 현재 단계 이름을 타이틀로(대메뉴 진입 시 = 대메뉴명), 대메뉴 단계면 설명글도 표기
         const dtrail = sarsWalk(catData(), path).trail;
@@ -6385,7 +6385,7 @@ document.addEventListener('click', (e)=>{
   // V2.1 메인 인라인 탭(셀프서비스/ARS메뉴/상담원연결) 전환 — 트리 상태 초기화
   const v21 = t.closest('[data-v21tab]');
   if(v21){ s1state.v21Tab=v21.dataset.v21tab; s1state.sarsPath=[]; s1state.amOpen=-1; s1state.amOpen2=-1; renderS1(); return; }
-  // Ver 4.5 대메뉴 탭(공통/국내/그외상품) 전환 — 버블 슬라이딩 위해 전체 re-render 대신 부분 갱신
+  // Ver 4.5 대메뉴 탭(공통/증권/금융상품) 전환 — 버블 슬라이딩 위해 전체 re-render 대신 부분 갱신
   const v45t = t.closest('[data-v45tab]');
   if(v45t){
     const k = v45t.dataset.v45tab;
