@@ -2509,6 +2509,19 @@ let ssBannerTimer = null;
 const SS_CHEV_R = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
 
 function v45SsBannerCard(it){
+  if(isV46()){
+    return `<div class="v45ss-card" ${it.act} role="button">
+      <div class="v46ss-bg-clip">
+        <img class="v46ss-bg" src="assets/background.jpg" alt="">
+        <div class="v45ss-overlay"></div>
+      </div>
+      <img class="v46ss-icon" src="${it.img}" alt="">
+      <div class="v45ss-txt">
+        <div class="v45ss-nm">${it.t}</div>
+        <div class="v45ss-sub">${it.sub}</div>
+      </div>
+    </div>`;
+  }
   return `<div class="v45ss-card" ${it.act} role="button">
     <img class="v45ss-img" src="${it.img}" alt="">
     <div class="v45ss-overlay"></div>
@@ -5223,6 +5236,7 @@ function renderS1(){
   const v = document.getElementById('s1view');
   const flowEl = v && v.closest('.flow'); if(flowEl) flowEl.classList.toggle('toss', isV40());   // Ver 4.0 계열 토스 스킨 (전 화면 var() 토큰 오버라이드)
   if(flowEl){ flowEl.classList.toggle('v45', isV45()); }   // Ver 4.5 인디고 팔레트 오버라이드
+  if(flowEl){ flowEl.classList.toggle('v46', isV46()); }   // Ver 4.6 전용 CSS 스코프
   let html = '';
   if(s1state.page==='home'){
     /* 자주 찾는 서비스 9개로 한눈에 구성 */
