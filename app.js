@@ -5510,6 +5510,7 @@ function renderS1(){
     if(a) a.addEventListener('input', v45AuthBtnSync);
     v45AuthBtnSync();
   }
+  s1Ver = _savedVer;   // v46 렌더링 후 원래 버전 키 복원
 }
 
 function indexResult(){
