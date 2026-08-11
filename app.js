@@ -6759,9 +6759,10 @@ let s1Ver = 'v45';        // 시안1 기본 버전 = Ver 4.5(v45). 맨 URL(파�
 /* Ver 2.1 — 메인 3탭(셀프서비스/ARS메뉴/상담원연결)·드로어·favSrc 등 v21 전용 동작 게이트 */
 function isV21Ver(){ return s1Ver==='v21'; }
 /* Ver 4.0 계열 — 토스 스킨·9 카테고리(ARS_CAT6)·상담연결 팝업 등 공통 동작 게이트 (v40=리스트 메인 / v41=3×3 그리드 메인, 로직 동일) */
-function isV40(){ return s1Ver==='v40' || s1Ver==='v41' || s1Ver==='v42' || s1Ver==='v45'; }
-/* Ver 4.5 — 인디고 팔레트 게이트 (isV40 포함이지만 색상 오버라이드를 위해 별도 식별) */
-function isV45(){ return s1Ver==='v45'; }
+function isV40(){ return s1Ver==='v40' || s1Ver==='v41' || s1Ver==='v42' || s1Ver==='v45' || s1Ver==='v46'; }
+/* Ver 4.5/4.6 — 인디고 팔레트 게이트 (isV40 포함이지만 색상 오버라이드를 위해 별도 식별) */
+function isV45(){ return s1Ver==='v45' || s1Ver==='v46'; }
+function isV46(){ return s1Ver==='v46'; }
 function switchScheme(s){
   closeMenuDrawer();   // 탭/버전 전환 시 열려있던 전체메뉴 드로어 닫기
   scheme = s;
@@ -6869,7 +6870,7 @@ function updateSceneLabel(){
     v2:['kiwoom-qr-ver2.0.png','Ver 2.0'], v21:['kiwoom-qr-ver2.1.png','Ver 2.1'],
     v40:['kiwoom-qr-v40.png','Ver 4.0'],
     v41:['kiwoom-qr-v41.png','Ver 4.1'], v42:['kiwoom-qr-v42.png','Ver 4.2'],
-    v45:['kiwoom-qr-v45.png','Ver 4.5'],
+    v45:['kiwoom-qr-v45.png','Ver 4.5'], v46:['kiwoom-qr-v45.png','Ver 4.6'],
     dform:['kiwoom-qr-dform.png','Digital Form'], dform2:['kiwoom-qr-dform2.png','Ver 4.3'], dform3:['kiwoom-qr-dform3.png','Digital Form_v0.1'],
     dars1:['kiwoom-qr-ver3.0.png','Ver 3.0'], dars2:['kiwoom-qr-ver1.2.1.png','Ver 1.2.1']
   };
