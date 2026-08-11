@@ -2511,10 +2511,7 @@ const SS_CHEV_R = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 function v45SsBannerCard(it){
   if(isV46()){
     return `<div class="v45ss-card" ${it.act} role="button">
-      <div class="v46ss-bg-clip">
-        <img class="v46ss-bg" src="assets/background.jpg" alt="">
-        <div class="v45ss-overlay"></div>
-      </div>
+      <img class="v46ss-bg" src="assets/background.jpg" alt="">
       <img class="v46ss-icon" src="${it.img}" alt="">
       <div class="v45ss-txt">
         <div class="v45ss-nm">${it.t}</div>

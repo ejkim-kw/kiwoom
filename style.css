@@ -3668,10 +3668,6 @@ body{
 .kp-cert-input{width:100%;border:none;outline:none;background:transparent;font-size:calc(16px*var(--scale));font-weight:600;color:var(--ink);font-family:inherit;letter-spacing:1.5px;padding:0;display:block;box-sizing:border-box}
 .kp-cert-input::placeholder{color:#B4BAC6;letter-spacing:0;font-weight:500;font-size:calc(14px*var(--scale))}
 
-/* ── v46 자가해결 카드: background.jpg 배경 + 아이콘 오버플로우 ── */
-.flow.toss.v46 .v45-selfsolve{padding-top:40px;margin-top:-32px}
-.flow.toss.v46 .v45ss-wrap{overflow:visible}
-.flow.toss.v46 .v45ss-card{overflow:visible}
-.v46ss-bg-clip{position:absolute;inset:0;overflow:hidden;border-radius:20px;z-index:0}
-.v46ss-bg{width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.18;pointer-events:none;display:block}
-.v46ss-icon{position:absolute;right:-2px;top:-38px;height:calc(100% + 44px);width:auto;object-fit:contain;object-position:right bottom;pointer-events:none;z-index:2;filter:drop-shadow(0 6px 18px rgba(20,24,60,.15))}
+/* ── v46 자가해결 카드: background.jpg 배경 + 아이콘 투명 겹침 ── */
+.v46ss-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;display:block}
+.v46ss-icon{position:absolute;right:0;top:0;height:100%;width:auto;object-fit:contain;object-position:right center;pointer-events:none;z-index:2;opacity:0.55;mix-blend-mode:luminosity}
