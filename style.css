@@ -467,6 +467,7 @@ body{
 .flow.toss.v45 .tabbar .tb{flex:0 0 auto;flex-direction:row;gap:0;padding:10px 14px;border-radius:999px;color:#9AA3B2;align-items:center;justify-content:center}
 .flow.toss.v45 .tabbar .tb svg{width:22px;height:22px}
 .flow.toss.v45 .tabbar .tb:active{opacity:.7}
+.flow.toss.v45 .view{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
 
 /* ===== Ver 4.5 · 대메뉴 finance 3D 아이콘 (Finance Icons 슬라이스, 인디고 칩에 표시) ===== */
 .flow.toss.v45 .toss-list .tc-ic-fin{overflow:hidden}
