@@ -2585,10 +2585,9 @@ function banner(){
 }
 function tabbar(active){
   if(isV45()){
-    // Ver 4.5 플로팅 필 네비(tab2.jpg): 흰색 알약 바 위에 [홈(활성:다크칩) / 채팅 / 종료]
-    const isHome = active==='home';
+    // Ver 4.5 플로팅 필 네비(tab2.jpg): 흰색 알약 바, 아이콘 3개
     return `<div class="v45-nav-pill">`
-      + `<div class="tb v45nav-home${isHome?' on':''}" data-tab="home" title="홈">${I.home}<span>홈</span></div>`
+      + `<div class="tb v45nav-side" data-tab="home" title="홈">${I.home}</div>`
       + `<div class="tb v45nav-side" data-tab="chat" title="채팅">${I.chat}</div>`
       + `<div class="tb v45nav-side" data-tab="end" title="서비스종료">${I.power}</div>`
       + `</div>`;

@@ -464,12 +464,8 @@ body{
 /* v45 플로팅 필 네비(tab2.jpg) */
 .flow.toss.v45 .tabbar{background:transparent;border:none;border-radius:0;box-shadow:none;margin:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;overflow:visible}
 .flow.toss.v45 .tabbar .v45-nav-pill{background:#fff;border-radius:999px;padding:5px 8px;display:flex;align-items:center;justify-content:space-between;width:100%;box-shadow:0 8px 24px rgba(20,24,60,.15),0 2px 6px rgba(20,24,60,.08)}
-.flow.toss.v45 .tabbar .tb{flex:0 0 auto;flex-direction:row;gap:6px;padding:10px 16px;border-radius:999px;color:#9AA3B2;align-items:center;justify-content:center}
-.flow.toss.v45 .tabbar .tb span{display:none;font-size:calc(14px*var(--scale));font-weight:700;color:inherit}
-.flow.toss.v45 .tabbar .v45nav-home.on{background:#1B2048;color:#fff}
-.flow.toss.v45 .tabbar .v45nav-home.on span{display:inline}
+.flow.toss.v45 .tabbar .tb{flex:0 0 auto;flex-direction:row;gap:0;padding:10px 16px;border-radius:999px;color:#9AA3B2;align-items:center;justify-content:center}
 .flow.toss.v45 .tabbar .tb svg{width:22px;height:22px}
-.flow.toss.v45 .tabbar .v45nav-side{color:#9AA3B2}
 .flow.toss.v45 .tabbar .tb:active{opacity:.7}
 
 /* ===== Ver 4.5 · 대메뉴 finance 3D 아이콘 (Finance Icons 슬라이스, 인디고 칩에 표시) ===== */
