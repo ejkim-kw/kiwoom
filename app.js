@@ -2334,6 +2334,21 @@ function v45Menu(){
     return `<div class="v45-acc-item${isOpen?' open':''}"><div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic${c.fi?' tc-ic-fin':''}">${icon}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw${isOpen?' open':''}">${I.chev}</div></div>${subsHtml}</div>`;
   }).join('') + `</div>`;
 }
+/* v46: 탭 없이 모든 대메뉴 flat 나열 */
+function v46FlatMenu(){
+  const openId = s1state.v45Cat;
+  const allCats = V45_MENU_TABS.reduce((a,t)=>a.concat(t.cats),[]);
+  return `<div class="toss-list">` + allCats.map(c=>{
+    const icon = c.fi ? `<img src="assets/finance-${c.fi}.png" alt="">` : (I[c.ic]||I.order);
+    const isOpen = (openId === c.id) && c.subs && c.subs.length;
+    const subsHtml = isOpen
+      ? `<div class="v45-acc-subs">` + c.subs.map(s=>
+          `<div class="toss-cat v45-acc-sub" data-v45sub="${s}"><div class="tc-body"><div class="tc-nm">${s}</div></div><div class="tc-arw">${I.chev}</div></div>`
+        ).join('') + `</div>`
+      : '';
+    return `<div class="v45-acc-item${isOpen?' open':''}"><div class="toss-cat" data-v45cat="${c.id}"><div class="tc-ic${c.fi?' tc-ic-fin':''}">${icon}</div><div class="tc-body"><div class="tc-nm">${c.t}</div>${c.d?`<div class="tc-desc">${c.d}</div>`:''}</div><div class="tc-arw${isOpen?' open':''}">${I.chev}</div></div>${subsHtml}</div>`;
+  }).join('') + `</div>`;
+}
 /* 대메뉴 드릴다운: 중메뉴 리스트 (뒤로가기 + 대메뉴명 타이틀). 중메뉴 클릭 이후 절차는 추후 정의 */
 function renderV45Sub(){
   const cat = v45CatById(s1state.v45Cat);
@@ -5205,7 +5220,6 @@ function pageTop(title, hideTitle, rightHtml){
 }
 
 function renderS1(){
-  const _savedVer = s1Ver; if(s1Ver==='v46') s1Ver='v45';   // v46 = v45 완전 복사
   const v = document.getElementById('s1view');
   const flowEl = v && v.closest('.flow'); if(flowEl) flowEl.classList.toggle('toss', isV40());   // Ver 4.0 계열 토스 스킨 (전 화면 var() 토큰 오버라이드)
   if(flowEl){ flowEl.classList.toggle('v45', isV45()); }   // Ver 4.5 인디고 팔레트 오버라이드
@@ -5258,7 +5272,7 @@ function renderS1(){
         html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
           + `<div class="toss-hero"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div></div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
-          + (isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v45: 자가해결 2×2 + 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
+          + (isV46() ? v46FlatMenu() : isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v46: 탭없이 전체 flat / v45: 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
         // 드릴다운 헤더: 현재 단계 이름을 타이틀로(대메뉴 진입 시 = 대메뉴명), 대메뉴 단계면 설명글도 표기
         const dtrail = sarsWalk(catData(), path).trail;
@@ -5511,7 +5525,6 @@ function renderS1(){
     if(a) a.addEventListener('input', v45AuthBtnSync);
     v45AuthBtnSync();
   }
-  s1Ver = _savedVer;   // v46 렌더링 후 원래 버전 키 복원
 }
 
 function indexResult(){
