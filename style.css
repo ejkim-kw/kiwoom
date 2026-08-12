@@ -3669,5 +3669,6 @@ body{
 .kp-cert-input::placeholder{color:#B4BAC6;letter-spacing:0;font-weight:500;font-size:calc(14px*var(--scale))}
 
 /* ── v46 자가해결 카드: background.jpg 배경 + 아이콘 투명 겹침 ── */
+.flow.toss.v46 .v45ss-wrap{-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 14%,#000 86%,transparent 100%);mask-image:linear-gradient(to right,transparent 0%,#000 14%,#000 86%,transparent 100%)}
 .v46ss-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;display:block}
 .v46ss-icon{position:absolute;right:0;top:0;height:100%;width:auto;object-fit:contain;object-position:right center;pointer-events:none;z-index:2;opacity:0.55;mix-blend-mode:luminosity}
