@@ -1561,7 +1561,7 @@ body{
 .iodload-center{flex:1;display:flex;align-items:center;justify-content:center}
 /* 계좌조회 로딩: 설명글 아래 움직이는 search 아이콘(GIF) */
 .iodload-icon{display:flex;justify-content:flex-start;margin-top:0}   /* 타이틀→아이콘 간격 16px (dhead padding-bottom 16 + margin-top 0) */
-.iodload-icon img{width:calc(56px*var(--scale));height:calc(56px*var(--scale));object-fit:contain}   /* 로딩 아이콘: 민트 원본을 브랜드 마젠타(#E6007F)로 재색상한 GIF(search-magenta.gif) 사용 — 애니메이션·검정선 유지 */
+.iodload-icon img{width:calc(56px*var(--scale));height:calc(56px*var(--scale));object-fit:contain}
 /* 계좌조회 결과안내(재설계, v40): 진행바 없음 · 타이틀(제한사유,클릭순환)+설명글 첫페이지 위치 · 버튼 · 데모설명 맨 아래 */
 .iodresult-screen{height:100%;display:flex;flex-direction:column}
 .iodresult-screen .page-top{flex:none}
