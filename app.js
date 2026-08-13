@@ -2503,22 +2503,12 @@ const SS_ITEMS = [
   {t:'입출금이 안돼요',           sub:'한도제한·출금불가 원인을 즉시 확인해요',   act:'data-iodstart',  img:'assets/glass3.png'},
   {t:'서류 발급현황이 궁금해요',   sub:'신청 서류의 발급 상태를 바로 확인해요',   act:'data-certstart', img:'assets/glass5.png'},
   {t:'ISA 가입서류를 내고 싶어요', sub:'소득확인 서류를 제출하고 가입을 완료해요', act:'data-isastart',  img:'assets/glass4.png'},
-  {t:'비밀번호를 모르겠어요',      sub:'계좌 비밀번호를 안전하게 재설정해요',     act:'data-pwreset',   img:'assets/glass2.jpeg', v46img:'assets/glass2-nobg.png'},
+  {t:'비밀번호를 모르겠어요',      sub:'계좌 비밀번호를 안전하게 재설정해요',     act:'data-pwreset',   img:'assets/glass2.jpeg'},
 ];
 let ssBannerTimer = null;
 const SS_CHEV_R = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
 
 function v45SsBannerCard(it){
-  if(isV46()){
-    return `<div class="v45ss-card" ${it.act} role="button">
-      <img class="v46ss-bg" src="assets/background.jpg" alt="">
-      <img class="v46ss-icon" src="${it.v46img||it.img}" alt="">
-      <div class="v45ss-txt">
-        <div class="v45ss-nm">${it.t}</div>
-        <div class="v45ss-sub">${it.sub}</div>
-      </div>
-    </div>`;
-  }
   return `<div class="v45ss-card" ${it.act} role="button">
     <img class="v45ss-img" src="${it.img}" alt="">
     <div class="v45ss-overlay"></div>
