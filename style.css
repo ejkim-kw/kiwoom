@@ -3719,6 +3719,12 @@ body{
 .v47-cell:active{background:#F5F5FF;border-color:#4848D8;transform:scale(.97)}
 .v47-cell-ic{position:absolute;bottom:0;left:0;width:56px;height:auto;background:transparent;border-radius:0;overflow:hidden;opacity:0.52;pointer-events:none}
 .v47-cell-ic img{width:56px;height:auto;object-fit:contain}
+/* 1,2번 아이콘 크기 축소 */
+.v47-cell[data-v47cat="1"] .v47-cell-ic,.v47-cell[data-v47cat="1"] .v47-cell-ic img{width:44px}
+.v47-cell[data-v47cat="2"] .v47-cell-ic,.v47-cell[data-v47cat="2"] .v47-cell-ic img{width:44px}
+/* 4,6번 아이콘 아래로 */
+.v47-cell[data-v47cat="4"] .v47-cell-ic{bottom:-10px}
+.v47-cell[data-v47cat="6"] .v47-cell-ic{bottom:-10px}
 .v47-cell-nm{position:relative;z-index:1;font-size:calc(14px*var(--scale));font-weight:700;color:#1A1A4E;line-height:1.3;letter-spacing:-.2px;text-align:center}
 .v47-cell-sub{position:relative;z-index:1;font-size:calc(10px*var(--scale));font-weight:500;color:#8B95A1;line-height:1.3;word-break:keep-all}
 
