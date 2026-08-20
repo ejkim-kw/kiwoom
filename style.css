@@ -3681,7 +3681,7 @@ body{
 .flow.toss.v47 .v45ss-wrap{border:1.5px solid #EAECFF;box-shadow:0 1px 4px rgba(72,72,216,.07);border-radius:18px;overflow:visible;clip-path:inset(-36px 0 0 0 round 18px)}
 /* float 아이콘 카드 (입출금이 안돢요): 배경 이미지 없이 아이콘만 카드 위 플로팅 */
 .flow.toss.v47 .v45ss-card.v47-ic-float{overflow:visible;background:#fff}
-.flow.toss.v47 .v47-float-ic{position:absolute;right:10px;top:-32px;height:128px;width:auto;object-fit:contain;filter:drop-shadow(0 5px 10px rgba(72,72,216,.22));pointer-events:none;z-index:2}
+.flow.toss.v47 .v47-float-ic{position:absolute;right:10px;top:-18px;height:148px;width:auto;object-fit:contain;filter:drop-shadow(0 5px 10px rgba(72,72,216,.22));pointer-events:none;z-index:2}
 /* 오버레이: 흰색→투명 그라데이션으로 카드 배경색을 그리드와 통일 */
 .flow.toss.v47 .v45ss-overlay{background:linear-gradient(to right,rgba(255,255,255,1) 0%,rgba(255,255,255,.92) 45%,rgba(255,255,255,.5) 70%,transparent 100%)}
 /* 텍스트 색상을 그리드 메뉴와 동일하게 */
