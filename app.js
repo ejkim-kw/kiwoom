@@ -1594,11 +1594,13 @@ function openMenuDrawer(){
     <div class="menu-scroll">${renderAllMenu()}</div>
   </div>`;
   screen.appendChild(el);
+  if(isV47()) screen.classList.add('v47-fab-open');
   requestAnimationFrame(()=>el.classList.add('on'));
 }
 function closeMenuDrawer(){
   const el = document.getElementById('menuDrawer');
   if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 300); }
+  document.getElementById('screen')?.classList.remove('v47-fab-open');
 }
 /* 자주 찾는 서비스 추가 바텀시트 (favmore 빈 슬롯 클릭 → 후보 선택 → FAV 추가) */
 function openFavAdd(){
@@ -2337,8 +2339,8 @@ const V47_MENU_CATS = [
   {id:2, t:'비대면업무',    sub:'접수현황/서류발급',        ic:'v47-glass-2.png', subs:['서류신청','계좌개설 이어하기','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
   {id:3, t:'뱅킹서비스',    sub:'입출금/신용/대출',         ic:'v47-glass-3.png', subs:['은행이체','주식대체','미수 및 반대매매','신용·대출 약정 및 신청방법','신용·대출 잔고조회','신용·대출 만기일연장','신용·대출 상환']},
   {id:4, t:'권리/청약',     sub:'유상청약/공모주청약',      ic:'v47-glass-4.png', subs:['유상청약','공모주청약','반대의사 및 매수청구','그의 권리업무']},
-  {id:5, t:'국내주식',      sub:'',                        ic:'v47-glass-5.png', subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
-  {id:6, t:'해외주식',      sub:'',                        ic:'v47-glass-6.png', subs:['해외주식 관련','RIA계좌']},
+  {id:5, t:'국내주식',      sub:'시세/주문/잔고',            ic:'v47-glass-5.png', subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
+  {id:6, t:'해외주식',      sub:'제도,환전',                ic:'v47-glass-6.png', subs:['해외주식 관련','RIA계좌']},
   {id:7, t:'금융상품',      sub:'ISA·연금·펀드',            ic:'v47-glass-7.png', subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
   {id:8, t:'선물옵션',      sub:'CFD/파생상품',             ic:'v47-glass-8.png', subs:['국내선물옵션','해외CFD 및 상품선물옵션','국내CFD']},
   {id:9, t:'기타서비스',    sub:'인증/화면문의',            ic:'v47-glass-9.png', subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스','간편인증·공동인증서','HTS 화면 문의','MTS 화면 문의','사고 등록·해지','금융센터 전화번호 안내']},
@@ -6508,7 +6510,16 @@ document.addEventListener('click', (e)=>{
   const v45s = t.closest('[data-v45sub]');
   if(v45s){ flash(`'${v45s.dataset.v45sub}' 중메뉴 선택 · 이후 절차 정의 예정`); return; }
   // Ver 4.7 FAB 토글
-  if(t.closest('[data-v47fabtoggle]')){ const fab=document.getElementById('v47Fab'); if(fab) fab.classList.toggle('open'); return; }
+  if(t.closest('[data-v47fabtoggle]')){
+    const fab=document.getElementById('v47Fab');
+    if(fab){ const open=fab.classList.toggle('open'); fab.closest('.screen')?.classList.toggle('v47-fab-open',open); }
+    return;
+  }
+  // Ver 4.7 FAB 열림 상태에서 배경 클릭 → 닫기
+  if(isV47() && !t.closest('#v47Fab') && !t.closest('.menu-ov')){
+    const fab=document.getElementById('v47Fab');
+    if(fab?.classList.contains('open')){ fab.classList.remove('open'); fab.closest('.screen')?.classList.remove('v47-fab-open'); }
+  }
   // Ver 4.7 대메뉴 그리드 클릭 → 중메뉴 목록 페이지
   const v47c = t.closest('[data-v47cat]');
   if(v47c){ s1nav({page:'v47cat', v47Cat:+v47c.dataset.v47cat}); return; }
@@ -6519,7 +6530,7 @@ document.addEventListener('click', (e)=>{
   // Ver 4.0 · '상담 없이 해결할 수 있어요' 자가해결 카드 펼침/접기 (화살표)
   if(t.closest('[data-faqtoggle]')){ s1state.faqOpen = !s1state.faqOpen; renderS1(); return; }
   // 전체메뉴(햄버거) → 오른쪽에서 슬라이딩하는 드로어로 열기
-  if(t.closest('[data-menu]')){ s1state.amTab='ars'; s1state.amOpen=0; s1state.amOpen2=-1; s1state.sarsPath=[]; s1state.amCat='self'; s1state.amTreeOpen={}; document.getElementById('v47Fab')?.classList.remove('open'); openMenuDrawer(); return; }
+  if(t.closest('[data-menu]')){ s1state.amTab='ars'; s1state.amOpen=0; s1state.amOpen2=-1; s1state.sarsPath=[]; s1state.amCat='self'; s1state.amTreeOpen={}; const _fab=document.getElementById('v47Fab'); _fab?.classList.remove('open'); _fab?.closest('.screen')?.classList.remove('v47-fab-open'); openMenuDrawer(); return; }
   // V2.1 전체메뉴: 좌측 대메뉴(셀프서비스/ARS/상담원연결) 선택 → 아코디언 초기화
   const amc = t.closest('[data-amcat]');
   if(amc){ s1state.amCat=amc.dataset.amcat; s1state.amTreeOpen={}; refreshMenu(); return; }

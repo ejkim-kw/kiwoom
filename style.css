@@ -3678,10 +3678,13 @@ body{
 /* 셀프서비스 배너 높이 축소 + 그리드와 동일 테두리/그림자 (v47 전용) */
 .flow.toss.v47 .v45ss-card{height:102px}
 .flow.toss.v47 .v45ss-wrap{border:1.5px solid #EAECFF;box-shadow:0 1px 4px rgba(72,72,216,.07)}
+.flow.toss.v47 .v45ss-overlay{background:linear-gradient(to right,rgba(58,58,150,.72) 0%,rgba(58,58,150,.55) 42%,rgba(58,58,150,.3) 68%,rgba(58,58,150,.08) 88%,transparent 100%)}
 .flow.toss.v47 .v45ss-dots{margin:5px 0 8px}
 .flow.toss.v47 .v45ss-txt{padding:0 16px 12px 16px}
 /* view 하단 패딩 (FAB 영역 확보) */
 .flow.toss.v47 .view{padding-bottom:72px}
+/* FAB 열림 시 배경 블러 오버레이 */
+.screen.v47-fab-open::after{content:'';position:absolute;inset:0;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:rgba(26,26,78,.18);z-index:18;transition:opacity .2s}
 /* 3×3 그리드 */
 .v47-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 14px 20px}
 /* ===== Ver 4.7 · 플로팅 FAB ===== */
