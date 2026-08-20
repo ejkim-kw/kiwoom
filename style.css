@@ -3678,7 +3678,12 @@ body{
 /* 셀프서비스 배너 높이 축소 + 그리드와 동일 테두리/그림자 (v47 전용) */
 .flow.toss.v47 .v45ss-card{height:102px}
 .flow.toss.v47 .v45ss-wrap{border:1.5px solid #EAECFF;box-shadow:0 1px 4px rgba(72,72,216,.07)}
-.flow.toss.v47 .v45ss-overlay{background:linear-gradient(to right,rgba(58,58,150,.72) 0%,rgba(58,58,150,.55) 42%,rgba(58,58,150,.3) 68%,rgba(58,58,150,.08) 88%,transparent 100%)}
+/* 오버레이: 흰색→투명 그라데이션으로 카드 배경색을 그리드와 통일 */
+.flow.toss.v47 .v45ss-overlay{background:linear-gradient(to right,rgba(255,255,255,1) 0%,rgba(255,255,255,.92) 45%,rgba(255,255,255,.5) 70%,transparent 100%)}
+/* 텍스트 색상을 그리드 메뉴와 동일하게 */
+.flow.toss.v47 .v45ss-headtxt{font-size:calc(12.5px*var(--scale))}
+.flow.toss.v47 .v45ss-nm{color:#1A1A4E;font-size:calc(15px*var(--scale))}
+.flow.toss.v47 .v45ss-sub{color:#8B95A1}
 .flow.toss.v47 .v45ss-dots{margin:5px 0 8px}
 .flow.toss.v47 .v45ss-txt{padding:0 16px 12px 16px}
 /* view 하단 패딩 (FAB 영역 확보) */
