@@ -1689,6 +1689,8 @@ body{
 .iod-done-note{margin:18px 24px 0;text-align:center;font-size:calc(12.5px*var(--scale));color:var(--sub);line-height:1.6}
 .iod-done-btnwrap{padding:22px 24px 0}
 .iod-done-btnwrap .primary-btn{margin:0}
+.flow.toss .iod-done-btnwrap .iddone-confirm{border-radius:999px;background:#1A1A4E;box-shadow:0 6px 16px rgba(26,26,78,.22)}
+.iod-done-d b{color:#1A1A4E}
 .iod-done{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 24px 8px}
 .iod-done-ic{width:100px;height:100px;border-radius:50%;overflow:hidden;
   display:grid;place-items:center;margin-bottom:20px}
@@ -3676,7 +3678,9 @@ body{
 /* ===== Ver 4.7 · 3×3 그리드 메인 ===== */
 .flow.toss.v47 .toss-home{background:linear-gradient(180deg,#EBEDFF 0px,#EFF0FF 160px,#F4F5FF 300px,#F9FAFF 440px,#fff 600px)}
 .flow.toss.v47 .toss-stick{background:#EBEDFF}
-.flow.toss.v47 .statusbar{background:#EBEDFF}
+.flow.toss.v47 .statusbar{background:#fff}
+.flow.toss.v47:has(.toss-home) .statusbar,
+.flow.toss.v47:has(.v45-authpage) .statusbar{background:#EBEDFF}
 .flow.toss.v47 .v47-hero{padding:4px 22px 8px}
 /* 셀프서비스 배너 높이 축소 + 그리드와 동일 테두리/그림자 (v47 전용) */
 .flow.toss.v47 .v45ss-card{height:78px;border-radius:18px}

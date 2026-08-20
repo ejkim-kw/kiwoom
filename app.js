@@ -3852,10 +3852,10 @@ const IOD_RESULTS = {
   },
   idcard: {
     tab:'신분증 미확인', badge:'진위확인 필요', badgeCls:'warn',
-    title:'신분증 진위확인이 되지않은 계좌예요',
-    body:'등록된 신분증의 진위확인이 완료되지 않아 거래가 제한돼 있어요.',
+    title:'신분증 진위확인이 필요한 계좌에요',
+    body:'등록된 신분증의 진위확인이 완료되지 않아 거래가 제한돼있어요.<br>신분증 진위확인을 위해 재요청 URL을 통해 신분증을 재접수 해주세요.',
     release:'<b>신분증 진위확인</b>을 완료하시면 바로 풀려요.',
-    btn:'신분증 진위확인하기',
+    btn:'신분증 재촬영 URL 받기',
     sheet:{ title:'어떻게 확인할까요?', sub:'편하신 방법으로 진위확인을 도와드려요', methods:[
       {kind:'app',      ic:IOD_HERO_IC,  nm:'영웅문S#에서 확인하기', desc:'앱을 열어 신분증 진위확인을 진행해요'},
       {kind:'idcardcs', ic:CS_ICON.call, nm:'상담원과 통화하기',     desc:'상담원이 진위확인을 도와드려요'},
@@ -3928,24 +3928,29 @@ function renderIodResult(){
     </div>`;
   }
   const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${fmtAcct(authAcct.no)}` : '위탁종합 1234-5678';
-  if(isV45()) return `<div class="iodresult-screen v45-iodresult v45-authpage">
+  if(isV45()){
+    const v45badge = r.infoBadge ? `<div class="iodres-badge" data-idbadge><span class="ib-q">?</span>왜 진위확인이 되지 않았나요?</div>` : '';
+    const v45btnAttr = r.infoBadge ? 'data-idurl' : 'data-iodmethods';
+    return `<div class="iodresult-screen v45-iodresult v45-authpage">
     ${v45AuthTop(2)}
     <div class="iod-v45-body">
       <div class="toss-dhead">
         <div class="td-title">${r.title}</div>
         <div class="td-desc">${r.body}</div>
       </div>
+      ${v45badge}
       <div class="iod-v45-card" data-iodcycle>
         <div class="iod-v45-acct">${acct}</div>
         <span class="iod-badge ${r.badgeCls}">${r.badge}</span>
         <div class="iod-release">${r.release}</div>
       </div>
       <div class="iod-v45-actions">
-        <div class="primary-btn v45-iod-btn" data-iodmethods>${r.btn}</div>
+        <div class="primary-btn v45-iod-btn" ${v45btnAttr}>${r.btn}</div>
       </div>
       <div class="iod-note">※ 데모 화면이에요. 위 카드를 탭하면 다른 사유를 볼 수 있어요.</div>
     </div>
   </div>`;
+  }
   const actBtns = `<div class="primary-btn" data-iodmethods>${r.btn}</div>`;
   return pageTop(s1state.title||'계좌 상태', true)
     + untactSteps(IOD_STEPS, 2)
@@ -4812,7 +4817,7 @@ function renderIdDone(){
         <div class="iod-done-d"><b>신분증 재요청 URL</b>을 알림톡으로 발송했어요.<br>링크에서 신분증을 재접수하시면,<br>진위확인 후 거래 제한이 풀려요.</div>
       </div>
       <div class="iod-done-note">※ 알림톡이 오지 않으면 잠시 후 다시 시도해 주세요.</div>
-      <div class="iod-done-btnwrap"><div class="primary-btn" data-iodhome>확인</div></div>
+      <div class="iod-done-btnwrap"><div class="primary-btn iddone-confirm" data-iodhome>확인</div></div>
     </div>`;
 }
 
