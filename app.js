@@ -2335,15 +2335,15 @@ function v45CatById(id){ for(const tab of V45_MENU_TABS){ const c=tab.cats.find(
 
 /* Ver 4.7 · 9대메뉴 (메뉴구조도 기반) */
 const V47_MENU_CATS = [
-  {id:1, t:'내정보',        sub:'계좌정보/ID/PW',          ic:'v47-glass-1.png', subs:['계좌정보 조회 및 변경','증권계좌번호확인','계좌비밀번호 재설정','ID조회/PW초기화','장기미사용ID 제한 해지']},
-  {id:2, t:'비대면업무',    sub:'접수현황/서류발급',        ic:'v47-glass-2.png', subs:['서류신청','계좌개설 이어하기','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
-  {id:3, t:'뱅킹서비스',    sub:'입출금/신용/대출',         ic:'v47-glass-3.png', subs:['은행이체','주식대체','미수 및 반대매매','신용·대출 약정 및 신청방법','신용·대출 잔고조회','신용·대출 만기일연장','신용·대출 상환']},
-  {id:4, t:'권리/청약',     sub:'유상청약/공모주청약',      ic:'v47-glass-4.png', subs:['유상청약','공모주청약','반대의사 및 매수청구','그의 권리업무']},
-  {id:5, t:'국내주식',      sub:'시세/주문/잔고',            ic:'v47-glass-5.png', subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
-  {id:6, t:'해외주식',      sub:'제도/환전/RIA',             ic:'v47-glass-6.png', subs:['해외주식 관련','RIA계좌']},
-  {id:7, t:'금융상품',      sub:'ISA·연금·펀드',            ic:'v47-glass-7.png', subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
-  {id:8, t:'선물옵션',      sub:'CFD/파생상품',             ic:'v47-glass-8.png', subs:['국내선물옵션','해외CFD 및 상품선물옵션','국내CFD']},
-  {id:9, t:'기타서비스',    sub:'인증/화면문의',            ic:'v47-glass-9.png', subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스','간편인증·공동인증서','HTS 화면 문의','MTS 화면 문의','사고 등록·해지','금융센터 전화번호 안내']},
+  {id:1, t:'내정보',        sub:'계좌 정보, 아이디·비밀번호를 관리해요',       ic:'v47-glass-1.png', subs:['계좌정보 조회 및 변경','증권계좌번호확인','계좌비밀번호 재설정','ID조회/PW초기화','장기미사용ID 제한 해지']},
+  {id:2, t:'비대면업무',    sub:'비대면 접수 현황과 서류를 발급해요',           ic:'v47-glass-2.png', subs:['서류신청','계좌개설 이어하기','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
+  {id:3, t:'뱅킹서비스',    sub:'입출금, 신용·대출 서비스를 이용해요',          ic:'v47-glass-3.png', subs:['은행이체','주식대체','미수 및 반대매매','신용·대출 약정 및 신청방법','신용·대출 잔고조회','신용·대출 만기일연장','신용·대출 상환']},
+  {id:4, t:'권리/청약',     sub:'유상청약과 공모주 청약을 신청해요',            ic:'v47-glass-4.png', subs:['유상청약','공모주청약','반대의사 및 매수청구','그의 권리업무']},
+  {id:5, t:'국내주식',      sub:'국내 주식 시세·주문·잔고를 확인해요',          ic:'v47-glass-5.png', subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
+  {id:6, t:'해외주식',      sub:'해외 주식 거래, 환전, RIA를 알아봐요',         ic:'v47-glass-6.png', subs:['해외주식 관련','RIA계좌']},
+  {id:7, t:'금융상품',      sub:'ISA·연금·펀드 등 금융상품을 관리해요',         ic:'v47-glass-7.png', subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
+  {id:8, t:'선물옵션',      sub:'CFD와 파생상품 거래를 도와드려요',             ic:'v47-glass-8.png', subs:['국내선물옵션','해외CFD 및 상품선물옵션','국내CFD']},
+  {id:9, t:'기타서비스',    sub:'인증 관리와 화면 문의를 도와드려요',           ic:'v47-glass-9.png', subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스','간편인증·공동인증서','HTS 화면 문의','MTS 화면 문의','사고 등록·해지','금융센터 전화번호 안내']},
 ];
 /* Ver 4.7 · 3×3 그리드 홈 */
 function v47Grid(){
@@ -2362,7 +2362,7 @@ function v47SubMenuPage(){
   ).join('');
   return `<div class="home-wrap toss-home">
     <div class="toss-stick">
-      <div class="toss-top"><div class="toss-back" data-s1back>${I.back}</div><div class="head-spacer"></div></div>
+      <div class="toss-top"><div class="toss-back" data-s1back>${I.chev}</div><div class="head-spacer"></div></div>
       <div class="toss-dhead"><div class="td-title">${cat.t}</div>${cat.sub?`<div class="td-desc">${cat.sub}</div>`:''}</div>
     </div>
     <div class="toss-list">${rows}</div>
