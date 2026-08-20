@@ -13,17 +13,16 @@
 <body>
 
 <div class="deck-head">
-  <img class="brand-logo" src="assets/kiwoom-logo-title.png" alt="키움증권">
-  <h1>디지털 ARS 시안 · <span class="accent">CS기획팀</span></h1>
+  <h1><img class="brand-logo" src="assets/kiwoom-logo-title.png" alt="키움증권"> 디지털 ARS 시안 · <span class="accent">CS기획팀</span></h1>
   <p>번호 선택 없이 쉽고 직관적으로 · <span class="accent">상담 없이 스스로 해결</span>하는 디지털 ARS · 인터랙티브 프로토타입</p>
 </div>
 
-<div class="tabs" id="schemeTabs">
-  <button class="tab active" data-scheme="sian">시안</button>
-  <button class="tab" data-scheme="ref">참고</button>
-</div>
-
 <div class="stage">
+  <div class="left-col">
+    <div class="tabs" id="schemeTabs">
+      <button class="tab active" data-scheme="sian">시안</button>
+      <button class="tab" data-scheme="ref">참고</button>
+    </div>
   <!-- 참고 탭: 폰 왼쪽 증권사 리스트 (참고 스킴 활성 시에만 표시) -->
   <div class="ref-list" id="refList">
     <div class="ref-title">참고 · 보이는 ARS</div>
@@ -36,8 +35,8 @@
   <!-- 시안 탭: 폰 왼쪽 시안 선택 리스트 (시안 스킴 활성 시에만 표시) -->
   <div class="ref-list sian-list" id="sianList">
     <div class="ref-title">시안 · 디지털 ARS</div>
+    <div class="ref-item" data-sian="s1" data-ver="v47"><span class="rf-nm">Ver 4.7</span><span class="rf-tel">3×3 그리드 메인 · 9대메뉴 구조 (신규 메뉴구조도 기반)</span></div>
     <div class="ref-item" data-sian="s1" data-ver="v46"><span class="rf-nm">Ver 4.6</span><span class="rf-tel">Ver 4.5 복사본 · 추가 작업용</span></div>
-    <div class="ref-item" data-sian="s1" data-ver="v45"><span class="rf-nm">Ver 4.5</span><span class="rf-tel">인디고 디자인 · s1 기반 · 탭(공통/국내/그외상품)·글라스 아이콘·리퀴드 탭·하단 네비 (메인)</span></div>
     <div class="ref-item" data-sian="dform"><span class="rf-nm">Digital Form</span><span class="rf-tel">키움증권 로고만 있는 빈 화면 (작업용 템플릿)</span></div>
     <div class="ref-item" data-sian="dform3"><span class="rf-nm">Digital Form_v0.1</span><span class="rf-tel">서류제출 엔진 흐름 재현 · 5단계(인증→서류준비→첨부→제출→완료) · 업무 11종·상태머신</span></div>
     <!-- 시안 · 이전버전 (접이식 · 우측 [+] 토글) -->
@@ -54,6 +53,7 @@
     <div class="ref-item prev-item" data-sian="s1" data-ver="v42"><span class="rf-nm">Ver 4.2</span><span class="rf-tel">Ver 4.0 복사본 · 리스트형 (추가 작업용)</span></div>
     <div class="ref-item prev-item" data-sian="dform2"><span class="rf-nm">Ver 4.3</span><span class="rf-tel">Digital Form 복사본 · 서류 제출 폼 (독립 편집용)</span></div>
     <div class="ref-item prev-item" data-sian="dars1v44"><span class="rf-nm">Ver 4.4</span><span class="rf-tel">인디고 계열 완전 새 디자인 · oklch 토큰 · pill 탭 · underline 입력 · 바텀시트</span></div>
+    <div class="ref-item prev-item" data-sian="s1" data-ver="v45"><span class="rf-nm">Ver 4.5</span><span class="rf-tel">인디고 디자인 · s1 기반 · 탭(공통/국내/그외상품)·글라스 아이콘·리퀴드 탭·하단 네비 (메인)</span></div>
     <div class="ref-title func-title">시연 · 기능</div>
     <div class="func-item" data-skipauth><span class="rf-nm">본인인증 생략</span><span class="rf-tel">클릭 시 이후 인증 생략 (시연용)</span></div>
     <div class="sp-qr" id="spQrWrap">
@@ -62,6 +62,7 @@
       <div class="sp-qrcap" id="spQrCap"></div>
     </div>
   </div>
+  </div><!-- /left-col -->
   <div class="phone-wrap" id="mainStage">
     <div class="phone">
       <div class="notch"></div>

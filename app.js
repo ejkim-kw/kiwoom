@@ -324,7 +324,7 @@ const RESULT = {
       <div class="data-row"><div class="k">연계 출금계좌</div><div class="v">신한 110-***-**56</div></div>
     </div>
     <div class="primary-btn" data-flash="개설된 계좌 정보로 이동합니다. (시연용)">개설 계좌 보기</div>
-    <div class="notice">개설이 완료되어 즉시 거래가 가능합니다. 계좌번호는 ‘계좌번호 조회’에서 확인하세요.</div>`;
+    <div class="notice">개설이 완료되어 즉시 거래가 가능합니다. 계좌번호는 '계좌번호 조회'에서 확인하세요.</div>`;
   },
 
   /* 비대면 ── 출금계좌등록 (완료) */
@@ -660,7 +660,7 @@ const RESULT = {
       {k:'유상청약예약 신청', d:'예약 청약 신청 (청약기간 내 자동접수)'},
       {k:'유상청약 취소',     d:'당일·예약 청약 취소'},
       {k:'유상청약신청내역',  d:'청약 신청·배정·환불 내역 조회'},
-    ], '‘유상청약’ 세부 업무는 시연 준비 중입니다. (시연용)');
+    ], `'유상청약' 세부 업무는 시연 준비 중입니다. (시연용)`);
   },
   /* 권리업무 ── 2) 주주반대의사 (중분류) → 소분류 3종 */
   rightsDissent(){
@@ -669,7 +669,7 @@ const RESULT = {
       {k:'주주반대의사 신청',    d:'주주총회 안건 반대의사 통지'},
       {k:'주주반대의사 신청취소', d:'통지한 반대의사 철회'},
       {k:'주주반대의사신청내역',  d:'반대의사 통지 내역 조회'},
-    ], '‘주주반대의사’ 세부 업무는 시연 준비 중입니다. (시연용)');
+    ], `'주주반대의사' 세부 업무는 시연 준비 중입니다. (시연용)`);
   },
   /* 권리업무 ── 3) 주식매수청구 (중분류) → 소분류 3종 */
   rightsAppraisal(){
@@ -678,7 +678,7 @@ const RESULT = {
       {k:'주식매수청구 신청',    d:'주식매수청구권 행사 신청'},
       {k:'주식매수청구 신청취소', d:'행사 신청 취소'},
       {k:'주식매수청구신청내역',  d:'매수청구 신청·정산 내역 조회'},
-    ], '‘주식매수청구’ 세부 업무는 시연 준비 중입니다. (시연용)');
+    ], `'주식매수청구' 세부 업무는 시연 준비 중입니다. (시연용)`);
   },
   /* 권리업무 ── 4) 권리현황 (중분류 · 소분류 없음, 조회 화면) */
   rightsStatus(){
@@ -1436,7 +1436,7 @@ function isAgent(t){ return /직원연결/.test(t); }
 /* 표시용 번호 제거 (대메뉴·소메뉴), 중메뉴는 번호 유지 */
 function stripNum(t){ return t.replace(/^[0-9#]+\.\s*/,''); }
 /* 소메뉴(하위) 없는 항목 클릭 시 안내멘트 */
-function connectMsg(label){ return `‘${label}’ 화면으로 연결합니다. (시연용)`; }
+function connectMsg(label){ return `'${label}' 화면으로 연결합니다. (시연용)`; }
 
 /* 메인: 대메뉴만 표기 → 클릭 시 중메뉴/소메뉴 아코디언 화면으로 이동 (data-ivdae) */
 function renderIvr(){
@@ -1568,10 +1568,15 @@ function openMenuDrawer(){
   closeMenuDrawer();
   const screen = document.getElementById('screen'); if(!screen) return;
   const el = document.createElement('div');
-  el.className = 'menu-ov'; el.id = 'menuDrawer';
+  el.className = 'menu-ov' + (isV47()?' v47':''); el.id = 'menuDrawer';
   const isV21 = isV21Ver();
-  // V2.1/전체메뉴 펼치기: 홈버튼을 헤더 왼쪽에 배치 + 상단 pills 제거(좌측 3대메뉴로 대체)
-  const head = isV21
+  const head = isV47()
+    ? `<div class="menu-head">
+         <div class="page-title">전체메뉴</div>
+         <div class="head-spacer"></div>
+         <div class="back" data-menuclose title="닫기">${I.x}</div>
+       </div>`
+    : isV21
     ? `<div class="menu-head">
          <div class="back home-wbtn" data-home title="홈">${I.home}</div>
          <div class="page-title">전체메뉴</div>
@@ -1712,7 +1717,20 @@ function renderV21Menu(forceOpen){
   const right = `<div class="amv-list">${renderAccTree(tree, '', cat, forceOpen)}</div>`;
   return `<div class="am2col v21col"><div class="am-left">${left}</div><div class="am-right">${right}</div></div>`;
 }
+function renderV47AllMenu(){
+  const sel = Math.max(0, Math.min(s1state.amOpen||0, V47_MENU_CATS.length-1));
+  const left = V47_MENU_CATS.map((c,i)=>
+    `<div class="am-dae ${i===sel?'on':''}" data-am1="${i}">${c.t}${c.sub?`<span class="am-dae-sub">${c.sub}</span>`:''}</div>`
+  ).join('');
+  const cat = V47_MENU_CATS[sel];
+  const right = cat.subs.map(s=>
+    `<div class="am-mid" data-flash="${s} · 이후 절차 정의 예정"><div class="ivt">${s}</div></div>`
+  ).join('');
+  return `<div class="am2col"><div class="am-left">${left}</div><div class="am-right">${right}</div></div>`;
+}
 function renderAllMenu(forceTab){
+  // Ver 4.7 · V47_MENU_CATS 기반 전체메뉴
+  if(isV47()) return renderV47AllMenu();
   // 시안1 V2.1 · 전체메뉴를 3 대메뉴 + 중첩 아코디언 구조로 분기
   if(isV21Ver() && !forceTab) return renderV21Menu();
   const tab = forceTab || s1state.amTab || 'ars';
@@ -2009,7 +2027,7 @@ function renderStaffTree(){ return renderArsTree(FAV_MENU, {guide:'상담 분야
 /* 상담원(직원) 연결 화면 */
 function agentConnectScreen(label){
   const nm = (label && label!=='직원연결') ? stripNum(label) : '';
-  const desc = nm ? `‘${nm}’ 관련 상담부서로<br>상담원(직원)에게 연결해 드립니다.`
+  const desc = nm ? `'${nm}' 관련 상담부서로<br>상담원(직원)에게 연결해 드립니다.`
     : `상담원(직원)에게 바로 연결해 드립니다.<br>아래 버튼을 눌러 상담을 시작하세요.`;
   return `<div class="agent-connect">
     <div class="ac-ic">${I.headset}</div>
@@ -2028,7 +2046,7 @@ function agentConnectScreen(label){
 /* Ver 4.0 · 상담원 연결 화면 — 토스 헤더(뒤로가기만, 타이틀·햄버거 없음) + 중앙정렬 본문(헤드셋 아이콘 포함, 기존 .agent-connect 재사용) */
 function renderAgentV40(label){
   const nm = (label && label!=='직원연결') ? stripNum(label) : '';
-  const desc = nm ? `’${nm}’ 관련 상담부서로<br>상담원에게 연결해 드려요.` : `상담원에게 바로 연결해 드려요.<br>아래 버튼을 눌러 상담을 시작하세요.`;
+  const desc = nm ? `'${nm}' 관련 상담부서로<br>상담원에게 연결해 드려요.` : `상담원에게 바로 연결해 드려요.<br>아래 버튼을 눌러 상담을 시작하세요.`;
   if(isV45()){
     return `<div class="iodresult-screen v45-authpage">
       <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
@@ -2118,7 +2136,7 @@ function showPopup(label){
   if(isV40()){   // Ver 4.0 계열: 토스 스타일 안내 팝업(app-pop 재사용 · 마젠타 스킨)
     const v40only = (s1Ver==='v40');   // Ver 4.0: 안내 첫째줄('키움증권 음성 ARS로 연결해 드릴게요.')·연결번호/시간 삭제
     const msg = name
-      ? `‘${name}’ 메뉴를<br>음성 ARS로 연결해 드릴게요.`
+      ? `'${name}' 메뉴를<br>음성 ARS로 연결해 드릴게요.`
       : (v40only ? `음성 안내에 따라 원하시는 메뉴를 선택하세요.`
                  : `키움증권 음성 ARS로 연결해 드릴게요.<br>음성 안내에 따라 원하시는 메뉴를 선택하세요.`);
     const warn = v40only ? '' : `<span class="ap-warn">연결 번호 1544-9900 · 평일 08:00~18:00</span>`;
@@ -2137,7 +2155,7 @@ function showPopup(label){
     return;
   }
   // 레거시(비 v40) 안내 팝업
-  const msg = name ? `‘${name}’ 메뉴는<br>음성 ARS 상담으로 연결됩니다.` : `음성 ARS 상담으로<br>연결해 드립니다.`;
+  const msg = name ? `'${name}' 메뉴는<br>음성 ARS 상담으로 연결됩니다.` : `음성 ARS 상담으로<br>연결해 드립니다.`;
   el.className = 'modal-ov'; el.id = 'arsModal';
   el.innerHTML = `<div class="modal">
     <div class="m-ic">${I.phone}</div>
@@ -2312,6 +2330,42 @@ const V45_MENU_TABS = [
   ]},
 ];
 function v45CatById(id){ for(const tab of V45_MENU_TABS){ const c=tab.cats.find(x=>x.id===id); if(c) return c; } return null; }
+
+/* Ver 4.7 · 9대메뉴 (메뉴구조도 기반) */
+const V47_MENU_CATS = [
+  {id:1, t:'내정보',        sub:'계좌정보/ID/PW',          fi:2,  subs:['계좌정보 조회 및 변경','증권계좌번호확인','계좌비밀번호 재설정','ID조회/PW초기화','장기미사용ID 제한 해지']},
+  {id:2, t:'비대면업무',    sub:'접수현황/서류발급',        fi:4,  subs:['서류신청','계좌개설 이어하기','출금계좌등록','한도제한계좌해제','계좌폐쇄']},
+  {id:3, t:'뱅킹서비스',     sub:'입출금/신용/대출',          fi:1,  subs:['은행이체','주식대체','미수 및 반대매매','신용·대출 약정 및 신청방법','신용·대출 잔고조회','신용·대출 만기일연장','신용·대출 상환']},
+  {id:4, t:'권리/청약',     sub:'유상청약/공모주청약',      fi:6,  subs:['유상청약','공모주청약','반대의사 및 매수청구','그의 권리업무']},
+  {id:5, t:'국내주식',      sub:'',                        fi:12, subs:['시세 및 시황','주문','체결조회','예수금 및 잔고조회','대체거래소 문의']},
+  {id:6, t:'해외주식',      sub:'',                        fi:8,  subs:['해외주식 관련','RIA계좌']},
+  {id:7, t:'금융상품',      sub:'ISA·연금·펀드',            fi:7,  subs:['ISA 가입','연금 및 IRP 가입','ELS·랩어카운트','펀드·채권·발행어음','계좌조회 및 뱅킹업무']},
+  {id:8, t:'선물옵션',      sub:'CFD/파생상품',             fi:9,  subs:['국내선물옵션','해외CFD 및 상품선물옵션','국내CFD']},
+  {id:9, t:'기타서비스',    sub:'인증/화면문의',            fi:5,  subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스','간편인증·공동인증서','HTS 화면 문의','MTS 화면 문의','사고 등록·해지','금융센터 전화번호 안내']},
+];
+/* Ver 4.7 · 3×3 그리드 홈 */
+function v47Grid(){
+  return `<div class="v47-grid">` + V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}">
+      <div class="v47-cell-ic"><img src="assets/finance-${c.fi}.png" alt=""></div>
+      <div class="v47-cell-nm">${c.t}</div>
+      ${c.sub?`<div class="v47-cell-sub">${c.sub}</div>`:''}
+    </div>`).join('') + `</div>`;
+}
+/* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
+function v47SubMenuPage(){
+  const cat = V47_MENU_CATS.find(c=>c.id===s1state.v47Cat);
+  if(!cat) return '';
+  const rows = cat.subs.map(s=>
+    `<div class="toss-cat" data-v47sub="${s}"><div class="tc-body"><div class="tc-nm">${s}</div></div><div class="tc-arw">${I.chev}</div></div>`
+  ).join('');
+  return `<div class="home-wrap toss-home">
+    <div class="toss-stick">
+      <div class="toss-top"><div class="toss-back" data-s1back>${I.back}</div><div class="head-spacer"></div></div>
+      <div class="toss-dhead"><div class="td-title">${cat.t}</div>${cat.sub?`<div class="td-desc">${cat.sub}</div>`:''}</div>
+    </div>
+    <div class="toss-list">${rows}</div>
+  </div>`;
+}
 function v45MenuTabs(){
   const cur = s1state.v45Tab || 'common';
   const tabs = V45_MENU_TABS.map(t=>
@@ -2460,7 +2514,7 @@ function tossFaqCard(){
               : it.t==='ISA 가입서류를 내고 싶어요' ? `data-isastart`
               : (it.t==='증명서 발급 현황이 궁금해요' || it.t==='서류 발급현황이 궁금해요') ? `data-certstart`
               : it.t==='비밀번호를 재설정하고 싶어요' ? `data-pwreset`
-              : `data-flash="‘${it.t}’ 도움말 화면으로 이동합니다. (시연용)"`;
+              : `data-flash="'${it.t}' 도움말 화면으로 이동합니다. (시연용)"`;
     return `<div class="tf-row" ${act}><div class="tf-ic">${it.svg}</div><div class="tf-t">${it.t}</div><div class="tf-arw">${I.chev}</div></div>`;
   };
   const toggleEl = `<div class="tf-toggle ${open?'open':''}">${s1Ver==='v40'?I.plus:I.down}</div>`;
@@ -2599,6 +2653,20 @@ function banner(){
   </div>`;
 }
 function tabbar(active){
+  if(isV47()){
+    // Ver 4.7 플로팅 FAB: 우하단 [+] 버튼, 클릭 시 메뉴 펼침
+    return `<div class="v47-fab" id="v47Fab">
+      <div class="v47-fab-menu">
+        <div class="v47-fab-item" data-menu>${I.menu}<span>전체메뉴</span></div>
+        <div class="v47-fab-item" data-tab="voice">${I.phone}<span>음성ARS</span></div>
+        <div class="v47-fab-item" data-tab="chat">${I.chat}<span>챗봇</span></div>
+        <div class="v47-fab-item end" data-tab="end">${I.power}<span>서비스종료</span></div>
+      </div>
+      <button class="v47-fab-btn" data-v47fabtoggle aria-label="메뉴 열기/닫기">
+        <span class="v47-fab-ic">${I.plus}</span>
+      </button>
+    </div>`;
+  }
   if(isV45()){
     // Ver 4.5 플로팅 필 네비(tab2.jpg): 흰색 알약 바, 아이콘 3개
     return `<div class="v45-nav-pill">`
@@ -2627,7 +2695,7 @@ function appFooter(){
 /* ============================================================
    시안 1 화면 렌더
    ============================================================ */
-const s1state = {page:'home', cat:'금융상품', open:-1, open2:-1, title:'', listKey:'', resultKey:'', ivI:-1, ivJ:-1, midOpen:-1, amOpen:-1, amOpen2:-1, amTab:'ars', sarsPath:[], v21Tab:'self', amCat:'self', amTreeOpen:{}, faqOpen:false, priceTab:'hoga', fromFav:false, authNext:'', authMethod:'', acctPw:'', otpSent:false, noBack:false, noHome:false, history:[]};
+const s1state = {page:'home', cat:'금융상품', open:-1, open2:-1, title:'', listKey:'', resultKey:'', ivI:-1, ivJ:-1, midOpen:-1, amOpen:-1, amOpen2:-1, amTab:'ars', sarsPath:[], v21Tab:'self', amCat:'self', amTreeOpen:{}, faqOpen:false, priceTab:'hoga', fromFav:false, authNext:'', authMethod:'', acctPw:'', otpSent:false, noBack:false, noHome:false, history:[], v47Cat:null};
 // 본인인증 세션 유지 플래그 (메모리 변수 → 새로고침 시 자동 초기화)
 let sessionAuthed = false;
 
@@ -5224,6 +5292,7 @@ function renderS1(){
   const flowEl = v && v.closest('.flow'); if(flowEl) flowEl.classList.toggle('toss', isV40());   // Ver 4.0 계열 토스 스킨 (전 화면 var() 토큰 오버라이드)
   if(flowEl){ flowEl.classList.toggle('v45', isV45()); }   // Ver 4.5 인디고 팔레트 오버라이드
   if(flowEl){ flowEl.classList.toggle('v46', isV46()); }   // Ver 4.6 전용 CSS 스코프
+  if(flowEl){ flowEl.classList.toggle('v47', isV47()); }   // Ver 4.7 전용 CSS 스코프
   let html = '';
   if(s1state.page==='home'){
     /* 자주 찾는 서비스 9개로 한눈에 구성 */
@@ -5271,9 +5340,9 @@ function renderS1(){
       if(path.length===0){
         // 상단 로고~인사말은 고정(sticky), 아래 FAQ·카테고리 리스트만 스크롤
         html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
-          + `<div class="toss-hero"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div></div>`
+          + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div></div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
-          + (isV46() ? v46FlatMenu() : isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v46: 탭없이 전체 flat / v45: 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
+          + (isV47() ? v47Grid() : isV46() ? v46FlatMenu() : isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v47: 3×3 그리드 / v46: 탭없이 전체 flat / v45: 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
         // 드릴다운 헤더: 현재 단계 이름을 타이틀로(대메뉴 진입 시 = 대메뉴명), 대메뉴 단계면 설명글도 표기
         const dtrail = sarsWalk(catData(), path).trail;
@@ -5308,6 +5377,9 @@ function renderS1(){
       }
       html += `</div>`;
     }
+  }
+  else if(s1state.page==='v47cat' && isV47()){
+    html = v47SubMenuPage();
   }
   else if(s1state.page==='ssmore'){
     html = renderSsMore();
@@ -5914,7 +5986,7 @@ document.addEventListener('click', (e)=>{
     const k = csch.dataset.cschannel;
     if(k==='voice'){ closeConsult(); s1nav({page:'voiceconnect', title:'음성 ARS 연결', voiceLabel: lbl, noHome:true}); return; }   // 음성 ARS → 연결 안내 화면
     const CS_MSG = {
-      hero:  sessionAuthed ? `영웅문S#으로 연결합니다. ‘${lbl}’ 화면으로 바로 이동해요. (시연용)` : '영웅문S#을 실행합니다. 원하시는 업무 화면으로 이동해요. (시연용)',
+      hero:  sessionAuthed ? `영웅문S#으로 연결합니다. '${lbl}' 화면으로 바로 이동해요. (시연용)` : '영웅문S#을 실행합니다. 원하시는 업무 화면으로 이동해요. (시연용)',
       chat:  '24시간 AI 챗봇 상담으로 연결합니다. (시연용)',
       call:  '담당 부서 상담원에게 연결합니다. 연결까지 잠시만 기다려 주세요. (시연용)',
     };
@@ -6241,7 +6313,7 @@ document.addEventListener('click', (e)=>{
   if(fpick){
     const i = +fpick.dataset.favpick; const f = FAV_ADD.splice(i,1)[0];
     closeFavAdd();
-    if(f){ FAV.push(f); renderS1(); flash(`‘${f.k}’를 자주 찾는 서비스에 추가했습니다.`); }
+    if(f){ FAV.push(f); renderS1(); flash(`'${f.k}'를 자주 찾는 서비스에 추가했습니다.`); }
     return;
   }
   if(t.closest('[data-favaddclose]') || (t.classList && t.classList.contains('fav-add-ov'))){ closeFavAdd(); return; }
@@ -6426,7 +6498,7 @@ document.addEventListener('click', (e)=>{
         const menuEl = document.querySelector('.toss-list');
         if(menuEl){ const tmp=document.createElement('div'); tmp.innerHTML=isV46()?v46FlatMenu():v45Menu(); const fresh=tmp.firstElementChild; if(fresh) menuEl.replaceWith(fresh); else renderS1(); }
         else renderS1();
-      } else { flash(`‘${cat.t}’ 메뉴입니다. (중메뉴 없음 · 이후 절차 정의 예정)`); }
+      } else { flash(`'${cat.t}' 메뉴입니다. (중메뉴 없음 · 이후 절차 정의 예정)`); }
     }
     return;
   }
@@ -6434,12 +6506,20 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-v45back]')){ s1state.v45Cat = null; renderS1(); return; }
   // Ver 4.5 중메뉴 클릭 → 이후 절차는 추후 정의(현재 안내 placeholder)
   const v45s = t.closest('[data-v45sub]');
-  if(v45s){ flash(`‘${v45s.dataset.v45sub}’ 중메뉴 선택 · 이후 절차 정의 예정`); return; }
+  if(v45s){ flash(`'${v45s.dataset.v45sub}' 중메뉴 선택 · 이후 절차 정의 예정`); return; }
+  // Ver 4.7 FAB 토글
+  if(t.closest('[data-v47fabtoggle]')){ const fab=document.getElementById('v47Fab'); if(fab) fab.classList.toggle('open'); return; }
+  // Ver 4.7 대메뉴 그리드 클릭 → 중메뉴 목록 페이지
+  const v47c = t.closest('[data-v47cat]');
+  if(v47c){ s1nav({page:'v47cat', v47Cat:+v47c.dataset.v47cat}); return; }
+  // Ver 4.7 중메뉴 클릭 → 이후 절차 정의 예정
+  const v47s = t.closest('[data-v47sub]');
+  if(v47s){ flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`); return; }
   // [큰글씨] ON · 큰 카드 아코디언: 카드 탭=인라인 펼침/접힘, 서비스 탭=해당 카테고리 소메뉴 드릴다운
   // Ver 4.0 · '상담 없이 해결할 수 있어요' 자가해결 카드 펼침/접기 (화살표)
   if(t.closest('[data-faqtoggle]')){ s1state.faqOpen = !s1state.faqOpen; renderS1(); return; }
   // 전체메뉴(햄버거) → 오른쪽에서 슬라이딩하는 드로어로 열기
-  if(t.closest('[data-menu]')){ s1state.amTab='ars'; s1state.amOpen=0; s1state.amOpen2=-1; s1state.sarsPath=[]; s1state.amCat='self'; s1state.amTreeOpen={}; openMenuDrawer(); return; }
+  if(t.closest('[data-menu]')){ s1state.amTab='ars'; s1state.amOpen=0; s1state.amOpen2=-1; s1state.sarsPath=[]; s1state.amCat='self'; s1state.amTreeOpen={}; document.getElementById('v47Fab')?.classList.remove('open'); openMenuDrawer(); return; }
   // V2.1 전체메뉴: 좌측 대메뉴(셀프서비스/ARS/상담원연결) 선택 → 아코디언 초기화
   const amc = t.closest('[data-amcat]');
   if(amc){ s1state.amCat=amc.dataset.amcat; s1state.amTreeOpen={}; refreshMenu(); return; }
@@ -6457,7 +6537,7 @@ document.addEventListener('click', (e)=>{
   const slf = t.closest('[data-sarsleaf]');
   if(slf){
     if(isV40()){ openConsult(slf.dataset.sarsleaf, {exclude:['call']}); return; }   // Ver 4.0 계열: 음성ARS 최종메뉴 → 상담연결 팝업(전화상담 제외)
-    flash(`‘${slf.dataset.sarsleaf}’ 음성 ARS 최종 메뉴입니다. (메뉴 연결 안내 · 화면 미연결)`); return; }
+    flash(`'${slf.dataset.sarsleaf}' 음성 ARS 최종 메뉴입니다. (메뉴 연결 안내 · 화면 미연결)`); return; }
   // 전체메뉴: 좌측 대메뉴 선택(고정), 우측 중메뉴 표시
   const am1 = t.closest('[data-am1]');
   if(am1){ const i=+am1.dataset.am1; s1state.amOpen=i; s1state.amOpen2=-1; refreshMenu(); return; }
@@ -6771,14 +6851,15 @@ const SCHEME_META = {
 
 let refFirm = 'kiwoom';   // 참고 탭에서 현재 선택된 증권사 (기본: 키움증권 현행)
 let sianScheme = 's1';    // 시안 탭에서 현재 선택된 시안 (s1=시안1 / dars1=시안2 / dars2=시안3)
-let s1Ver = 'v46';        // 시안1 기본 버전 = Ver 4.6(v46). 맨 URL(파라미터 없음) 진입 시 메인을 Ver 4.6으로 표시. (타 버전은 QR ?v= 파라미터로 진입)
+let s1Ver = 'v47';        // 시안1 기본 버전 = Ver 4.7(v47). 맨 URL(파라미터 없음) 진입 시 메인을 Ver 4.7으로 표시. (타 버전은 QR ?v= 파라미터로 진입)
 /* Ver 2.1 — 메인 3탭(셀프서비스/ARS메뉴/상담원연결)·드로어·favSrc 등 v21 전용 동작 게이트 */
 function isV21Ver(){ return s1Ver==='v21'; }
 /* Ver 4.0 계열 — 토스 스킨·9 카테고리(ARS_CAT6)·상담연결 팝업 등 공통 동작 게이트 (v40=리스트 메인 / v41=3×3 그리드 메인, 로직 동일) */
-function isV40(){ return s1Ver==='v40' || s1Ver==='v41' || s1Ver==='v42' || s1Ver==='v45' || s1Ver==='v46'; }
-/* Ver 4.5/4.6 — 인디고 팔레트 게이트 (isV40 포함이지만 색상 오버라이드를 위해 별도 식별) */
-function isV45(){ return s1Ver==='v45' || s1Ver==='v46'; }
+function isV40(){ return s1Ver==='v40' || s1Ver==='v41' || s1Ver==='v42' || s1Ver==='v45' || s1Ver==='v46' || s1Ver==='v47'; }
+/* Ver 4.5/4.6/4.7 — 인디고 팔레트 게이트 (isV40 포함이지만 색상 오버라이드를 위해 별도 식별) */
+function isV45(){ return s1Ver==='v45' || s1Ver==='v46' || s1Ver==='v47'; }
 function isV46(){ return s1Ver==='v46'; }
+function isV47(){ return s1Ver==='v47'; }
 function switchScheme(s){
   closeMenuDrawer();   // 탭/버전 전환 시 열려있던 전체메뉴 드로어 닫기
   scheme = s;
@@ -6887,6 +6968,7 @@ function updateSceneLabel(){
     v40:['kiwoom-qr-v40.png','Ver 4.0'],
     v41:['kiwoom-qr-v41.png','Ver 4.1'], v42:['kiwoom-qr-v42.png','Ver 4.2'],
     v45:['kiwoom-qr-v45.png','Ver 4.5'], v46:['kiwoom-qr-v45.png','Ver 4.6'],
+    v47:['kiwoom-qr-v47.png','Ver 4.7'],
     dform:['kiwoom-qr-dform.png','Digital Form'], dform2:['kiwoom-qr-dform2.png','Ver 4.3'], dform3:['kiwoom-qr-dform3.png','Digital Form_v0.1'],
     dars1:['kiwoom-qr-ver3.0.png','Ver 3.0'], dars2:['kiwoom-qr-ver1.2.1.png','Ver 1.2.1']
   };
@@ -6912,7 +6994,7 @@ function selectSian(v, ver){
     // 깊은 페이지에 있었어도 항상 메인(home)으로 초기화 + 인라인 탭/트리 상태 리셋
     closeMenuDrawer();
     s1state.page='home'; s1state.fromFav=false; s1state.noHome=false; s1state.noBack=false; s1state.history=[];
-    s1state.v21Tab='self'; s1state.v45Tab='common'; s1state.v45Cat=null; s1state.sarsPath=[]; s1state.amOpen=-1; s1state.amOpen2=-1;
+    s1state.v21Tab='self'; s1state.v45Tab='common'; s1state.v45Cat=null; s1state.v47Cat=null; s1state.sarsPath=[]; s1state.amOpen=-1; s1state.amOpen2=-1;
     renderS1();
   } else if(v==='dars1'){ if(window.__darsHome1) window.__darsHome1(); }
   else if(v==='dars2'){ if(window.__darsHome2) window.__darsHome2(); }
@@ -7125,6 +7207,8 @@ switchScheme('sian');
       'v41':['s1','v41'],'4.1':['s1','v41'],'v4.1':['s1','v41'],
       'v42':['s1','v42'],'4.2':['s1','v42'],'v4.2':['s1','v42'],
       'v45':['s1','v45'],'4.5':['s1','v45'],'v4.5':['s1','v45'],
+      'v47':['s1','v47'],'4.7':['s1','v47'],'v4.7':['s1','v47'],
+      'v46':['s1','v46'],'4.6':['s1','v46'],'v4.6':['s1','v46'],
       'dars1':['dars1'],'3.0':['dars1'],'v3':['dars1'],'v30':['dars1'],
       'dars2':['dars2'],'1.2.1':['dars2'],'s3':['dars2'],
       'dform':['dform'],'dform2':['dform2'],'4.3':['dform2'],'v4.3':['dform2'],'dform3':['dform3']
