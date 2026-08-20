@@ -3688,7 +3688,7 @@ body{
 /* 텍스트 색상을 그리드 메뉴와 동일하게 */
 .flow.toss.v47 .v45ss-headtxt{font-size:calc(12.5px*var(--scale))}
 .flow.toss.v47 .v45ss-nm{color:#1A1A4E;font-size:calc(15px*var(--scale))}
-.flow.toss.v47 .v45ss-sub{color:#8B95A1}
+.flow.toss.v47 .v45ss-sub{color:#8B95A1;margin-top:2px}
 .flow.toss.v47 .v45ss-dots{margin:5px 0 8px}
 .flow.toss.v47 .v45ss-txt{padding:0 16px 12px 16px}
 /* view 하단 패딩 (FAB 영역 확보) */
