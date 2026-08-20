@@ -6988,14 +6988,14 @@ function updateSceneLabel(){
   if(scEl && !scEl.isContentEditable) scEl.textContent = loadScenario(tabItemKey(ai));   // 편집 중 아니면 시나리오 갱신
   // 현재 버전 접속 QR (시안 탭에서만 · 버전별 이미지)
   const QR_MAP = {
-    v1:['kiwoom-qr-ver1.0.png','Ver 1.0'], v11:['kiwoom-qr-ver1.1.png','Ver 1.1'],
-    v2:['kiwoom-qr-ver2.0.png','Ver 2.0'], v21:['kiwoom-qr-ver2.1.png','Ver 2.1'],
-    v40:['kiwoom-qr-v40.png','Ver 4.0'],
-    v41:['kiwoom-qr-v41.png','Ver 4.1'], v42:['kiwoom-qr-v42.png','Ver 4.2'],
-    v45:['kiwoom-qr-v45.png','Ver 4.5'], v46:['kiwoom-qr-v45.png','Ver 4.6'],
-    v47:['kiwoom-qr-v47.png','Ver 4.7'],
-    dform:['kiwoom-qr-dform.png','Digital Form'], dform2:['kiwoom-qr-dform2.png','Ver 4.3'], dform3:['kiwoom-qr-dform3.png','Digital Form_v0.1'],
-    dars1:['kiwoom-qr-ver3.0.png','Ver 3.0'], dars2:['kiwoom-qr-ver1.2.1.png','Ver 1.2.1']
+    v1:['qr/kiwoom-qr-ver1.0.png','Ver 1.0'], v11:['qr/kiwoom-qr-ver1.1.png','Ver 1.1'],
+    v2:['qr/kiwoom-qr-ver2.0.png','Ver 2.0'], v21:['qr/kiwoom-qr-ver2.1.png','Ver 2.1'],
+    v40:['qr/kiwoom-qr-v40.png','Ver 4.0'],
+    v41:['qr/kiwoom-qr-v41.png','Ver 4.1'], v42:['qr/kiwoom-qr-v42.png','Ver 4.2'],
+    v45:['qr/kiwoom-qr-v45.png','Ver 4.5'], v46:['qr/kiwoom-qr-v45.png','Ver 4.6'],
+    v47:['qr/kiwoom-qr-v47.png','Ver 4.7'],
+    dform:['qr/kiwoom-qr-dform.png','Digital Form'], dform2:['qr/kiwoom-qr-dform2.png','Ver 4.3'], dform3:['qr/kiwoom-qr-dform3.png','Digital Form_v0.1'],
+    dars1:['qr/kiwoom-qr-ver3.0.png','Ver 3.0'], dars2:['qr/kiwoom-qr-ver1.2.1.png','Ver 1.2.1']
   };
   const qrKey = (scheme!=='ref') ? ((sianScheme==='s1') ? s1Ver : sianScheme) : null;
   const qrWrap = document.getElementById('spQrWrap'), qrImg = document.getElementById('spQr'), qrCap = document.getElementById('spQrCap');
