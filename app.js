@@ -2568,8 +2568,6 @@ function v45SsBannerCard(it){
   if(isV47() && it.v47float){
     return `<div class="v45ss-card v47-ic-float" ${it.act} role="button">
       <img class="v47-float-ic" src="${it.img}" alt="">
-      <img class="v45ss-img" src="${it.img}" alt="">
-      <div class="v45ss-overlay"></div>
       <div class="v45ss-txt">
         <div class="v45ss-nm">${it.t}</div>
         <div class="v45ss-sub">${it.sub}</div>
