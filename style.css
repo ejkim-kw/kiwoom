@@ -3743,8 +3743,15 @@ body{
 .toss-home.bigfont .v47-cell-sub{display:none}
 /* Ver 4.7 내정보 공통 선택 단계 */
 .flow.toss.v47 .v47mi-list{display:flex;flex-direction:column;gap:8px;margin:18px 0}
-.flow.toss.v47 .v47mi-stepper{flex:none;margin:0 56px 8px;min-height:8px}
-.flow.toss.v47 .v47mi-stepper .v45-step{flex:1;max-width:34px;min-width:12px}
+.flow.toss.v47 .v47mi-stepper{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 10px}
+.flow.toss.v47 .v47mi-step-label{display:flex;align-items:center;gap:6px;max-width:100%;font-size:calc(12px*var(--scale));line-height:1.2;color:#667085;white-space:nowrap}
+.flow.toss.v47 .v47mi-step-label b{color:#1A1A4E;font-variant-numeric:tabular-nums}
+.flow.toss.v47 .v47mi-step-label span{overflow:hidden;text-overflow:ellipsis}
+.flow.toss.v47 .v47mi-step-track{width:100%;max-width:176px;display:flex;align-items:center;gap:5px}
+.flow.toss.v47 .v47mi-stepper .v45-step{height:4px;flex:1;min-width:8px;border-radius:999px;background:#E1E4EE}
+.flow.toss.v47 .v47mi-stepper .v45-step.done{background:#8D93B8}
+.flow.toss.v47 .v47mi-stepper .v45-step.on{background:#1A1A4E}
+.flow.toss.v47 .v45-authtop>.back{border:0;background:transparent;padding:0;display:grid;place-items:center}
 .flow.toss.v47 .v47mi-choice{min-height:64px;padding:14px 16px;border:1.5px solid #EAECFF;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .flow.toss.v47 .v47mi-choice.on{border-color:#1A1A4E;background:#F5F5FF}
 .flow.toss.v47 .v47mi-choice>span:first-child{display:flex;flex-direction:column;gap:3px;text-align:left}
@@ -3769,4 +3776,10 @@ body{
 .flow.toss.v47 .v47mi-account-result:active{border-color:#E4E7F0}
 .flow.toss.v47 .v47mi-password-form{margin-top:18px}
 .flow.toss.v47 .v47mi-password-form .ir{min-height:58px}
+.flow.toss.v47 .v47mi-auth-fields .ir{padding-right:7px}
+.flow.toss.v47 .v47mi-auth-fields .k{min-width:78px}
+.flow.toss.v47 .v47mi-help{width:44px;height:44px;flex:none;border:0;border-radius:50%;background:#EEF0FF;color:#1A1A4E;font-size:calc(16px*var(--scale));font-weight:800;cursor:pointer}
+.flow.toss.v47 .v47mi-help:hover{background:#E2E5FF}
+.flow.toss.v47 .v47mi-help:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px}
+.flow.toss.v47 .v47mi-help-account{width:100%}
 

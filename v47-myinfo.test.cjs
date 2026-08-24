@@ -48,7 +48,36 @@ test('defines variable-length progress for every multi-step flow', () => {
   assert.deepEqual(myInfo.getProgress({flow:'dormantRelease', step:'complete'}), {
     labels:['휴대폰 정보','인증번호','ID·계좌 선택','계좌 인증','완료'], current:4
   });
-  assert.equal(myInfo.getProgress({flow:'accountPasswordGuide', step:'guide'}), null);
+  assert.deepEqual(myInfo.getProgress({flow:'accountPasswordGuide', step:'guide'}), {
+    labels:['비밀번호 안내'], current:0
+  });
+});
+
+test('account help flows replace the main progress with their current steps', () => {
+  assert.deepEqual(myInfo.getProgress({flow:'accountProfile', step:'helpPhone', helpKind:'accountNumber'}), {
+    labels:['휴대폰 정보','인증번호','계좌 확인'], current:0
+  });
+  assert.deepEqual(myInfo.getProgress({flow:'accountProfile', step:'helpAccountList', helpKind:'accountNumber'}), {
+    labels:['휴대폰 정보','인증번호','계좌 확인'], current:2
+  });
+  assert.deepEqual(myInfo.getProgress({flow:'accountProfile', step:'helpPasswordGuide', helpKind:'accountPassword'}), {
+    labels:['비밀번호 안내'], current:0
+  });
+});
+
+test('detail header exposes only the current stepper and not the submenu title', () => {
+  assert.deepEqual(myInfo.getHeaderModel({flow:'accountProfile', step:'profile'}), {
+    accessibleTitle:'계좌정보 조회 및 변경',
+    labels:['계좌 인증','계좌정보 확인'],
+    current:1
+  });
+});
+
+test('account authentication uses direct inputs with contextual help actions', () => {
+  assert.deepEqual(myInfo.getAccountAuthModel({accountInput:'63217654'}), {
+    account:{value:'63217654', inputMode:'numeric', maxLength:8, helpKind:'accountNumber'},
+    password:{value:'', inputMode:'numeric', maxLength:8, helpKind:'accountPassword'}
+  });
 });
 
 test('orients every flow and result screen with a stable title', () => {
@@ -133,12 +162,39 @@ test('account profile account auth advances to a read-only profile', () => {
 
 test('account profile authentication validates the selected account and numeric password', () => {
   const state = myInfo.createState('계좌정보 조회 및 변경');
-  let result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'unknown', password:'1234'});
-  assert.equal(result.error, '조회할 계좌를 선택해 주세요.');
+  let result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'123', password:'1234'});
+  assert.equal(result.error, '계좌번호 숫자 8자리를 입력해 주세요.');
   assert.equal(result.field, 'account');
+  result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'12345678', password:'1234'});
+  assert.equal(result.error, '등록된 계좌번호를 확인해 주세요.');
   result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'52575602', password:'abcd'});
   assert.equal(result.error, '계좌비밀번호 숫자 4~8자리를 입력해 주세요.');
   assert.equal(result.field, 'accountPassword');
+});
+
+test('account number help verifies the phone and returns the chosen account to authentication', () => {
+  let state = myInfo.createState('계좌정보 조회 및 변경');
+  let result = myInfo.transition(state, {type:'OPEN_ACCOUNT_HELP', kind:'accountNumber'});
+  assert.equal(result.state.step, 'helpPhone');
+  assert.equal(result.state.helpKind, 'accountNumber');
+
+  result = myInfo.transition(result.state, {type:'PHONE_REQUEST', name:'홍길동', dob:'900101', phone:'01012345678', agreed:true});
+  assert.equal(result.state.step, 'helpPhoneOtp');
+  result = myInfo.transition(result.state, {type:'PHONE_VERIFY', otp:'123456'});
+  assert.equal(result.state.step, 'helpAccountList');
+  result = myInfo.transition(result.state, {type:'SELECT_HELP_ACCOUNT', value:'63217654'});
+  assert.equal(result.state.step, 'accountAuth');
+  assert.equal(result.state.accountInput, '63217654');
+  assert.equal(result.state.helpKind, undefined);
+});
+
+test('account password help returns to the account authentication step', () => {
+  const state = myInfo.createState('계좌정보 조회 및 변경');
+  const opened = myInfo.transition(state, {type:'OPEN_ACCOUNT_HELP', kind:'accountPassword'});
+  assert.equal(opened.state.step, 'helpPasswordGuide');
+  const closed = myInfo.transition(opened.state, {type:'CLOSE_ACCOUNT_HELP'});
+  assert.equal(closed.state.step, 'accountAuth');
+  assert.equal(closed.state.helpKind, undefined);
 });
 
 test('account number lookup ends at account list after phone verification', () => {

@@ -2355,11 +2355,11 @@ function v47Grid(){
 }
 /* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
 function v47MyInfoTop(state){
-  const title=V47MyInfo.getTitle(state);
-  const progress=V47MyInfo.getProgress(state);
-  const back=state.step==='complete' ? `<div class="v45-step-spacer" aria-hidden="true"></div>` : `<div class="back" data-s1back title="이전">${I.back}</div>`;
-  const stepper=progress ? `<div class="v45-stepper v47mi-stepper" role="progressbar" aria-label="${title} 진행 단계" aria-valuemin="1" aria-valuemax="${progress.labels.length}" aria-valuenow="${progress.current+1}" aria-valuetext="${progress.current+1}/${progress.labels.length} · ${progress.labels[progress.current]}">${progress.labels.map((label,i)=>`<span class="v45-step${i<=progress.current?' on':''}" title="${label}" aria-hidden="true"></span>`).join('')}</div>` : '';
-  return `<div class="page-top iod-top v45-authtop">${back}<div class="page-title">${title}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>${stepper}`;
+  const header=V47MyInfo.getHeaderModel(state);
+  const help=!!state.helpKind;
+  const back=state.step==='complete' ? `<div class="v45-step-spacer" aria-hidden="true"></div>` : `<button type="button" class="back" ${help?'data-v47mi-help-back':'data-s1back'} title="이전" aria-label="이전 화면">${I.back}</button>`;
+  const stepper=header ? `<div class="v47mi-stepper" role="progressbar" aria-label="${header.accessibleTitle} 진행 단계" aria-valuemin="1" aria-valuemax="${header.labels.length}" aria-valuenow="${header.current+1}" aria-valuetext="${header.current+1}/${header.labels.length} · ${header.labels[header.current]}"><div class="v47mi-step-label"><b>${header.current+1}/${header.labels.length}</b><span>${header.labels[header.current]}</span></div><div class="v47mi-step-track" aria-hidden="true">${header.labels.map((label,i)=>`<span class="v45-step${i<header.current?' done':(i===header.current?' on':'')}" title="${label}"></span>`).join('')}</div></div>` : '';
+  return `<div class="page-top iod-top v45-authtop">${back}${stepper}<div class="v45-step-spacer" aria-hidden="true"></div></div>`;
 }
 function startV47MyInfo(menuTitle){
   if(!V47MyInfo.shouldHandle(s1Ver, menuTitle)) return false;
@@ -2401,7 +2401,7 @@ function showV47MyInfoValidation(message,field){
   }
 }
 function renderV47MyInfoPhone(state){
-  const otp = state.step==='phoneOtp';
+  const otp = state.step==='phoneOtp'||state.step==='helpPhoneOtp';
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body">
     <div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>
     ${otp ? `<div class="auth-info"><div class="ir"><label class="k" for="v47MyInfoOtp">인증번호</label><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-phone-verify>인증완료</button>` : `<div class="auth-info"><div class="ir"><label class="k" for="v47MiName">고객명</label><input id="v47MiName" class="ir-input" autocomplete="name"></div><div class="ir"><label class="k" for="v47MiDob">생년월일</label><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="bday"></div><div class="ir"><label class="k" for="v47MiPhone">휴대폰</label><input id="v47MiPhone" class="ir-input" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel"></div></div><button id="v47MiAgreement" type="button" class="find-agree v47mi-phone-consent${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree role="checkbox" aria-checked="${s1state.v47MyInfoAgree}" aria-label="휴대폰 인증 전체 약관동의 (필수), ${s1state.v47MyInfoAgree?'동의함':'동의 전'}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b> · <span class="v47mi-consent-state">${s1state.v47MyInfoAgree?'동의함':'동의 전'}</span></span></button>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-phone-request>인증요청</button>`}
@@ -2415,8 +2415,12 @@ function renderV47IdSelection(state){
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">ID와 계좌를 선택해 주세요</div><div class="td-desc">본인 확인에 사용할 정보를 선택해요.</div></div><div id="v47MiSelection" role="group" aria-label="ID와 연결 계좌 선택" tabindex="-1"><div class="v47mi-list">${ids.map(x=>choice('id',x.id,x.id,x.dormant?'장기미사용 제한':'사용 가능',state.selectedId===x.id)).join('')}</div>${selected?`<div class="v47mi-list">${accounts.map(x=>choice('account',x.id,x.type,V47MyInfo.maskAccount(x.id),state.selectedAccount===x.id)).join('')}</div>`:''}</div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-continue>다음</button></div></div>`;
 }
 function renderV47AccountAuth(state){
-  const accounts=V47MyInfo.DATA.accounts.map(x=>`<option value="${x.id}">${x.type} · ${V47MyInfo.maskAccount(x.id)}</option>`).join('');
-  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">조회할 계좌와 계좌비밀번호를 입력해 주세요.</div></div><div class="auth-info"><div class="ir"><label class="k" for="v47MiAccount">계좌</label><select id="v47MiAccount" class="ir-input"><option value="">계좌를 선택해 주세요</option>${accounts}</select></div><div class="ir"><label class="k" for="v47MiAccountPassword">계좌비밀번호</label><input id="v47MiAccountPassword" class="ir-input" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-account-auth>인증하기</button></div></div>`;
+  const model=V47MyInfo.getAccountAuthModel(state);
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">계좌번호와 계좌비밀번호를 직접 입력해 주세요.</div></div><div class="auth-info v47mi-auth-fields"><div class="ir"><label class="k" for="v47MiAccount">계좌번호</label><input id="v47MiAccount" class="ir-input" value="${model.account.value}" inputmode="${model.account.inputMode}" maxlength="${model.account.maxLength}" autocomplete="off" placeholder="숫자 8자리"><button type="button" class="v47mi-help" data-v47mi-help="${model.account.helpKind}" aria-label="계좌번호 찾기">?</button></div><div class="ir"><label class="k" for="v47MiAccountPassword">계좌비밀번호</label><input id="v47MiAccountPassword" class="ir-input" type="password" inputmode="${model.password.inputMode}" maxlength="${model.password.maxLength}" autocomplete="current-password" placeholder="숫자 4~8자리"><button type="button" class="v47mi-help" data-v47mi-help="${model.password.helpKind}" aria-label="계좌비밀번호 안내">?</button></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-account-auth>인증하기</button></div></div>`;
+}
+function renderV47HelpAccountList(state){
+  const rows=V47MyInfo.DATA.accounts.map(x=>`<button type="button" class="v47mi-choice v47mi-help-account" data-v47mi-help-account="${x.id}"><span><b>${x.type}</b><small>${x.id.slice(0,4)}-${x.id.slice(4)}</small></span><span class="v47mi-check">입력</span></button>`).join('');
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌번호를 확인했어요</div><div class="td-desc">인증에 사용할 계좌를 선택하면 계좌번호가 자동 입력돼요.</div></div><div class="v47mi-list" role="list" aria-label="본인인증된 계좌번호">${rows}</div>${v47MyInfoValidation()}</div></div>`;
 }
 function renderV47AccountProfile(state){
   const p=V47MyInfo.DATA.accountProfile;
@@ -2445,6 +2449,8 @@ function renderV47MyInfo(){
   const state = s1state.v47MyInfo;
   if(!state) return '';
   if(state.step==='accountAuth') return renderV47AccountAuth(state);
+  if(state.step==='helpAccountList') return renderV47HelpAccountList(state);
+  if(state.step==='helpPasswordGuide') return renderV47AccountPasswordGuide(state);
   if(state.step==='profile') return renderV47AccountProfile(state);
   if(state.step==='accountList') return renderV47AccountNumbers(state);
   if(state.step==='guide') return renderV47AccountPasswordGuide(state);
@@ -6716,6 +6722,22 @@ document.addEventListener('click', (e)=>{
     agree.setAttribute('aria-label', `휴대폰 인증 전체 약관동의 (필수), ${stateText}`);
     const stateLabel=agree.querySelector('.v47mi-consent-state');
     if(stateLabel) stateLabel.textContent=stateText;
+    return;
+  }
+  if(t.closest('[data-v47mi-help-back]')){
+    applyV47MyInfoEvent({type:'CLOSE_ACCOUNT_HELP'});
+    return;
+  }
+  if(t.closest('[data-v47mi-help]')){
+    applyV47MyInfoEvent({
+      type:'OPEN_ACCOUNT_HELP',
+      kind:t.closest('[data-v47mi-help]').dataset.v47miHelp,
+      accountInput:(document.getElementById('v47MiAccount')||{}).value||''
+    });
+    return;
+  }
+  if(t.closest('[data-v47mi-help-account]')){
+    applyV47MyInfoEvent({type:'SELECT_HELP_ACCOUNT', value:t.closest('[data-v47mi-help-account]').dataset.v47miHelpAccount});
     return;
   }
   if(t.closest('[data-v47mi-phone-request]')){
