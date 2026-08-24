@@ -53,3 +53,18 @@ test('an account must belong to the selected ID', () => {
   const result = myInfo.transition(state, {type:'SELECT_ACCOUNT', value:'52575602'});
   assert.equal(result.error, '선택한 ID에 연결된 계좌를 선택해 주세요.');
 });
+
+test('an unknown ID cannot select an account', () => {
+  const state = {...myInfo.createState('ID조회/PW초기화'), step:'selection', selectedId:'unknown-id'};
+  const result = myInfo.transition(state, {type:'SELECT_ACCOUNT', value:'52575602'});
+  assert.equal(result.error, '선택한 ID에 연결된 계좌를 선택해 주세요.');
+  assert.equal(result.state.selectedAccount, '');
+});
+
+test('continue rejects an unlinked or unknown ID and account relationship', () => {
+  const base = {...myInfo.createState('ID조회/PW초기화'), step:'selection', phoneVerified:true};
+  let result = myInfo.transition({...base, selectedId:'kiwoom0728', selectedAccount:'50430218'}, {type:'CONTINUE'});
+  assert.equal(result.error, '선택한 ID에 연결된 계좌를 선택해 주세요.');
+  result = myInfo.transition({...base, selectedId:'unknown-id', selectedAccount:'52575602'}, {type:'CONTINUE'});
+  assert.equal(result.error, '선택한 ID에 연결된 계좌를 선택해 주세요.');
+});

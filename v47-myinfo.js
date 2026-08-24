@@ -46,11 +46,13 @@
     if(event.type==='SELECT_ID') return {state:{...next, selectedId:event.value, selectedAccount:''}, error:''};
     if(event.type==='SELECT_ACCOUNT'){
       const owner = DATA.ids.find(x=>x.id===state.selectedId);
-      if(owner && !owner.accounts.includes(event.value)) return {state, error:'선택한 ID에 연결된 계좌를 선택해 주세요.'};
+      if(!owner || !owner.accounts.includes(event.value)) return {state, error:'선택한 ID에 연결된 계좌를 선택해 주세요.'};
       return {state:{...next, selectedAccount:event.value}, error:''};
     }
     if(event.type==='CONTINUE'){
       if(!state.selectedId || !state.selectedAccount) return {state, error:'재설정할 ID와 계좌를 선택해 주세요.'};
+      const owner = DATA.ids.find(x=>x.id===state.selectedId);
+      if(!owner || !owner.accounts.includes(state.selectedAccount)) return {state, error:'선택한 ID에 연결된 계좌를 선택해 주세요.'};
       return {state:{...next, step:'accountPassword'}, error:''};
     }
     if(event.type==='ACCOUNT_PASSWORD') return {state:{...next, step:'newIdPassword'}, error:''};
