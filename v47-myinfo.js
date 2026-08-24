@@ -48,7 +48,12 @@
       if(!/^\d{4,8}$/.test(event.password||'')) return {state, error:'계좌비밀번호 숫자 4~8자리를 입력해 주세요.'};
       return {state:{...next, selectedAccount:event.account, step:'profile'}, error:''};
     }
-    if(event.type==='SELECT_ID') return {state:{...next, selectedId:event.value, selectedAccount:''}, error:''};
+    if(event.type==='SELECT_ID'){
+      const selected = DATA.ids.find(x=>x.id===event.value);
+      if(!selected) return {state, error:'ID를 선택해 주세요.'};
+      if(state.flow==='dormantRelease' && !selected.dormant) return {state, error:'장기미사용 제한 ID를 선택해 주세요.'};
+      return {state:{...next, selectedId:event.value, selectedAccount:''}, error:''};
+    }
     if(event.type==='SELECT_ACCOUNT'){
       const owner = DATA.ids.find(x=>x.id===state.selectedId);
       if(!owner || !owner.accounts.includes(event.value)) return {state, error:'선택한 ID에 연결된 계좌를 선택해 주세요.'};
@@ -60,8 +65,18 @@
       if(!owner || !owner.accounts.includes(state.selectedAccount)) return {state, error:'선택한 ID에 연결된 계좌를 선택해 주세요.'};
       return {state:{...next, step:'accountPassword'}, error:''};
     }
-    if(event.type==='ACCOUNT_PASSWORD') return {state:{...next, step:'newIdPassword'}, error:''};
-    if(event.type==='NEW_ID_PASSWORD' || event.type==='COMPLETE') return {state:{...next, step:'complete', completed:true}, error:''};
+    if(event.type==='ACCOUNT_PASSWORD'){
+      if(!/^\d{4,8}$/.test(event.password||'')) return {state, error:'계좌비밀번호 숫자 4~8자리를 입력해 주세요.'};
+      return state.flow==='dormantRelease'
+        ? {state:{...next, step:'complete', completed:true}, error:''}
+        : {state:{...next, step:'newIdPassword'}, error:''};
+    }
+    if(event.type==='NEW_ID_PASSWORD'){
+      if(!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,8}$/.test(event.password||'')) return {state, error:'영문과 숫자를 조합해 5~8자리로 입력해 주세요.'};
+      if(event.password!==event.confirm) return {state, error:'새 ID 비밀번호가 서로 일치하지 않아요.'};
+      return {state:{...next, step:'complete', completed:true}, error:''};
+    }
+    if(event.type==='COMPLETE') return {state:{...next, step:'complete', completed:true}, error:''};
     return {state, error:''};
   }
   return {MENU_KEYS, DATA, createState, transition};

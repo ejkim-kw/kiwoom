@@ -95,3 +95,28 @@ test('account password guide starts without authentication', () => {
   const state = myInfo.createState('계좌비밀번호 재설정');
   assert.equal(state.step, 'guide');
 });
+
+test('ID password flow rejects a short account password', () => {
+  const state={...myInfo.createState('ID조회/PW초기화'), step:'accountPassword', selectedId:'kiwoom0728', selectedAccount:'52575602'};
+  const result=myInfo.transition(state,{type:'ACCOUNT_PASSWORD',password:'123'});
+  assert.equal(result.error,'계좌비밀번호 숫자 4~8자리를 입력해 주세요.');
+  assert.equal(result.state.step,'accountPassword');
+});
+
+test('ID password reset validates matching 5 to 8 character values', () => {
+  const state={...myInfo.createState('ID조회/PW초기화'), step:'newIdPassword', selectedId:'kiwoom0728', selectedAccount:'52575602'};
+  assert.equal(myInfo.transition(state,{type:'NEW_ID_PASSWORD',password:'abc12',confirm:'abc13'}).error,'새 ID 비밀번호가 서로 일치하지 않아요.');
+  const done=myInfo.transition(state,{type:'NEW_ID_PASSWORD',password:'abc12',confirm:'abc12'});
+  assert.equal(done.state.step,'complete');
+  assert.equal(done.state.completed,true);
+});
+
+test('dormant release accepts only a dormant ID and completes after account password', () => {
+  const selection={...myInfo.createState('장기미사용ID 제한 해지'),step:'selection'};
+  const blocked=myInfo.transition(selection,{type:'SELECT_ID',value:'kiwoom0728'});
+  assert.equal(blocked.error,'장기미사용 제한 ID를 선택해 주세요.');
+  const state={...myInfo.createState('장기미사용ID 제한 해지'),step:'accountPassword',selectedId:'hero2024',selectedAccount:'50430218'};
+  const done=myInfo.transition(state,{type:'ACCOUNT_PASSWORD',password:'1234'});
+  assert.equal(done.state.step,'complete');
+  assert.equal(done.state.completed,true);
+});

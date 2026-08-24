@@ -3760,4 +3760,6 @@ body{
 .flow.toss.v47 .v47mi-guide-item span{color:#667085;font-size:13px}
 .flow.toss.v47 .v47mi-account-result{cursor:default;transition:none}
 .flow.toss.v47 .v47mi-account-result:active{border-color:#E4E7F0}
+.flow.toss.v47 .v47mi-password-form{margin-top:18px}
+.flow.toss.v47 .v47mi-password-form .ir{min-height:58px}
 
