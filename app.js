@@ -2355,7 +2355,8 @@ function v47Grid(){
 }
 /* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
 function v47MyInfoTop(state){
-  return `<div class="page-top iod-top v45-authtop"><div class="back" data-s1back title="이전">${I.back}</div><div class="page-title">${state.flow==='idPassword'?'ID 조회·비밀번호 초기화':'본인인증'}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>`;
+  const title = state.flow==='idPassword' ? 'ID 조회·비밀번호 초기화' : state.flow==='accountPasswordGuide' ? '계좌비밀번호 재설정' : '본인인증';
+  return `<div class="page-top iod-top v45-authtop"><div class="back" data-s1back title="이전">${I.back}</div><div class="page-title">${title}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>`;
 }
 function startV47MyInfo(menuTitle){
   const state = V47MyInfo.createState(menuTitle);
@@ -2395,7 +2396,7 @@ function renderV47AccountProfile(state){
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌정보를 확인해 주세요</div><div class="td-desc">등록된 정보는 영웅문S# 또는 상담원을 통해 변경할 수 있어요.</div></div><div class="iod-v45-card v47mi-profile">${rows.map(([k,v])=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv">${v}</span></div>`).join('')}</div><div class="v47mi-dual"><button data-v47mi-agent>상담원 연결</button><button data-v47mi-hero-profile>영웅문S#에서 변경</button></div></div></div>`;
 }
 function renderV47AccountNumbers(state){
-  const rows=V47MyInfo.DATA.accounts.map(x=>`<div class="iod-v45-card v45-cert-item"><div class="v45-ci-head"><div class="v45-ci-nm">${x.type}</div><span class="iod-badge done">사용 가능</span></div><div class="v45-ci-date">${x.display}</div></div>`).join('');
+  const rows=V47MyInfo.DATA.accounts.map(x=>`<div class="iod-v45-card v47mi-account-result"><div class="v45-ci-head"><div class="v45-ci-nm">${x.type}</div><span class="iod-badge done">사용 가능</span></div><div class="v45-ci-date">${x.display}</div></div>`).join('');
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">보유 계좌를 확인했어요</div><div class="td-desc">고객님 명의의 증권계좌 목록이에요.</div></div>${rows}</div></div>`;
 }
 function renderV47AccountPasswordGuide(state){

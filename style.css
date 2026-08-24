@@ -3758,4 +3758,6 @@ body{
 .flow.toss.v47 .v47mi-guide-item:last-child{border-bottom:0}
 .flow.toss.v47 .v47mi-guide-item b{color:#1A1A4E;font-size:14px}
 .flow.toss.v47 .v47mi-guide-item span{color:#667085;font-size:13px}
+.flow.toss.v47 .v47mi-account-result{cursor:default;transition:none}
+.flow.toss.v47 .v47mi-account-result:active{border-color:#E4E7F0}
 
