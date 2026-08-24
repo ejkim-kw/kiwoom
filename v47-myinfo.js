@@ -25,6 +25,9 @@
       marketing:'알림톡 · 이메일', occupation:'회사원', residence:'대한민국'
     }
   };
+  function shouldHandle(version, menuTitle){
+    return version==='v47' && Object.prototype.hasOwnProperty.call(MENU_KEYS,menuTitle);
+  }
   function createState(menuTitle){
     const flow = MENU_KEYS[menuTitle];
     return flow ? {flow, step:flow==='accountPasswordGuide'?'guide':(flow==='accountProfile'?'accountAuth':'phone'), phoneVerified:false, selectedId:'', selectedAccount:'', completed:false, errors:{}} : null;
@@ -79,5 +82,5 @@
     if(event.type==='COMPLETE') return {state:{...next, step:'complete', completed:true}, error:''};
     return {state, error:''};
   }
-  return {MENU_KEYS, DATA, createState, transition};
+  return {MENU_KEYS, DATA, shouldHandle, createState, transition};
 });

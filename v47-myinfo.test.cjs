@@ -2,6 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const myInfo = require('./v47-myinfo.js');
 
+test('handles 내정보 detail routes only in VER4.7', () => {
+  assert.equal(myInfo.shouldHandle('v47','계좌정보 조회 및 변경'), true);
+  assert.equal(myInfo.shouldHandle('v46','계좌정보 조회 및 변경'), false);
+  assert.equal(myInfo.shouldHandle('v47','해외주식 관련'), false);
+});
+
 test('maps all five VER4.7 내정보 menu labels', () => {
   assert.deepEqual(Object.keys(myInfo.MENU_KEYS), [
     '계좌정보 조회 및 변경', '증권계좌번호확인', '계좌비밀번호 재설정',
@@ -16,6 +22,17 @@ test('creates an isolated initial state for each supported menu', () => {
     selectedId:'', selectedAccount:'', completed:false, errors:{}
   });
   assert.equal(myInfo.createState('알 수 없는 메뉴'), null);
+});
+
+test('creates independent state and error objects for separate flows', () => {
+  const idPassword = myInfo.createState('ID조회/PW초기화');
+  const dormantRelease = myInfo.createState('장기미사용ID 제한 해지');
+
+  idPassword.errors.field = 'error';
+
+  assert.notEqual(idPassword, dormantRelease);
+  assert.notEqual(idPassword.errors, dormantRelease.errors);
+  assert.deepEqual(dormantRelease.errors, {});
 });
 
 test('phone request requires complete customer information and consent', () => {

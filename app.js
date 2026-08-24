@@ -2359,6 +2359,7 @@ function v47MyInfoTop(state){
   return `<div class="page-top iod-top v45-authtop"><div class="back" data-s1back title="이전">${I.back}</div><div class="page-title">${title}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>`;
 }
 function startV47MyInfo(menuTitle){
+  if(!V47MyInfo.shouldHandle(s1Ver, menuTitle)) return false;
   const state = V47MyInfo.createState(menuTitle);
   if(!state) return false;
   s1state.v47MyInfo = state;
@@ -2376,7 +2377,7 @@ function renderV47MyInfoPhone(state){
   const otp = state.step==='phoneOtp';
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body">
     <div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>
-    ${otp ? `<div class="auth-info"><div class="ir"><span class="k">인증번호</span><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6"></div></div><div class="primary-btn v45-iod-btn" data-v47mi-phone-verify>인증완료</div>` : `<div class="auth-info"><div class="ir"><span class="k">고객명</span><input id="v47MiName" class="ir-input"></div><div class="ir"><span class="k">생년월일</span><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6"></div><div class="ir"><span class="k">휴대폰</span><input id="v47MiPhone" class="ir-input" inputmode="numeric" maxlength="11"></div></div><div class="find-agree${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></div><div class="primary-btn v45-iod-btn" data-v47mi-phone-request>인증요청</div>`}
+    ${otp ? `<div class="auth-info"><div class="ir"><span class="k">인증번호</span><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6"></div></div><div class="primary-btn v45-iod-btn" data-v47mi-phone-verify>인증완료</div>` : `<div class="auth-info"><div class="ir"><span class="k">고객명</span><input id="v47MiName" class="ir-input"></div><div class="ir"><span class="k">생년월일</span><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6"></div><div class="ir"><span class="k">휴대폰</span><input id="v47MiPhone" class="ir-input" inputmode="numeric" maxlength="11"></div></div><button type="button" class="find-agree v47mi-phone-consent${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree role="checkbox" aria-checked="${s1state.v47MyInfoAgree}" aria-label="휴대폰 인증 전체 약관동의 (필수), ${s1state.v47MyInfoAgree?'동의함':'동의 전'}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b> · <span class="v47mi-consent-state">${s1state.v47MyInfoAgree?'동의함':'동의 전'}</span></span></button><div class="primary-btn v45-iod-btn" data-v47mi-phone-request>인증요청</div>`}
   </div></div>`;
 }
 function renderV47IdSelection(state){
@@ -6681,7 +6682,13 @@ document.addEventListener('click', (e)=>{
   }
   if(t.closest('[data-v47mi-agree]')){
     s1state.v47MyInfoAgree = !s1state.v47MyInfoAgree;
-    t.closest('[data-v47mi-agree]').classList.toggle('on', s1state.v47MyInfoAgree);
+    const agree=t.closest('[data-v47mi-agree]');
+    const stateText=s1state.v47MyInfoAgree?'동의함':'동의 전';
+    agree.classList.toggle('on', s1state.v47MyInfoAgree);
+    agree.setAttribute('aria-checked', String(s1state.v47MyInfoAgree));
+    agree.setAttribute('aria-label', `휴대폰 인증 전체 약관동의 (필수), ${stateText}`);
+    const stateLabel=agree.querySelector('.v47mi-consent-state');
+    if(stateLabel) stateLabel.textContent=stateText;
     return;
   }
   if(t.closest('[data-v47mi-phone-request]')){
@@ -6742,7 +6749,7 @@ document.addEventListener('click', (e)=>{
   // Ver 4.7 중메뉴 클릭 → 내정보 공통 인증·선택 플로우로 진입
   const v47s = t.closest('[data-v47sub]');
   if(v47s){
-    if(isV47() && startV47MyInfo(v47s.dataset.v47sub)) return;
+    if(startV47MyInfo(v47s.dataset.v47sub)) return;
     flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`);
     return;
   }
