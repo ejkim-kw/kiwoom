@@ -2354,6 +2354,41 @@ function v47Grid(){
     </div>`).join('') + `</div>`;
 }
 /* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
+function v47MyInfoTop(state){
+  return `<div class="page-top iod-top v45-authtop"><div class="back" data-s1back title="이전">${I.back}</div><div class="page-title">${state.flow==='idPassword'?'ID 조회·비밀번호 초기화':'본인인증'}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>`;
+}
+function startV47MyInfo(menuTitle){
+  const state = V47MyInfo.createState(menuTitle);
+  if(!state) return false;
+  s1state.v47MyInfo = state;
+  s1state.v47MyInfoAgree = false;
+  s1nav({page:'v47myinfo', title:menuTitle, noHome:true});
+  return true;
+}
+function applyV47MyInfoEvent(event){
+  const result = V47MyInfo.transition(s1state.v47MyInfo, event);
+  if(result.error){ flash(result.error); return; }
+  s1state.v47MyInfo = result.state;
+  renderS1();
+}
+function renderV47MyInfoPhone(state){
+  const otp = state.step==='phoneOtp';
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body">
+    <div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>
+    ${otp ? `<div class="auth-info"><div class="ir"><span class="k">인증번호</span><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6"></div></div><div class="primary-btn v45-iod-btn" data-v47mi-phone-verify>인증완료</div>` : `<div class="auth-info"><div class="ir"><span class="k">고객명</span><input id="v47MiName" class="ir-input"></div><div class="ir"><span class="k">생년월일</span><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6"></div><div class="ir"><span class="k">휴대폰</span><input id="v47MiPhone" class="ir-input" inputmode="numeric" maxlength="11"></div></div><div class="find-agree${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></div><div class="primary-btn v45-iod-btn" data-v47mi-phone-request>인증요청</div>`}
+  </div></div>`;
+}
+function renderV47MyInfoSelection(state){
+  const ids=V47MyInfo.DATA.ids.filter(x=>state.flow!=='dormantRelease'||x.dormant);
+  const selected=ids.find(x=>x.id===state.selectedId);
+  const accounts=selected ? V47MyInfo.DATA.accounts.filter(x=>selected.accounts.includes(x.id)) : [];
+  const choice=(kind,value,title,sub,on)=>`<button class="v47mi-choice${on?' on':''}" data-v47mi-${kind}="${value}" aria-pressed="${on}"><span><b>${title}</b><small>${sub}</small></span><span class="v47mi-check">${on?'선택됨 ✓':'선택'}</span></button>`;
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">ID와 계좌를 선택해 주세요</div><div class="td-desc">본인 확인에 사용할 정보를 선택해요.</div></div><div class="v47mi-list">${ids.map(x=>choice('id',x.id,x.id,x.dormant?'장기미사용 제한':'사용 가능',state.selectedId===x.id)).join('')}</div>${selected?`<div class="v47mi-list">${accounts.map(x=>choice('account',x.id,x.type,x.display,state.selectedAccount===x.id)).join('')}</div>`:''}<button class="primary-btn v45-iod-btn" data-v47mi-continue>다음</button></div></div>`;
+}
+function renderV47MyInfo(){
+  const state = s1state.v47MyInfo;
+  return state && state.step==='selection' ? renderV47MyInfoSelection(state) : renderV47MyInfoPhone(state);
+}
 function v47SubMenuPage(){
   const cat = V47_MENU_CATS.find(c=>c.id===s1state.v47Cat);
   if(!cat) return '';
@@ -5453,6 +5488,9 @@ function renderS1(){
   else if(s1state.page==='v47cat' && isV47()){
     html = v47SubMenuPage();
   }
+  else if(s1state.page==='v47myinfo' && isV47()){
+    html = renderV47MyInfo();
+  }
   else if(s1state.page==='ssmore'){
     html = renderSsMore();
   }
@@ -6604,12 +6642,47 @@ document.addEventListener('click', (e)=>{
     const fab=document.getElementById('v47Fab');
     if(fab?.classList.contains('open')){ fab.classList.remove('open'); fab.closest('.screen')?.classList.remove('v47-fab-open'); }
   }
+  if(t.closest('[data-v47mi-agree]')){
+    s1state.v47MyInfoAgree = !s1state.v47MyInfoAgree;
+    renderS1();
+    return;
+  }
+  if(t.closest('[data-v47mi-phone-request]')){
+    applyV47MyInfoEvent({
+      type:'PHONE_REQUEST',
+      name:(document.getElementById('v47MiName')||{}).value||'',
+      dob:(document.getElementById('v47MiDob')||{}).value||'',
+      phone:(document.getElementById('v47MiPhone')||{}).value||'',
+      agreed:!!s1state.v47MyInfoAgree
+    });
+    return;
+  }
+  if(t.closest('[data-v47mi-phone-verify]')){
+    applyV47MyInfoEvent({type:'PHONE_VERIFY', otp:(document.getElementById('v47MyInfoOtp')||{}).value||''});
+    return;
+  }
+  if(t.closest('[data-v47mi-id]')){
+    applyV47MyInfoEvent({type:'SELECT_ID', value:t.closest('[data-v47mi-id]').dataset.v47miId});
+    return;
+  }
+  if(t.closest('[data-v47mi-account]')){
+    applyV47MyInfoEvent({type:'SELECT_ACCOUNT', value:t.closest('[data-v47mi-account]').dataset.v47miAccount});
+    return;
+  }
+  if(t.closest('[data-v47mi-continue]')){
+    applyV47MyInfoEvent({type:'CONTINUE'});
+    return;
+  }
   // Ver 4.7 대메뉴 그리드 클릭 → 중메뉴 목록 페이지
   const v47c = t.closest('[data-v47cat]');
   if(v47c){ s1nav({page:'v47cat', v47Cat:+v47c.dataset.v47cat}); return; }
-  // Ver 4.7 중메뉴 클릭 → 이후 절차 정의 예정
+  // Ver 4.7 중메뉴 클릭 → 내정보 공통 인증·선택 플로우로 진입
   const v47s = t.closest('[data-v47sub]');
-  if(v47s){ flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`); return; }
+  if(v47s){
+    if(isV47() && startV47MyInfo(v47s.dataset.v47sub)) return;
+    flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`);
+    return;
+  }
   // [큰글씨] ON · 큰 카드 아코디언: 카드 탭=인라인 펼침/접힘, 서비스 탭=해당 카테고리 소메뉴 드릴다운
   // Ver 4.0 · '상담 없이 해결할 수 있어요' 자가해결 카드 펼침/접기 (화살표)
   if(t.closest('[data-faqtoggle]')){ s1state.faqOpen = !s1state.faqOpen; renderS1(); return; }

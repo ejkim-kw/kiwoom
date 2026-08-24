@@ -17,3 +17,39 @@ test('creates an isolated initial state for each supported menu', () => {
   });
   assert.equal(myInfo.createState('알 수 없는 메뉴'), null);
 });
+
+test('phone request requires complete customer information and consent', () => {
+  const state = myInfo.createState('증권계좌번호확인');
+  let result = myInfo.transition(state, {type:'PHONE_REQUEST', name:'', dob:'900101', phone:'01012345678', agreed:true});
+  assert.equal(result.error, '고객명을 입력해 주세요.');
+  result = myInfo.transition(state, {type:'PHONE_REQUEST', name:'홍길동', dob:'9001', phone:'01012345678', agreed:true});
+  assert.equal(result.error, '생년월일 6자리를 입력해 주세요.');
+  result = myInfo.transition(state, {type:'PHONE_REQUEST', name:'홍길동', dob:'900101', phone:'0101234', agreed:true});
+  assert.equal(result.error, '휴대폰 번호 10~11자리를 입력해 주세요.');
+  result = myInfo.transition(state, {type:'PHONE_REQUEST', name:'홍길동', dob:'900101', phone:'01012345678', agreed:false});
+  assert.equal(result.error, '휴대폰 인증 필수 약관에 동의해 주세요.');
+  result = myInfo.transition(state, {type:'PHONE_REQUEST', name:'홍길동', dob:'900101', phone:'01012345678', agreed:true});
+  assert.equal(result.state.step, 'phoneOtp');
+});
+
+test('phone verification cannot advance without six digits', () => {
+  const state = myInfo.createState('증권계좌번호확인');
+  const result = myInfo.transition({...state, step:'phoneOtp'}, {type:'PHONE_VERIFY', otp:'123'});
+  assert.equal(result.state.step, 'phoneOtp');
+  assert.equal(result.error, '인증번호 6자리를 입력해 주세요.');
+});
+
+test('ID password flow requires an ID and linked account', () => {
+  let state = {...myInfo.createState('ID조회/PW초기화'), step:'selection', phoneVerified:true};
+  let result = myInfo.transition(state, {type:'CONTINUE'});
+  assert.equal(result.error, '재설정할 ID와 계좌를 선택해 주세요.');
+  state = {...state, selectedId:'kiwoom0728', selectedAccount:'52575602'};
+  result = myInfo.transition(state, {type:'CONTINUE'});
+  assert.equal(result.state.step, 'accountPassword');
+});
+
+test('an account must belong to the selected ID', () => {
+  const state = {...myInfo.createState('ID조회/PW초기화'), step:'selection', selectedId:'hero2024'};
+  const result = myInfo.transition(state, {type:'SELECT_ACCOUNT', value:'52575602'});
+  assert.equal(result.error, '선택한 ID에 연결된 계좌를 선택해 주세요.');
+});
