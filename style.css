@@ -1420,7 +1420,7 @@ body{
 .find-agree .fa-box svg{width:13px;height:13px}
 .find-agree.on .fa-box{background:#1A1A4E;border-color:#1A1A4E;color:#fff}
 .find-agree b{color:#1A1A4E}
-.v47mi-phone-consent{width:100%;border:0;background:transparent;text-align:left;font:inherit}
+.v47mi-phone-consent{width:100%;min-height:44px;border:0;background:transparent;text-align:left;font:inherit}
 .v47mi-phone-consent:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px}
 .find-ov .cs-cta{background:#1A1A4E;color:#fff;text-align:center;padding:16px;border-radius:14px;
   font-size:calc(16px*var(--scale));font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(26,26,78,.25);transition:opacity .15s}
