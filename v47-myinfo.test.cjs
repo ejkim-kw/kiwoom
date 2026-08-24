@@ -68,3 +68,30 @@ test('continue rejects an unlinked or unknown ID and account relationship', () =
   result = myInfo.transition({...base, selectedId:'unknown-id', selectedAccount:'52575602'}, {type:'CONTINUE'});
   assert.equal(result.error, '선택한 ID에 연결된 계좌를 선택해 주세요.');
 });
+
+test('account profile account auth advances to a read-only profile', () => {
+  let state = myInfo.createState('계좌정보 조회 및 변경');
+  let result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'52575602', password:'1234'});
+  assert.equal(result.state.step, 'profile');
+  assert.equal(result.state.selectedAccount, '52575602');
+});
+
+test('account profile authentication validates the selected account and numeric password', () => {
+  const state = myInfo.createState('계좌정보 조회 및 변경');
+  let result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'unknown', password:'1234'});
+  assert.equal(result.error, '조회할 계좌를 선택해 주세요.');
+  result = myInfo.transition(state, {type:'ACCOUNT_AUTH', account:'52575602', password:'abcd'});
+  assert.equal(result.error, '계좌비밀번호 숫자 4~8자리를 입력해 주세요.');
+});
+
+test('account number lookup ends at account list after phone verification', () => {
+  let state = {...myInfo.createState('증권계좌번호확인'), step:'phoneOtp'};
+  const result = myInfo.transition(state, {type:'PHONE_VERIFY', otp:'123456'});
+  assert.equal(result.state.step, 'accountList');
+  assert.equal(myInfo.DATA.accounts.length, 3);
+});
+
+test('account password guide starts without authentication', () => {
+  const state = myInfo.createState('계좌비밀번호 재설정');
+  assert.equal(state.step, 'guide');
+});

@@ -3747,4 +3747,15 @@ body{
 .flow.toss.v47 .v47mi-choice small{color:#6B7280;font-size:12px}
 .flow.toss.v47 .v47mi-check{min-width:44px;min-height:44px;display:grid;place-items:center;color:#1A1A4E;font-size:12px}
 .flow.toss.v47 .v47mi-error{color:#B42318;font-size:13px;line-height:1.45;margin-top:8px}
+.flow.toss.v47 .v47mi-profile{padding:0;overflow:hidden}
+.flow.toss.v47 .v47mi-profile .v45-ir{padding:15px 16px;margin:0;border-bottom:1px solid #EEF0F4}
+.flow.toss.v47 .v47mi-profile .v45-ir:last-child{border-bottom:0}
+.flow.toss.v47 .v47mi-dual{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.flow.toss.v47 .v47mi-dual button{min-height:52px;border:1px solid #D8DCF0;border-radius:14px;background:#fff;color:#1A1A4E;font-weight:700}
+.flow.toss.v47 .v47mi-dual button:last-child{border-color:#1A1A4E;background:#1A1A4E;color:#fff}
+.flow.toss.v47 .v47mi-guide{padding:0}
+.flow.toss.v47 .v47mi-guide-item{display:flex;flex-direction:column;gap:5px;padding:16px;border-bottom:1px solid #EEF0F4;line-height:1.45}
+.flow.toss.v47 .v47mi-guide-item:last-child{border-bottom:0}
+.flow.toss.v47 .v47mi-guide-item b{color:#1A1A4E;font-size:14px}
+.flow.toss.v47 .v47mi-guide-item span{color:#667085;font-size:13px}
 

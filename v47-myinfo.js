@@ -43,6 +43,11 @@
       const step = state.flow==='accountNumbers' ? 'accountList' : 'selection';
       return {state:{...next, phoneVerified:true, step}, error:''};
     }
+    if(event.type==='ACCOUNT_AUTH'){
+      if(!DATA.accounts.some(x=>x.id===event.account)) return {state, error:'조회할 계좌를 선택해 주세요.'};
+      if(!/^\d{4,8}$/.test(event.password||'')) return {state, error:'계좌비밀번호 숫자 4~8자리를 입력해 주세요.'};
+      return {state:{...next, selectedAccount:event.account, step:'profile'}, error:''};
+    }
     if(event.type==='SELECT_ID') return {state:{...next, selectedId:event.value, selectedAccount:''}, error:''};
     if(event.type==='SELECT_ACCOUNT'){
       const owner = DATA.ids.find(x=>x.id===state.selectedId);

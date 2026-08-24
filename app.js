@@ -2385,9 +2385,30 @@ function renderV47MyInfoSelection(state){
   const choice=(kind,value,title,sub,on)=>`<button class="v47mi-choice${on?' on':''}" data-v47mi-${kind}="${value}" aria-pressed="${on}"><span><b>${title}</b><small>${sub}</small></span><span class="v47mi-check">${on?'선택됨 ✓':'선택'}</span></button>`;
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">ID와 계좌를 선택해 주세요</div><div class="td-desc">본인 확인에 사용할 정보를 선택해요.</div></div><div class="v47mi-list">${ids.map(x=>choice('id',x.id,x.id,x.dormant?'장기미사용 제한':'사용 가능',state.selectedId===x.id)).join('')}</div>${selected?`<div class="v47mi-list">${accounts.map(x=>choice('account',x.id,x.type,x.display,state.selectedAccount===x.id)).join('')}</div>`:''}<button class="primary-btn v45-iod-btn" data-v47mi-continue>다음</button></div></div>`;
 }
+function renderV47AccountAuth(state){
+  const accounts=V47MyInfo.DATA.accounts.map(x=>`<option value="${x.id}">${x.type} · ${x.display}</option>`).join('');
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">조회할 계좌와 계좌비밀번호를 입력해 주세요.</div></div><div class="auth-info"><div class="ir"><span class="k">계좌</span><select id="v47MiAccount" class="ir-input"><option value="">계좌를 선택해 주세요</option>${accounts}</select></div><div class="ir"><span class="k">계좌비밀번호</span><input id="v47MiAccountPassword" class="ir-input" type="password" inputmode="numeric" maxlength="8"></div></div><button class="primary-btn v45-iod-btn" data-v47mi-account-auth>인증하기</button></div></div>`;
+}
+function renderV47AccountProfile(state){
+  const p=V47MyInfo.DATA.accountProfile;
+  const rows=[['주소',p.address],['연락처',p.phone],['마케팅 수신매체',p.marketing],['직업',p.occupation],['거주국가',p.residence]];
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌정보를 확인해 주세요</div><div class="td-desc">등록된 정보는 영웅문S# 또는 상담원을 통해 변경할 수 있어요.</div></div><div class="iod-v45-card v47mi-profile">${rows.map(([k,v])=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv">${v}</span></div>`).join('')}</div><div class="v47mi-dual"><button data-v47mi-agent>상담원 연결</button><button data-v47mi-hero-profile>영웅문S#에서 변경</button></div></div></div>`;
+}
+function renderV47AccountNumbers(state){
+  const rows=V47MyInfo.DATA.accounts.map(x=>`<div class="iod-v45-card v45-cert-item"><div class="v45-ci-head"><div class="v45-ci-nm">${x.type}</div><span class="iod-badge done">사용 가능</span></div><div class="v45-ci-date">${x.display}</div></div>`).join('');
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">보유 계좌를 확인했어요</div><div class="td-desc">고객님 명의의 증권계좌 목록이에요.</div></div>${rows}</div></div>`;
+}
+function renderV47AccountPasswordGuide(state){
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌비밀번호를 안내해 드릴게요</div><div class="td-desc">비밀번호 재설정은 영웅문S#에서 진행할 수 있어요.</div></div><div class="iod-v45-card v47mi-guide"><div class="v47mi-guide-item"><b>어디에 사용하나요?</b><span>주문, 이체 등 계좌 업무를 확인할 때 사용해요.</span></div><div class="v47mi-guide-item"><b>몇 자리인가요?</b><span>숫자 4~8자리로 설정해요.</span></div><div class="v47mi-guide-item"><b>비밀번호를 잊으셨나요?</b><span>기존 비밀번호는 조회할 수 없으며 안전하게 재설정해야 해요.</span></div></div><button class="primary-btn v45-iod-btn" data-v47mi-hero-password>영웅문S#에서 재설정</button></div></div>`;
+}
 function renderV47MyInfo(){
   const state = s1state.v47MyInfo;
-  return state && state.step==='selection' ? renderV47MyInfoSelection(state) : renderV47MyInfoPhone(state);
+  if(!state) return '';
+  if(state.step==='accountAuth') return renderV47AccountAuth(state);
+  if(state.step==='profile') return renderV47AccountProfile(state);
+  if(state.step==='accountList') return renderV47AccountNumbers(state);
+  if(state.step==='guide') return renderV47AccountPasswordGuide(state);
+  return state.step==='selection' ? renderV47MyInfoSelection(state) : renderV47MyInfoPhone(state);
 }
 function v47SubMenuPage(){
   const cat = V47_MENU_CATS.find(c=>c.id===s1state.v47Cat);
@@ -6644,7 +6665,7 @@ document.addEventListener('click', (e)=>{
   }
   if(t.closest('[data-v47mi-agree]')){
     s1state.v47MyInfoAgree = !s1state.v47MyInfoAgree;
-    renderS1();
+    t.closest('[data-v47mi-agree]').classList.toggle('on', s1state.v47MyInfoAgree);
     return;
   }
   if(t.closest('[data-v47mi-phone-request]')){
@@ -6661,6 +6682,17 @@ document.addEventListener('click', (e)=>{
     applyV47MyInfoEvent({type:'PHONE_VERIFY', otp:(document.getElementById('v47MyInfoOtp')||{}).value||''});
     return;
   }
+  if(t.closest('[data-v47mi-account-auth]')){
+    applyV47MyInfoEvent({
+      type:'ACCOUNT_AUTH',
+      account:(document.getElementById('v47MiAccount')||{}).value||'',
+      password:(document.getElementById('v47MiAccountPassword')||{}).value||''
+    });
+    return;
+  }
+  if(t.closest('[data-v47mi-agent]')){ openConsult('계좌정보 변경'); return; }
+  if(t.closest('[data-v47mi-hero-profile]')){ openAppLink('myacctinfo'); return; }
+  if(t.closest('[data-v47mi-hero-password]')){ openAppLink('pwresetacct'); return; }
   if(t.closest('[data-v47mi-id]')){
     applyV47MyInfoEvent({type:'SELECT_ID', value:t.closest('[data-v47mi-id]').dataset.v47miId});
     return;
