@@ -80,6 +80,14 @@ test('account authentication uses direct inputs with contextual help actions', (
   });
 });
 
+test('내정보 인증화면은 셀프서비스 인증 디자인 프레젠테이션을 사용한다', () => {
+  assert.deepEqual(myInfo.getAuthPresentation(), {
+    bodyClass:'v47mi-self-auth',
+    inputGroupClass:'v47mi-self-auth-info',
+    inset:20,
+  });
+});
+
 test('orients every flow and result screen with a stable title', () => {
   assert.equal(myInfo.getTitle({flow:'accountProfile', step:'profile'}), '계좌정보 조회 및 변경');
   assert.equal(myInfo.getTitle({flow:'accountNumbers', step:'accountList'}), '증권계좌번호 확인');
