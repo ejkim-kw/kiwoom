@@ -59,6 +59,9 @@
       password:{value:'', inputMode:'numeric', maxLength:8, helpKind:'accountPassword'}
     };
   }
+  function getAuthPresentation(){
+    return {bodyClass:'v47mi-self-auth', inputGroupClass:'v47mi-self-auth-info', inset:20};
+  }
   function maskAccount(value){
     const raw=String(value||'').replace(/\D/g,'');
     return raw.length===8 ? `${raw.slice(0,2)}**-**${raw.slice(-2)}` : '****';
@@ -135,5 +138,5 @@
     if(event.type==='COMPLETE') return {state:{...next, step:'complete', completed:true}, error:''};
     return {state, error:''};
   }
-  return {MENU_KEYS, FLOW_META, DATA, shouldHandle, getTitle, getProgress, getHeaderModel, getAccountAuthModel, maskAccount, createState, transition};
+  return {MENU_KEYS, FLOW_META, DATA, shouldHandle, getTitle, getProgress, getHeaderModel, getAccountAuthModel, getAuthPresentation, maskAccount, createState, transition};
 });

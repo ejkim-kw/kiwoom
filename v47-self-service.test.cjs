@@ -67,3 +67,88 @@ test('VER4.7 셀프서비스 stepper는 범위를 벗어난 현재 단계를 안
   assert.equal(model.current, 2);
   assert.deepEqual(model.states, ['done','done','current']);
 });
+
+test('VER4.7 서류 발급현황은 카드 대신 새로고침 버튼으로 결과를 전환한다', () => {
+  assert.deepEqual(service.getCertificateResultInteraction('v47'), {
+    cardToggles:false,
+    refreshToggles:true,
+    refreshLabel:'다른 결과 보기',
+  });
+});
+
+test('이전 버전의 서류 발급현황 카드 전환 방식은 유지한다', () => {
+  assert.deepEqual(service.getCertificateResultInteraction('v46'), {
+    cardToggles:true,
+    refreshToggles:false,
+    refreshLabel:'다른 결과 보기',
+  });
+});
+
+test('VER4.7 비밀번호 재설정은 전체화면 선택 모델을 제공한다', () => {
+  assert.deepEqual(service.getPasswordResetChoiceModel('v47'), {
+    title:'어떤 비밀번호를 재설정할까요?',
+    description:'재설정할 비밀번호를 선택해 주세요.',
+    stepLabel:'비밀번호 선택',
+    options:[
+      { kind:'pwreset0', name:'ID 비밀번호', description:'로그인에 쓰는 영문과 숫자를 조합한 5~8자리 비밀번호예요.' },
+      { kind:'pwreset1', name:'증권계좌 비밀번호', description:'증권계좌에 쓰는 숫자 4~8자리 비밀번호예요.' },
+      { kind:'pwreset2', name:'공동인증서 비밀번호', description:'영문·숫자·특수문자를 모두 포함한 10자리 이상 비밀번호예요.' },
+    ],
+  });
+  assert.equal(service.getPasswordResetChoiceModel('v46'), null);
+});
+
+test('VER4.7 ID 비밀번호 재설정은 공통 3단계 stepper 모델을 사용한다', () => {
+  assert.deepEqual(service.getIdPasswordResetStepper('v47', 1), {
+    accessibleTitle:'ID 비밀번호 재설정',
+    labels:['본인 인증','계좌 인증','비밀번호 재설정'],
+    current:1,
+    states:['done','current','upcoming'],
+  });
+  assert.equal(service.getIdPasswordResetStepper('v46', 1), null);
+});
+
+test('VER4.7 증권계좌와 공동인증서 비밀번호 안내를 결과페이지 모델로 제공한다', () => {
+  assert.deepEqual(service.getPasswordResetGuideModel('v47', 'account'), {
+    title:'증권계좌 비밀번호',
+    rule:'숫자 4~8자리',
+    description:'비밀번호가 기억나지 않으면 영웅문S#에서 다시 설정할 수 있어요.',
+    appKey:'pwresetacct',
+  });
+  assert.deepEqual(service.getPasswordResetGuideModel('v47', 'certificate'), {
+    title:'공동인증서 비밀번호',
+    rule:'영문·숫자·특수문자를 모두 포함한 10자리 이상',
+    description:'비밀번호가 기억나지 않으면 영웅문S#에서 다시 설정할 수 있어요.',
+    appKey:'pwresetcert',
+  });
+  assert.equal(service.getPasswordResetGuideModel('v46', 'account'), null);
+  assert.equal(service.getPasswordResetGuideModel('v47', 'unknown'), null);
+});
+
+test('VER4.7 셀프서비스 더보기는 비밀번호 선택과 동일한 카드형 목록을 사용한다', () => {
+  assert.deepEqual(service.getSelfServiceListPresentation('v47'), {
+    layout:'choice-cards',
+    interactiveElement:'button',
+  });
+  assert.deepEqual(service.getSelfServiceListPresentation('v46'), {
+    layout:'legacy-rows',
+    interactiveElement:'div',
+  });
+});
+
+test('VER4.7 대메뉴의 중메뉴도 동일한 카드형 목록을 사용한다', () => {
+  assert.deepEqual(service.getSubMenuListPresentation('v47'), {
+    layout:'choice-cards',
+    interactiveElement:'button',
+    density:'compact',
+  });
+  assert.equal(service.getSubMenuListPresentation('v46'), null);
+});
+
+test('VER4.7 전체 중메뉴 44개에 간결한 행동형 설명을 제공한다', () => {
+  assert.equal(Object.keys(service.SUBMENU_DESCRIPTIONS).length, 44);
+  assert.ok(Object.values(service.SUBMENU_DESCRIPTIONS).every(text => text.length > 0 && text.endsWith('해요')));
+  assert.equal(service.getSubMenuDescription('v47', '계좌정보 조회 및 변경'), '등록된 계좌 정보를 확인하고 변경해요');
+  assert.equal(service.getSubMenuDescription('v47', '체결조회'), '주문 체결 여부와 내역을 확인해요');
+  assert.equal(service.getSubMenuDescription('v46', '체결조회'), '');
+});
