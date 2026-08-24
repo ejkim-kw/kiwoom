@@ -3743,12 +3743,17 @@ body{
 .toss-home.bigfont .v47-cell-sub{display:none}
 /* Ver 4.7 내정보 공통 선택 단계 */
 .flow.toss.v47 .v47mi-list{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+.flow.toss.v47 .v47mi-stepper{flex:none;margin:0 56px 8px;min-height:8px}
+.flow.toss.v47 .v47mi-stepper .v45-step{flex:1;max-width:34px;min-width:12px}
 .flow.toss.v47 .v47mi-choice{min-height:64px;padding:14px 16px;border:1.5px solid #EAECFF;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .flow.toss.v47 .v47mi-choice.on{border-color:#1A1A4E;background:#F5F5FF}
 .flow.toss.v47 .v47mi-choice>span:first-child{display:flex;flex-direction:column;gap:3px;text-align:left}
 .flow.toss.v47 .v47mi-choice small{color:#6B7280;font-size:12px}
 .flow.toss.v47 .v47mi-check{min-width:44px;min-height:44px;display:grid;place-items:center;color:#1A1A4E;font-size:12px}
-.flow.toss.v47 .v47mi-error{color:#B42318;font-size:13px;line-height:1.45;margin-top:8px}
+.flow.toss.v47 .v47mi-error{color:#B42318;font-size:13px;font-weight:600;line-height:1.45;margin-top:8px;overflow-wrap:anywhere}
+.flow.toss.v47 .v47mi-error:empty{display:none}
+.flow.toss.v47 .ir:has([aria-invalid="true"]){border-color:#B42318!important;background:#FFF7F6!important}
+.flow.toss.v47 [role="group"][aria-invalid="true"],.flow.toss.v47 .v47mi-phone-consent[aria-invalid="true"]{outline:2px solid #B42318;outline-offset:3px}
 .flow.toss.v47 .v47mi-profile{padding:0;overflow:hidden}
 .flow.toss.v47 .v47mi-profile .v45-ir{padding:15px 16px;margin:0;border-bottom:1px solid #EEF0F4}
 .flow.toss.v47 .v47mi-profile .v45-ir:last-child{border-bottom:0}
