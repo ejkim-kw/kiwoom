@@ -51,3 +51,19 @@ test('비대면 접수현황 결과는 네 가지 신청 업무를 보여준다'
   ]);
   assert.ok(service.UNTACT_STATUS.every(item => item.status && item.description));
 });
+
+test('VER4.7 셀프서비스는 내정보와 동일한 현재 단계 stepper 모델을 제공한다', () => {
+  assert.deepEqual(service.getStepperModel('v47', '비대면 접수현황', ['계좌 인증','접수현황 조회','결과 안내'], 1), {
+    accessibleTitle:'비대면 접수현황',
+    labels:['계좌 인증','접수현황 조회','결과 안내'],
+    current:1,
+    states:['done','current','upcoming'],
+  });
+  assert.equal(service.getStepperModel('v46', '비대면 접수현황', ['계좌 인증','접수현황 조회','결과 안내'], 1), null);
+});
+
+test('VER4.7 셀프서비스 stepper는 범위를 벗어난 현재 단계를 안전하게 보정한다', () => {
+  const model = service.getStepperModel('v47', '서류 발급현황', ['계좌 인증','발급현황 조회','재발급'], 9);
+  assert.equal(model.current, 2);
+  assert.deepEqual(model.states, ['done','done','current']);
+});

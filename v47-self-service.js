@@ -39,5 +39,16 @@
       : BASE_SELF_SERVICE_ITEMS.slice();
   }
 
-  return { getSelfServiceItems, CERTIFICATE_STATUS, UNTACT_STATUS };
+  function getStepperModel(version, title, steps, current) {
+    if (version !== 'v47' || !Array.isArray(steps) || !steps.length) return null;
+    const safeCurrent = Math.max(0, Math.min(steps.length - 1, Number.isFinite(current) ? current : 0));
+    return {
+      accessibleTitle:String(title || '셀프서비스'),
+      labels:steps.slice(),
+      current:safeCurrent,
+      states:steps.map((_, index) => index < safeCurrent ? 'done' : (index === safeCurrent ? 'current' : 'upcoming')),
+    };
+  }
+
+  return { getSelfServiceItems, getStepperModel, CERTIFICATE_STATUS, UNTACT_STATUS };
 });

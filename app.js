@@ -3004,10 +3004,19 @@ function authStep(method){
 function v45AuthTop(cur){
   cur = (cur !== undefined && cur !== null) ? cur : 0;
   const steps = iodStepsFor();
-  const seg = steps.map((s,i)=>`<span class="v45-step${i<=cur?' on':''}"></span>`).join('');
+  const v47Model = V47SelfService.getStepperModel(s1Ver, s1state.title, steps, cur);
   const back = s1state.noBack
     ? `<div class="v45-step-spacer" aria-hidden="true"></div>`
-    : `<div class="back" data-s1back>${I.back}</div>`;
+    : (v47Model ? `<button type="button" class="back" data-s1back aria-label="이전 화면">${I.back}</button>` : `<div class="back" data-s1back>${I.back}</div>`);
+  if(v47Model){
+    const segments=v47Model.labels.map((label,i)=>`<span class="v45-step${v47Model.states[i]==='done'?' done':(v47Model.states[i]==='current'?' on':'')}" title="${label}"></span>`).join('');
+    return `<div class="page-top iod-top v45-authtop">`
+      + back
+      + `<div class="v47mi-stepper v47ss-stepper" role="progressbar" aria-label="${v47Model.accessibleTitle} 진행 단계" aria-valuemin="1" aria-valuemax="${v47Model.labels.length}" aria-valuenow="${v47Model.current+1}" aria-valuetext="${v47Model.current+1}/${v47Model.labels.length} · ${v47Model.labels[v47Model.current]}"><div class="v47mi-step-label"><b>${v47Model.current+1}/${v47Model.labels.length}</b><span>${v47Model.labels[v47Model.current]}</span></div><div class="v47mi-step-track" aria-hidden="true">${segments}</div></div>`
+      + `<div class="v45-step-spacer" aria-hidden="true"></div>`
+      + `</div>`;
+  }
+  const seg = steps.map((s,i)=>`<span class="v45-step${i<=cur?' on':''}"></span>`).join('');
   return `<div class="page-top iod-top v45-authtop">`
     + back
     + `<div class="v45-stepper" title="${cur+1}/${steps.length} · ${steps[cur]}">${seg}</div>`
