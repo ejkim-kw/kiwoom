@@ -2555,12 +2555,12 @@ function v45Banner(){
   </div>`;
 }
 /* Ver 4.5 · 자가해결 배너 슬라이더 (1장씩 자동 슬라이딩 + 점 인디케이터 + 더보기) */
-const SS_ITEMS = [
-  {t:'입출금이 안돼요',           sub:'한도제한·출금불가 원인을 즉시 확인해요',   act:'data-iodstart',  img:'assets/glass3.png',  ic:'assets/v47-glass-3.png', v47float:true},
-  {t:'서류 발급현황이 궁금해요',   sub:'신청 서류의 발급 상태를 바로 확인해요',   act:'data-certstart', img:'assets/glass5.png',  ic:'assets/v47-glass-2.png', v47float:true},
-  {t:'ISA 가입서류를 내고 싶어요', sub:'소득확인 서류를 제출하고 가입을 완료해요', act:'data-isastart',  img:'assets/glass4.png',  ic:'assets/v47-glass-7.png', v47float:true},
-  {t:'비밀번호를 모르겠어요',      sub:'계좌 비밀번호를 안전하게 재설정해요',     act:'data-pwreset',   img:'assets/glass2.jpeg', ic:'assets/v47-glass-1.png', v47float:true, v47img:'assets/glass2-nobg.png'},
-];
+function selfServiceItems(){
+  return V47SelfService.getSelfServiceItems(s1Ver).map(it=>({
+    t:it.title, sub:it.sub, act:`data-${it.action}`, img:it.img, ic:it.icon,
+    v47float:it.v47Float, v47img:it.v47Img
+  }));
+}
 let ssBannerTimer = null;
 const SS_CHEV_R = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
 
@@ -2585,8 +2585,9 @@ function v45SsBannerCard(it){
 }
 
 function v45SelfSolve(){
-  const slides = SS_ITEMS.map(it => v45SsBannerCard(it)).join('');
-  const dots = SS_ITEMS.map((_, i) =>
+  const bannerItems = selfServiceItems().slice(0, 4);
+  const slides = bannerItems.map(it => v45SsBannerCard(it)).join('');
+  const dots = bannerItems.map((_, i) =>
     `<span class="v45ss-dot${i===0?' on':''}" data-ssdot="${i}"></span>`
   ).join('');
   return `<div class="v45-selfsolve">
@@ -2600,7 +2601,7 @@ function v45SelfSolve(){
 }
 
 function renderSsMore(){
-  const rows = SS_ITEMS.map(it=>
+  const rows = selfServiceItems().map(it=>
     `<div class="toss-cat v45ss-txtrow" ${it.act}>
       <div class="tc-body"><div class="tc-nm">${it.t}</div><div class="tc-desc">${it.sub}</div></div>
       <div class="tc-arw">${I.chev}</div>
@@ -2850,21 +2851,23 @@ function authStep(method){
   const isa = isIsaFlow();
   const v40 = isV40();
   const cert = isCertFlow();
-  const iodOnly = iod && !isa && !cert;   // 순수 '입출금이 안돼요' 흐름만 초보자용 간결 재설계(진행바·note 삭제, 타이틀·플레이스홀더 정리)
+  const untactStatus = isUntactStatusFlow();
+  const iodOnly = iod && !isa && !cert && !untactStatus;   // 순수 '입출금이 안돼요' 흐름만 초보자용 간결 재설계(진행바·note 삭제, 타이틀·플레이스홀더 정리)
   const certV40 = cert && s1Ver==='v40';  // v40 '서류 발급현황' 흐름도 iodauth와 동일한 초보자용 간결 재설계(진행바·note 삭제, 25px 정렬, 회색 findlink)
   const isaV40 = isa && s1Ver==='v40';    // v40 ISA(FAQ 3번)도 1·2번과 동일 iodauth 초보자용 스타일(진행바 삭제·14px·25px·회색 findlink). v41/v42는 기존 유지
   const simple = iodOnly || certV40 || isaV40;   // 간결 UI(iodauth 클래스·플레이스홀더·note삭제·버튼폭·25px) 공통 게이트
   const ctx = cheAuthCtx();
-  const head = isa ? '중개형 ISA 신청현황을<br>조회할 계좌를 인증해주세요' : (iod ? '어떤 계좌에서<br>입출금이 안되나요?' : '본인 명의 계좌번호와<br>비밀번호를 입력해주세요');
+  const head = isa ? '중개형 ISA 신청현황을<br>조회할 계좌를 인증해주세요' : (untactStatus ? '비대면 접수현황을<br>조회할 계좌를 인증해주세요' : (iod ? '어떤 계좌에서<br>입출금이 안되나요?' : '본인 명의 계좌번호와<br>비밀번호를 입력해주세요'));
   const acctDesc = isa ? '중개형 ISA 신청현황을 확인할 계좌번호와 비밀번호를 입력해 주세요'
+                 : untactStatus ? '비대면으로 신청한 업무를 확인할 계좌번호와 비밀번호를 입력해 주세요'
                  : cert ? (certV40 ? '신청 내역을 확인할 계좌번호와 비밀번호를 입력해 주세요' : '증명서 발급·신청 내역을 확인할 계좌번호와 비밀번호를 입력해 주세요')
                  : iod ? '입출금 상태를 확인할 계좌번호와 비밀번호를 입력해 주세요'
                  : che ? `${ctx?ctx+'을 확인할 ':''}계좌번호와 비밀번호를 입력해 주세요`
                  : '본인 명의 계좌번호와 비밀번호를 입력해 주세요';
-  const note = isa ? '인증하신 계좌의 중개형 ISA 가입·이전 신청현황을 확인해요.' : (cert ? '인증하신 계좌의 증명서 발급·신청 내역을 확인해요.' : (iod ? '인증하신 계좌의 상태를 확인해서 안내해 드려요.' : (che ? '본인 명의 계좌만 조회 가능해요.' : '계좌번호와 비밀번호로 본인인증을 진행합니다.')));
+  const note = isa ? '인증하신 계좌의 중개형 ISA 가입·이전 신청현황을 확인해요.' : (untactStatus ? '인증하신 계좌의 비대면 업무 접수·처리 현황을 확인해요.' : (cert ? '인증하신 계좌의 증명서 발급·신청 내역을 확인해요.' : (iod ? '인증하신 계좌의 상태를 확인해서 안내해 드려요.' : (che ? '본인 명의 계좌만 조회 가능해요.' : '계좌번호와 비밀번호로 본인인증을 진행합니다.'))));
   const acctVal = iod ? (s1state.iodAcctNo||'') : (che ? (s1state.cheAcctNo||'') : '');   // 계좌 선택(인증 후 계좌리스트)에서 자동 입력된 계좌번호
   // v40 계열: Ver 4.0 토스 헤딩(타이틀+설명) / 레거시: 기존 auth-head. ISA·증명서는 안내+인증 1페이지 통합 → 전용 타이틀
-  const acctTitle = isa ? (isaV40 ? 'ISA 가입 · 이전 신청내역을 확인해볼게요' : 'ISA 가입서류 제출') : (cert ? (certV40 ? '서류 신청내역을 확인해볼게요' : '증명서 발급 현황') : (iodOnly ? '계좌 상태를 확인해볼게요' : '계좌 인증'));
+  const acctTitle = isa ? (isaV40 ? 'ISA 가입 · 이전 신청내역을 확인해볼게요' : 'ISA 가입서류 제출') : (untactStatus ? '비대면 접수현황' : (cert ? (certV40 ? '서류 신청내역을 확인해볼게요' : '증명서 발급 현황') : (iodOnly ? '계좌 상태를 확인해볼게요' : '계좌 인증')));
   const heading = v40
     ? `<div class="toss-dhead"><div class="td-title">${acctTitle}</div><div class="td-desc">${acctDesc}</div></div>`
     : `<div class="auth-head">${head}</div>`;
@@ -3530,9 +3533,11 @@ function cheAuthCtx(){ const go=(s1state.authNext||{}).go; if(go==='chefilled') 
 const IOD_STEPS = ['계좌 인증','계좌 조회','결과 안내'];
 const ISA_STEPS = ['계좌 인증','신청현황 조회','서류 제출'];   // 중개형 ISA 가입서류 제출 플로우 스텝
 const CERT_STEPS = ['계좌 인증','발급현황 조회','재발급'];   // 증명서 발급 현황 플로우 스텝
+const UNTACT_STATUS_STEPS = ['계좌 인증','접수현황 조회','결과 안내'];
 function isIsaFlow(){ return !!(s1state.authNext||{}).isa; }   // ISA 플로우(계좌인증 재사용, authNext.isa 플래그)
 function isCertFlow(){ return !!(s1state.authNext||{}).cert; }   // 증명서 발급 현황 플로우(계좌인증 재사용, authNext.cert 플래그)
-function iodStepsFor(){ return isCertFlow() ? CERT_STEPS : (isIsaFlow() ? ISA_STEPS : IOD_STEPS); }   // 공유 계좌인증 화면 스텝 라벨
+function isUntactStatusFlow(){ return !!(s1state.authNext||{}).untactStatus; }
+function iodStepsFor(){ return isUntactStatusFlow() ? UNTACT_STATUS_STEPS : (isCertFlow() ? CERT_STEPS : (isIsaFlow() ? ISA_STEPS : IOD_STEPS)); }   // 공유 계좌인증 화면 스텝 라벨
 const IOD_HERO_IC = '<img src="assets/ys-icon.png" alt="영웅문S#">';
 /* 결과 화면 하단 버튼 → 클릭 시 방법 선택 플로팅(openMethodSheet) 노출.
    등록형(multi/dormant)=금융거래목적확인서 등록, 한도제한(limit)=한도 제한 해제. */
@@ -4188,11 +4193,15 @@ function startIsaCheck(){
 
 /* ===== 증명서 발급 현황 플로우 (Ver 4.0) =====
    FAQ 진입 → 계좌인증(안내+인증 1페이지 통합, 타이틀 '증명서 발급 현황') → 발급현황 조회 로딩 → 발급현황(재발급 버튼) */
-const CERT_STATUS = [
+const LEGACY_CERT_STATUS = [
   {n:'잔고증명서',       st:'발급완료', stc:'done', d:'2026.07.05 발급 · 이메일 발송 완료', re:true},
   {n:'거래내역서',       st:'처리중',   stc:'wait', d:'2026.07.08 신청 · 발급 준비 중',     re:false},
   {n:'외화예수금증명서', st:'발급완료', stc:'done', d:'2026.06.30 발급 · 이메일 발송 완료', re:true},
 ];
+function certificateStatusData(){
+  if(!isV47()) return LEGACY_CERT_STATUS;
+  return V47SelfService.CERTIFICATE_STATUS.map(x=>({n:x.name, st:x.status, stc:x.statusClass, d:x.description, re:x.reissue}));
+}
 function startCertCheck(){
   s1nav({page:'certcheck', title:'발급현황 조회', noBack:true, noHome:true, fromFav:false});
   s1state.history = [];
@@ -4235,7 +4244,8 @@ function renderCertChecking(){
 /* 신청내역 표기 — 발급현황 + 재발급 버튼 */
 function renderCertStatus(){
   const v40 = s1Ver==='v40';
-  const itemHtml = cls => CERT_STATUS.map(x=>`<div class="${cls}">
+  const certStatus = certificateStatusData();
+  const itemHtml = cls => certStatus.map(x=>`<div class="${cls}">
       <div class="fv-it"><div class="fv-nm">${x.n} <span class="fv-tag ${x.stc}">${x.st}</span></div><div class="fv-sub">${x.d}</div></div>
       ${x.re ? `<div class="fv-issue" data-certreissue="${x.n}">재발급</div>` : ''}
     </div>`).join('');
@@ -4243,7 +4253,7 @@ function renderCertStatus(){
     const has = s1state.certHasRecords !== false;
     const title = has ? '서류 신청내역이 조회되었어요' : '서류 신청내역이 없어요';
     const desc  = has ? '최근 1개월 내 신청하신 서류 내역이에요.' : '최근 1개월 내 신청하신 서류가 없어요.';
-    const items = has ? CERT_STATUS.map(x=>`
+    const items = has ? certStatus.map(x=>`
       <div class="iod-v45-card v45-cert-item" data-certstatustoggle>
         <div class="v45-ci-head">
           <div class="v45-ci-nm">${x.n}</div>
@@ -4284,9 +4294,53 @@ function renderCertStatus(){
     ${untactSteps(CERT_STEPS, 1)}
     <div class="toss-dhead"><div class="td-title">증명서 발급 현황</div><div class="td-desc">신청하신 증명서의 발급 현황을 확인하고 재발급받아요</div></div>
     <div class="fv-chip hv-acct"><span class="fv-cv">${acct}</span></div>
-    <div class="hv-secttl">발급 현황 ${CERT_STATUS.length}</div>
+    <div class="hv-secttl">발급 현황 ${certStatus.length}</div>
     <div class="fv-card"><div class="fv-list">${itemHtml('fv-item')}</div></div>
     <div class="fv-note">발급완료 증명서는 <b>재발급</b>으로 다시 받을 수 있어요.<br>처리중 증명서는 발급 완료 후 알림톡으로 안내해 드려요.</div>
+  </div>`;
+}
+
+/* ===== Ver 4.7 비대면 접수현황 플로우 =====
+   셀프서비스 더보기 → 계좌인증 → 접수현황 조회 → 업무별 처리 상태 */
+function startUntactStatusCheck(){
+  s1nav({page:'untactstatuscheck', title:'비대면 접수현황 조회', noBack:true, noHome:true, fromFav:false});
+  s1state.history = [];
+  setTimeout(()=>{
+    if(s1state.page!=='untactstatuscheck') return;
+    s1state.page='untactstatusresult'; s1state.title='비대면 접수현황';
+    s1state.noBack=false; s1state.noHome=true;
+    renderS1();
+  }, 2500);
+}
+
+function renderUntactStatusChecking(){
+  return `<div class="iodload-screen v45-authpage">
+    ${v45AuthTop(1)}
+    <div class="iodload-body v45-iodload-body">
+      <div class="toss-dhead"><div class="td-title">비대면 접수내역을 확인하고 있어요</div><div class="td-desc">잠시만 기다려 주세요</div></div>
+      <div class="v45-scan-anim">
+        <div class="v45-dot-spinner"><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div><div class="v45-ds-dot"></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderUntactStatusResult(){
+  const items = V47SelfService.UNTACT_STATUS.map(x=>`
+    <div class="iod-v45-card v45-cert-item">
+      <div class="v45-ci-head">
+        <div class="v45-ci-nm">${x.name}</div>
+        <span class="iod-badge ${x.statusClass}">${x.status}</span>
+      </div>
+      <div class="v45-ci-date">${x.description}</div>
+    </div>`).join('');
+  return `<div class="iodresult-screen v45-authpage">
+    ${v45AuthTop(2)}
+    <div class="iod-v45-body">
+      <div class="toss-dhead"><div class="td-title">비대면 접수현황이 조회되었어요</div><div class="td-desc">최근 신청하신 비대면 업무의 처리 상태예요.</div></div>
+      ${items}
+      <div class="iod-note">처리에 필요한 보완사항이 있으면 알림톡으로 안내해 드려요.</div>
+    </div>
   </div>`;
 }
 /* 증명서 재발급 상세화면 — 발급 정보 확인 + 재발급 신청 */
@@ -4688,7 +4742,7 @@ function renderIodAcctSel(){
   return pageTop(s1state.title||'계좌 선택', true)
     + untactSteps(iodStepsFor(), 0)
     + `<div class="auth-wrap">
-        <div class="toss-dhead"><div class="td-title">계좌 선택</div><div class="td-desc">${isCertFlow() ? '증명서 발급·신청 내역을 확인할 계좌를 선택해 주세요' : (isIsaFlow() ? '중개형 ISA 신청현황을 확인할 계좌를 선택해 주세요' : '입출금을 확인할 계좌를 선택해 주세요')}</div></div>
+        <div class="toss-dhead"><div class="td-title">계좌 선택</div><div class="td-desc">${isUntactStatusFlow() ? '비대면 접수현황을 확인할 계좌를 선택해 주세요' : (isCertFlow() ? '증명서 발급·신청 내역을 확인할 계좌를 선택해 주세요' : (isIsaFlow() ? '중개형 ISA 신청현황을 확인할 계좌를 선택해 주세요' : '입출금을 확인할 계좌를 선택해 주세요'))}</div></div>
         <div class="iodsel-list">${rows}</div>
       </div>`;
 }
@@ -5266,6 +5320,8 @@ function gotoAuthNext(deep){
   if(d.go==='iodcheck' && d.isa){ startIsaCheck(); return; }
   // 증명서 발급 현황 플로우: 인증 완료 → 발급현황 조회(로딩) → 발급현황
   if(d.go==='iodcheck' && d.cert){ startCertCheck(); return; }
+  // 비대면 접수현황 플로우: 인증 완료 → 접수현황 조회(로딩) → 결과
+  if(d.go==='iodcheck' && d.untactStatus){ startUntactStatusCheck(); return; }
   // 입출금 안내 플로우: 인증 완료 → 계좌 상태 확인(로딩) → 결과
   if(d.go==='iodcheck'){ startIodCheck(); return; }
   // 체결·주문내역 조회(디지털ARS): 계좌 인증 완료 → 체결내역 화면
@@ -5453,6 +5509,12 @@ function renderS1(){
   }
   else if(s1state.page==='certstatus'){
     html = renderCertStatus();
+  }
+  else if(s1state.page==='untactstatuscheck'){
+    html = renderUntactStatusChecking();
+  }
+  else if(s1state.page==='untactstatusresult'){
+    html = renderUntactStatusResult();
   }
   else if(s1state.page==='certreissue'){
     html = renderCertReissue();
@@ -6239,6 +6301,14 @@ document.addEventListener('click', (e)=>{
     s1state.iodAcctNo = '';
     if(sessionAuthed){ gotoAuthNext(); return; }   // 이미 계좌인증됨 → 인증 생략
     s1nav({page:'authstep', authMethod:'account', title:'증명서 발급 현황', acctPw:'', otpSent:false, fromFav:false, noBack:false, noHome:true});
+    return;
+  }
+  // Ver 4.7 비대면 접수현황: 더보기 → 계좌인증 → 접수현황 조회
+  if(t.closest('[data-untactstatusstart]')){
+    s1state.authNext = {go:'iodcheck', untactStatus:true};
+    s1state.iodAcctNo = '';
+    if(sessionAuthed){ gotoAuthNext(); return; }
+    s1nav({page:'authstep', authMethod:'account', title:'비대면 접수현황', acctPw:'', otpSent:false, fromFav:false, noBack:false, noHome:true});
     return;
   }
   // 발급현황 재발급 버튼 → 재발급 상세화면
