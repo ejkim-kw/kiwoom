@@ -2354,6 +2354,106 @@ function v47Grid(){
     </div>`).join('') + `</div>`;
 }
 /* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
+function v47MyInfoTop(state){
+  const title=V47MyInfo.getTitle(state);
+  const progress=V47MyInfo.getProgress(state);
+  const back=state.step==='complete' ? `<div class="v45-step-spacer" aria-hidden="true"></div>` : `<div class="back" data-s1back title="이전">${I.back}</div>`;
+  const stepper=progress ? `<div class="v45-stepper v47mi-stepper" role="progressbar" aria-label="${title} 진행 단계" aria-valuemin="1" aria-valuemax="${progress.labels.length}" aria-valuenow="${progress.current+1}" aria-valuetext="${progress.current+1}/${progress.labels.length} · ${progress.labels[progress.current]}">${progress.labels.map((label,i)=>`<span class="v45-step${i<=progress.current?' on':''}" title="${label}" aria-hidden="true"></span>`).join('')}</div>` : '';
+  return `<div class="page-top iod-top v45-authtop">${back}<div class="page-title">${title}</div><div class="v45-step-spacer" aria-hidden="true"></div></div>${stepper}`;
+}
+function startV47MyInfo(menuTitle){
+  if(!V47MyInfo.shouldHandle(s1Ver, menuTitle)) return false;
+  const state = V47MyInfo.createState(menuTitle);
+  if(!state) return false;
+  s1state.v47MyInfo = state;
+  s1state.v47MyInfoAgree = false;
+  s1nav({page:'v47myinfo', title:menuTitle, noHome:true});
+  return true;
+}
+function applyV47MyInfoEvent(event){
+  const result = V47MyInfo.transition(s1state.v47MyInfo, event);
+  if(result.error){ showV47MyInfoValidation(result.error,result.field); flash(result.error); return; }
+  s1state.v47MyInfo = result.state;
+  renderS1();
+}
+const V47_MYINFO_FIELD_IDS = {
+  name:'v47MiName',dob:'v47MiDob',phone:'v47MiPhone',agreement:'v47MiAgreement',otp:'v47MyInfoOtp',
+  account:'v47MiAccount',accountPassword:'v47MiAccountPassword',selection:'v47MiSelection',
+  flowAccountPassword:'v47MiFlowAccountPassword',newPassword:'v47MiNewIdPassword',newPasswordConfirm:'v47MiNewIdPasswordConfirm'
+};
+function v47MyInfoValidation(){
+  return `<div id="v47MiValidation" class="v47mi-error" role="alert" aria-live="assertive" aria-atomic="true"></div>`;
+}
+function showV47MyInfoValidation(message,field){
+  const region=document.getElementById('v47MiValidation');
+  if(!region) return;
+  document.querySelectorAll('[aria-describedby~="v47MiValidation"]').forEach(el=>{
+    el.removeAttribute('aria-describedby'); el.removeAttribute('aria-invalid');
+  });
+  region.textContent=message;
+  const target=document.getElementById(V47_MYINFO_FIELD_IDS[field]||'');
+  if(target){
+    target.setAttribute('aria-describedby','v47MiValidation');
+    target.setAttribute('aria-invalid','true');
+    target.focus();
+  } else {
+    region.tabIndex=-1; region.focus();
+  }
+}
+function renderV47MyInfoPhone(state){
+  const otp = state.step==='phoneOtp';
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body">
+    <div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>
+    ${otp ? `<div class="auth-info"><div class="ir"><label class="k" for="v47MyInfoOtp">인증번호</label><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-phone-verify>인증완료</button>` : `<div class="auth-info"><div class="ir"><label class="k" for="v47MiName">고객명</label><input id="v47MiName" class="ir-input" autocomplete="name"></div><div class="ir"><label class="k" for="v47MiDob">생년월일</label><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="bday"></div><div class="ir"><label class="k" for="v47MiPhone">휴대폰</label><input id="v47MiPhone" class="ir-input" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel"></div></div><button id="v47MiAgreement" type="button" class="find-agree v47mi-phone-consent${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree role="checkbox" aria-checked="${s1state.v47MyInfoAgree}" aria-label="휴대폰 인증 전체 약관동의 (필수), ${s1state.v47MyInfoAgree?'동의함':'동의 전'}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b> · <span class="v47mi-consent-state">${s1state.v47MyInfoAgree?'동의함':'동의 전'}</span></span></button>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-phone-request>인증요청</button>`}
+  </div></div>`;
+}
+function renderV47IdSelection(state){
+  const ids=V47MyInfo.DATA.ids.filter(x=>state.flow!=='dormantRelease'||x.dormant);
+  const selected=ids.find(x=>x.id===state.selectedId);
+  const accounts=selected ? V47MyInfo.DATA.accounts.filter(x=>selected.accounts.includes(x.id)) : [];
+  const choice=(kind,value,title,sub,on)=>`<button type="button" class="v47mi-choice${on?' on':''}" data-v47mi-${kind}="${value}" aria-pressed="${on}"><span><b>${title}</b><small>${sub}</small></span><span class="v47mi-check">${on?'선택됨 ✓':'선택'}</span></button>`;
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">ID와 계좌를 선택해 주세요</div><div class="td-desc">본인 확인에 사용할 정보를 선택해요.</div></div><div id="v47MiSelection" role="group" aria-label="ID와 연결 계좌 선택" tabindex="-1"><div class="v47mi-list">${ids.map(x=>choice('id',x.id,x.id,x.dormant?'장기미사용 제한':'사용 가능',state.selectedId===x.id)).join('')}</div>${selected?`<div class="v47mi-list">${accounts.map(x=>choice('account',x.id,x.type,V47MyInfo.maskAccount(x.id),state.selectedAccount===x.id)).join('')}</div>`:''}</div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-continue>다음</button></div></div>`;
+}
+function renderV47AccountAuth(state){
+  const accounts=V47MyInfo.DATA.accounts.map(x=>`<option value="${x.id}">${x.type} · ${V47MyInfo.maskAccount(x.id)}</option>`).join('');
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">조회할 계좌와 계좌비밀번호를 입력해 주세요.</div></div><div class="auth-info"><div class="ir"><label class="k" for="v47MiAccount">계좌</label><select id="v47MiAccount" class="ir-input"><option value="">계좌를 선택해 주세요</option>${accounts}</select></div><div class="ir"><label class="k" for="v47MiAccountPassword">계좌비밀번호</label><input id="v47MiAccountPassword" class="ir-input" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-account-auth>인증하기</button></div></div>`;
+}
+function renderV47AccountProfile(state){
+  const p=V47MyInfo.DATA.accountProfile;
+  const rows=[['주소',p.address],['연락처',p.phone],['마케팅 수신매체',p.marketing],['직업',p.occupation],['거주국가',p.residence]];
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌정보를 확인해 주세요</div><div class="td-desc">등록된 정보는 영웅문S# 또는 상담원을 통해 변경할 수 있어요.</div></div><div class="iod-v45-card v47mi-profile">${rows.map(([k,v])=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv">${v}</span></div>`).join('')}</div><div class="v47mi-dual"><button type="button" data-v47mi-agent>상담원 연결</button><button type="button" data-v47mi-hero-profile>영웅문S#에서 변경</button></div></div></div>`;
+}
+function renderV47AccountNumbers(state){
+  const rows=V47MyInfo.DATA.accounts.map(x=>`<div class="iod-v45-card v47mi-account-result"><div class="v45-ci-head"><div class="v45-ci-nm">${x.type}</div><span class="iod-badge done">사용 가능</span></div><div class="v45-ci-date">${V47MyInfo.maskAccount(x.id)}</div></div>`).join('');
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">보유 계좌를 확인했어요</div><div class="td-desc">고객님 명의의 증권계좌 목록이에요.</div></div>${rows}</div></div>`;
+}
+function renderV47AccountPasswordGuide(state){
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌비밀번호를 안내해 드릴게요</div><div class="td-desc">비밀번호 재설정은 영웅문S#에서 진행할 수 있어요.</div></div><div class="iod-v45-card v47mi-guide"><div class="v47mi-guide-item"><b>어디에 사용하나요?</b><span>주문, 이체 등 계좌 업무를 확인할 때 사용해요.</span></div><div class="v47mi-guide-item"><b>몇 자리인가요?</b><span>숫자 4~8자리로 설정해요.</span></div><div class="v47mi-guide-item"><b>비밀번호를 잊으셨나요?</b><span>기존 비밀번호는 조회할 수 없으며 안전하게 재설정해야 해요.</span></div></div><button type="button" class="primary-btn v45-iod-btn" data-v47mi-hero-password>영웅문S#에서 재설정</button></div></div>`;
+}
+function renderV47AccountPassword(state){
+  const dormant=state.flow==='dormantRelease';
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌비밀번호를 입력해 주세요</div><div class="td-desc">${dormant?'장기미사용 ID 제한을 해제하기 위해 인증해요.':'ID 비밀번호를 재설정하기 위해 인증해요.'}</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiFlowAccountPassword">계좌비밀번호</label><input id="v47MiFlowAccountPassword" class="ir-input" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-account-password>다음</button></div></div>`;
+}
+function renderV47NewIdPassword(state){
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">새 ID 비밀번호를 설정해 주세요</div><div class="td-desc">영문과 숫자를 조합해 5~8자리로 입력해 주세요.</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiNewIdPassword">새 ID 비밀번호</label><input id="v47MiNewIdPassword" class="ir-input" type="password" maxlength="8" autocomplete="new-password"></div><div class="ir"><label class="k" for="v47MiNewIdPasswordConfirm">새 ID 비밀번호 확인</label><input id="v47MiNewIdPasswordConfirm" class="ir-input" type="password" maxlength="8" autocomplete="new-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-new-id-password>완료</button></div></div>`;
+}
+function renderV47MyInfoComplete(state){
+  const dormant=state.flow==='dormantRelease';
+  return `<div class="iod-done-center v45-authpage">${v47MyInfoTop(state)}<div class="iod-done"><div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div><div class="iod-done-t">${dormant?'제한해제가 완료됐어요':'ID 비밀번호 재설정이 완료됐어요'}</div><div class="iod-done-d">${dormant?'장기미사용 ID로 다시 로그인할 수 있어요.':'새 비밀번호로 로그인해 주세요.'}</div></div><div class="iod-done-btnwrap"><button type="button" class="primary-btn v45-iod-btn" data-v47mi-home>확인</button></div></div>`;
+}
+function renderV47MyInfo(){
+  const state = s1state.v47MyInfo;
+  if(!state) return '';
+  if(state.step==='accountAuth') return renderV47AccountAuth(state);
+  if(state.step==='profile') return renderV47AccountProfile(state);
+  if(state.step==='accountList') return renderV47AccountNumbers(state);
+  if(state.step==='guide') return renderV47AccountPasswordGuide(state);
+  if(state.step==='selection') return renderV47IdSelection(state);
+  if(state.step==='accountPassword') return renderV47AccountPassword(state);
+  if(state.step==='newIdPassword') return renderV47NewIdPassword(state);
+  if(state.step==='complete') return renderV47MyInfoComplete(state);
+  return renderV47MyInfoPhone(state);
+}
 function v47SubMenuPage(){
   const cat = V47_MENU_CATS.find(c=>c.id===s1state.v47Cat);
   if(!cat) return '';
@@ -5453,6 +5553,9 @@ function renderS1(){
   else if(s1state.page==='v47cat' && isV47()){
     html = v47SubMenuPage();
   }
+  else if(s1state.page==='v47myinfo' && isV47()){
+    html = renderV47MyInfo();
+  }
   else if(s1state.page==='ssmore'){
     html = renderSsMore();
   }
@@ -6604,12 +6707,79 @@ document.addEventListener('click', (e)=>{
     const fab=document.getElementById('v47Fab');
     if(fab?.classList.contains('open')){ fab.classList.remove('open'); fab.closest('.screen')?.classList.remove('v47-fab-open'); }
   }
+  if(t.closest('[data-v47mi-agree]')){
+    s1state.v47MyInfoAgree = !s1state.v47MyInfoAgree;
+    const agree=t.closest('[data-v47mi-agree]');
+    const stateText=s1state.v47MyInfoAgree?'동의함':'동의 전';
+    agree.classList.toggle('on', s1state.v47MyInfoAgree);
+    agree.setAttribute('aria-checked', String(s1state.v47MyInfoAgree));
+    agree.setAttribute('aria-label', `휴대폰 인증 전체 약관동의 (필수), ${stateText}`);
+    const stateLabel=agree.querySelector('.v47mi-consent-state');
+    if(stateLabel) stateLabel.textContent=stateText;
+    return;
+  }
+  if(t.closest('[data-v47mi-phone-request]')){
+    applyV47MyInfoEvent({
+      type:'PHONE_REQUEST',
+      name:(document.getElementById('v47MiName')||{}).value||'',
+      dob:(document.getElementById('v47MiDob')||{}).value||'',
+      phone:(document.getElementById('v47MiPhone')||{}).value||'',
+      agreed:!!s1state.v47MyInfoAgree
+    });
+    return;
+  }
+  if(t.closest('[data-v47mi-phone-verify]')){
+    applyV47MyInfoEvent({type:'PHONE_VERIFY', otp:(document.getElementById('v47MyInfoOtp')||{}).value||''});
+    return;
+  }
+  if(t.closest('[data-v47mi-account-auth]')){
+    applyV47MyInfoEvent({
+      type:'ACCOUNT_AUTH',
+      account:(document.getElementById('v47MiAccount')||{}).value||'',
+      password:(document.getElementById('v47MiAccountPassword')||{}).value||''
+    });
+    return;
+  }
+  if(t.closest('[data-v47mi-account-password]')){
+    applyV47MyInfoEvent({type:'ACCOUNT_PASSWORD', password:(document.getElementById('v47MiFlowAccountPassword')||{}).value||''});
+    return;
+  }
+  if(t.closest('[data-v47mi-new-id-password]')){
+    applyV47MyInfoEvent({
+      type:'NEW_ID_PASSWORD',
+      password:(document.getElementById('v47MiNewIdPassword')||{}).value||'',
+      confirm:(document.getElementById('v47MiNewIdPasswordConfirm')||{}).value||''
+    });
+    return;
+  }
+  if(t.closest('[data-v47mi-home]')){
+    s1state.v47MyInfo=null; s1state.page='home'; s1state.history=[]; renderS1(); return;
+  }
+  if(t.closest('[data-v47mi-agent]')){ openConsult('계좌정보 변경'); return; }
+  if(t.closest('[data-v47mi-hero-profile]')){ openAppLink('myacctinfo'); return; }
+  if(t.closest('[data-v47mi-hero-password]')){ openAppLink('pwresetacct'); return; }
+  if(t.closest('[data-v47mi-id]')){
+    applyV47MyInfoEvent({type:'SELECT_ID', value:t.closest('[data-v47mi-id]').dataset.v47miId});
+    return;
+  }
+  if(t.closest('[data-v47mi-account]')){
+    applyV47MyInfoEvent({type:'SELECT_ACCOUNT', value:t.closest('[data-v47mi-account]').dataset.v47miAccount});
+    return;
+  }
+  if(t.closest('[data-v47mi-continue]')){
+    applyV47MyInfoEvent({type:'CONTINUE'});
+    return;
+  }
   // Ver 4.7 대메뉴 그리드 클릭 → 중메뉴 목록 페이지
   const v47c = t.closest('[data-v47cat]');
   if(v47c){ s1nav({page:'v47cat', v47Cat:+v47c.dataset.v47cat}); return; }
-  // Ver 4.7 중메뉴 클릭 → 이후 절차 정의 예정
+  // Ver 4.7 중메뉴 클릭 → 내정보 공통 인증·선택 플로우로 진입
   const v47s = t.closest('[data-v47sub]');
-  if(v47s){ flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`); return; }
+  if(v47s){
+    if(startV47MyInfo(v47s.dataset.v47sub)) return;
+    flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`);
+    return;
+  }
   // [큰글씨] ON · 큰 카드 아코디언: 카드 탭=인라인 펼침/접힘, 서비스 탭=해당 카테고리 소메뉴 드릴다운
   // Ver 4.0 · '상담 없이 해결할 수 있어요' 자가해결 카드 펼침/접기 (화살표)
   if(t.closest('[data-faqtoggle]')){ s1state.faqOpen = !s1state.faqOpen; renderS1(); return; }
