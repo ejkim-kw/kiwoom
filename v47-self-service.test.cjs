@@ -155,6 +155,14 @@ test('VER4.7 전체 중메뉴 44개에 간결한 행동형 설명을 제공한�
   assert.equal(service.getSubMenuDescription('v46', '체결조회'), '');
 });
 
+test('Ver 4.6은 현재 시안이 아닌 이전버전 접이식 목록에 배치한다', () => {
+  const index = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  assert.match(index, /class="ref-item prev-item" data-sian="s1" data-ver="v46"/);
+  const previousTitle = index.indexOf('class="ref-title prev-title"');
+  const v46 = index.indexOf('data-ver="v46"');
+  assert.ok(v46 > previousTitle);
+});
+
 test('VER4.7 모든 주요 화면 컨테이너는 좌우 20px 인셋 토큰을 사용한다', () => {
   const css = fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8');
 

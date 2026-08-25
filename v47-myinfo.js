@@ -66,9 +66,16 @@
     const raw=String(value||'').replace(/\D/g,'');
     return raw.length===8 ? `${raw.slice(0,2)}**-**${raw.slice(-2)}` : '****';
   }
-  function createState(menuTitle){
+  function createState(menuTitle, options){
     const flow = MENU_KEYS[menuTitle];
-    return flow ? {flow, step:flow==='accountPasswordGuide'?'guide':(flow==='accountProfile'?'accountAuth':'phone'), phoneVerified:false, selectedId:'', selectedAccount:'', completed:false, errors:{}} : null;
+    if(!flow) return null;
+    const skipAuthentication=!!(options && options.skipAuthentication);
+    const defaultStep=flow==='accountPasswordGuide' ? 'guide' : (flow==='accountProfile' ? 'accountAuth' : 'phone');
+    const skippedStep={accountProfile:'profile',accountNumbers:'accountList',idPassword:'selection',dormantRelease:'selection'}[flow];
+    return {flow, step:skipAuthentication && skippedStep ? skippedStep : defaultStep, phoneVerified:skipAuthentication, selectedId:'', selectedAccount:'', completed:false, errors:{}};
+  }
+  function establishesSessionAuthentication(event, result){
+    return !result.error && (event.type==='PHONE_VERIFY' || event.type==='ACCOUNT_AUTH');
   }
   function transition(state, event){
     const next = {...state, errors:{}};
@@ -138,5 +145,5 @@
     if(event.type==='COMPLETE') return {state:{...next, step:'complete', completed:true}, error:''};
     return {state, error:''};
   }
-  return {MENU_KEYS, FLOW_META, DATA, shouldHandle, getTitle, getProgress, getHeaderModel, getAccountAuthModel, getAuthPresentation, maskAccount, createState, transition};
+  return {MENU_KEYS, FLOW_META, DATA, shouldHandle, getTitle, getProgress, getHeaderModel, getAccountAuthModel, getAuthPresentation, maskAccount, createState, establishesSessionAuthentication, transition};
 });

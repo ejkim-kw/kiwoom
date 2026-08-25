@@ -247,15 +247,96 @@ test('dormant release accepts only a dormant ID and completes after account pass
   assert.equal(done.state.completed,true);
 });
 
+test('본인인증 생략 상태에서는 내정보 상세메뉴의 최초 인증 단계를 건너뛴다', () => {
+  const skipped = title => myInfo.createState(title, {skipAuthentication:true});
+
+  assert.equal(skipped('계좌정보 조회 및 변경').step, 'profile');
+  assert.equal(skipped('증권계좌번호확인').step, 'accountList');
+  assert.equal(skipped('계좌비밀번호 재설정').step, 'guide');
+  assert.equal(skipped('ID조회/PW초기화').step, 'selection');
+  assert.equal(skipped('장기미사용ID 제한 해지').step, 'selection');
+  assert.equal(skipped('증권계좌번호확인').phoneVerified, true);
+
+  assert.equal(myInfo.createState('계좌정보 조회 및 변경').step, 'accountAuth');
+  assert.equal(myInfo.createState('증권계좌번호확인').step, 'phone');
+});
+
 test('내정보 계좌인증은 셀프서비스와 동일한 입력란과 확인 버튼을 사용한다', () => {
   const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
   const index = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 
-  assert.match(app, /iod-v45-body auth-wrap \$\{presentation\.bodyClass\}/);
-  assert.match(app, /class="ir-qmark v47mi-help-inline" data-v47mi-help=/);
-  assert.match(app, /class="primary-btn v45-authbtn is-off" data-v47mi-account-auth disabled>확인<\/button>/);
+  assert.match(app, /iod-v45-body auth-wrap v47mi-account-auth/);
+  assert.match(app, /class="ir-qmark" data-v47mi-help=/);
+  assert.match(app, /class="primary-btn v45-authbtn v47mi-cta\$\{\(accountValue/);
   assert.match(app, /function v47MyInfoAccountAuthBtnSync\(\)/);
   assert.ok(app.includes("account:((document.getElementById('v47MiAccount')||{}).value||'').replace(/\\D/g,'')"));
-  assert.match(index, /style\.css\?v=20260825a/);
-  assert.match(index, /app\.js\?v=20260825a/);
+  assert.match(index, /style\.css\?v=20260825d/);
+  assert.match(index, /v47-myinfo\.js\?v=20260825b/);
+  assert.match(index, /app\.js\?v=20260825h/);
+});
+
+test('내정보 계좌인증은 셀프서비스의 비밀번호 마스킹과 키패드 구조를 그대로 사용한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+
+  assert.match(app, /id="v47MiAccountPwDisp" class="acct-dots"/);
+  assert.match(app, /data-pwopen="v47MyInfo"/);
+  assert.ok(app.includes("password:s1state.acctPw||''"));
+  assert.ok(app.includes("if(pwCtx==='v47MyInfo')"));
+  assert.doesNotMatch(app, /id="v47MiAccountPassword" class="ir-input" type="password"/);
+});
+
+test('내정보 전체 주요 CTA는 셀프서비스 공통 버튼 규격을 사용한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  const css = fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8');
+  const actions = ['phone-request','phone-verify','continue','account-password','new-id-password','hero-password','home'];
+
+  actions.forEach(action => {
+    assert.match(app, new RegExp(`class="[^"]*v47mi-cta[^"]*"[^>]*data-v47mi-${action}`));
+  });
+  assert.match(app, /class="v47mi-dual-btn secondary" data-v47mi-agent/);
+  assert.match(app, /class="v47mi-dual-btn primary" data-v47mi-hero-profile/);
+  assert.match(css, /\.flow\.toss\.v47 \.v47mi-cta\{/);
+  assert.match(css, /height:46px/);
+  assert.match(css, /border-radius:999px/);
+});
+
+test('내정보 계좌인증 도움말은 셀프서비스 하단 플로팅을 재사용한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+
+  assert.ok(app.includes("if(kind==='accountNumber'){ openFindAcct('v47MyInfo'); return; }"));
+  assert.ok(app.includes("if(kind==='accountPassword'){ openPwHelpSheet(); return; }"));
+  assert.ok(app.includes("s1state.findTarget==='v47MyInfo'"));
+  assert.ok(app.includes("document.getElementById('v47MiAccount')"));
+  assert.ok(app.includes('v47MyInfoAccountAuthBtnSync();'));
+});
+
+test('내정보 최초 본인인증 성공 이벤트만 공통 인증 상태로 공유한다', () => {
+  assert.equal(myInfo.establishesSessionAuthentication({type:'PHONE_VERIFY'}, {error:''}), true);
+  assert.equal(myInfo.establishesSessionAuthentication({type:'ACCOUNT_AUTH'}, {error:''}), true);
+  assert.equal(myInfo.establishesSessionAuthentication({type:'PHONE_VERIFY'}, {error:'인증번호를 확인해 주세요.'}), false);
+  assert.equal(myInfo.establishesSessionAuthentication({type:'ACCOUNT_PASSWORD'}, {error:''}), false);
+});
+
+test('좌측 시연 기능은 현재 인증 화면의 정보만 자동 입력한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  const index = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+  assert.match(index, /data-demo-fill-account/);
+  assert.match(index, /data-demo-fill-phone/);
+  assert.match(app, /function fillDemoAccountAuthentication\(\)/);
+  assert.match(app, /function fillDemoPhoneAuthentication\(\)/);
+  assert.ok(app.includes("setDemoInput('v47MiAccount','52575602')"));
+  assert.match(app, /\['v47MiPhone','01012345678'\]/);
+  assert.match(app, /\['v47MyInfoOtp','123456'\]/);
+});
+
+test('휴대폰 자동입력은 계좌번호 찾기 하단 플로팅에도 적용된다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+
+  ['findDemoName','findDemoDob','findDemoGender','findDemoCarrier','findDemoPhone','findDemoOtp'].forEach(id => {
+    assert.ok(app.includes(`id="${id}"`));
+  });
+  assert.match(app, /\['findDemoName','홍길동'\]/);
+  assert.match(app, /\['findDemoCarrier','SKT'\]/);
+  assert.match(app, /\['findDemoOtp','123456'\]/);
 });
