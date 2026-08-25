@@ -2474,6 +2474,65 @@ function renderV47MyInfo(){
   if(state.step==='complete') return renderV47MyInfoComplete(state);
   return renderV47MyInfoPhone(state);
 }
+/* Ver 4.7 · 비대면업무 상세 플로우 */
+function startV47Untact(menuTitle){
+  if(!V47Untact.shouldHandle(s1Ver,menuTitle)) return false;
+  s1state.v47Untact=V47Untact.createState(menuTitle,{skipAuthentication:sessionAuthed});
+  s1state.v47UntactAgree=false;
+  s1nav({page:'v47untact',title:menuTitle,noHome:true});
+  return true;
+}
+function applyV47UntactEvent(event){
+  const result=V47Untact.transition(s1state.v47Untact,event);
+  if(result.error){ flash(result.error); return false; }
+  if(V47Untact.establishesSessionAuthentication(event,result)) sessionAuthed=true;
+  s1state.v47Untact=result.state; renderS1(); return true;
+}
+function v47UntactTop(state,right){
+  const header=V47Untact.getHeaderModel(state);
+  const internal=['accountAuth','form','phoneOtp'].includes(state.step)||(state.step==='status'&&!state.skipAuthentication);
+  const back=state.step==='complete'||state.step==='sent' ? `<div class="v45-step-spacer"></div>` : `<button type="button" class="back" ${state.step==='history'?'data-v47u-history-back':internal?'data-v47u-back':'data-s1back'} aria-label="이전 화면">${I.back}</button>`;
+  const stepper=header?`<div class="v47mi-stepper" role="progressbar" aria-valuemin="1" aria-valuemax="${header.labels.length}" aria-valuenow="${header.current+1}"><div class="v47mi-step-label"><b>${header.current+1}/${header.labels.length}</b><span>${header.labels[header.current]}</span></div><div class="v47mi-step-track">${header.labels.map((x,i)=>`<span class="v45-step${i<header.current?' done':i===header.current?' on':''}"></span>`).join('')}</div></div>`:'';
+  return `<div class="page-top iod-top v45-authtop">${back}${stepper}${right||'<div class="v45-step-spacer"></div>'}</div>`;
+}
+function v47UntactValidation(){ return `<div class="v47mi-error" aria-live="assertive"></div>`; }
+function renderV47UntactDocuments(state){
+  const history=`<button type="button" class="v47u-top-action" data-v47u-history>신청내역</button>`;
+  return `<div class="v45-authpage">${v47UntactTop(state,history)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">어떤 서류가 필요하세요?</div><div class="td-desc">신청할 서류를 선택해 주세요.</div></div><div class="v47mi-list v47u-document-list">${V47Untact.DATA.documents.map(d=>`<button type="button" class="v47mi-choice" data-v47u-document="${d.name}"><span><b>${d.name}</b><small>${d.desc}</small></span><span class="v47-pwreset-chev">${I.chev}</span></button>`).join('')}</div></div></div>`;
+}
+function renderV47UntactHistory(state){
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">서류 신청내역이에요</div><div class="td-desc">최근 신청한 서류의 처리 상태를 확인해요.</div></div><div class="v47u-card-list">${V47Untact.DATA.documentHistory.map(x=>`<div class="iod-v45-card v47u-status-card"><div class="v45-ci-head"><div class="v45-ci-nm">${x.name}</div><span class="iod-badge ${x.statusClass}">${x.status}</span></div><div class="v45-ci-date">${x.detail}</div></div>`).join('')}</div></div></div>`;
+}
+function renderV47UntactAccount(state){
+  const help=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.4 2.4 0 1 1 3.4 2.2c-.9.4-1.2 1-1.2 1.8"/><path d="M12 16.7h.01"/></svg>`;
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body auth-wrap v47mi-self-auth"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">서류를 신청할 계좌정보를 입력해 주세요.</div></div><div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UAccount">계좌번호</label><input id="v47UAccount" class="ir-input" inputmode="numeric" maxlength="9"><button class="v47mi-help-inline" data-v47u-help="accountNumber" aria-label="계좌번호 찾기">${help}</button></div><div class="ir"><span class="k">비밀번호</span><div class="ir-input ir-pw" data-pwopen="v47Untact"><span id="v47UAccountPwDisp" class="acct-dots">${'●'.repeat((s1state.acctPw||'').length)}</span></div><button class="v47mi-help-inline" data-v47u-help="accountPassword" aria-label="계좌비밀번호 안내">${help}</button></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47u-account-auth aria-disabled="true">확인</button></div></div>`;
+}
+function v47UntactAccountAuthBtnSync(){
+  const a=document.getElementById('v47UAccount'),b=document.querySelector('[data-v47u-account-auth]'); if(!a||!b)return;
+  const on=a.value.replace(/\D/g,'').length===8&&/^\d{4,8}$/.test(s1state.acctPw||''); b.classList.toggle('is-off',!on); b.setAttribute('aria-disabled',String(!on));
+}
+function renderV47UntactForm(state){
+  const doc=V47Untact.DATA.documents.find(x=>x.name===state.selectedDocument);
+  const date=doc.mode==='date'?`<div class="ir"><label class="k" for="v47UDocDate">기준일자</label><input id="v47UDocDate" class="ir-input" type="date"></div>`:`<div class="v47u-period"><div class="ir"><label class="k" for="v47UDocStart">시작일</label><input id="v47UDocStart" class="ir-input" type="date"></div><div class="ir"><label class="k" for="v47UDocEnd">종료일</label><input id="v47UDocEnd" class="ir-input" type="date"></div></div>`;
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">신청정보를 입력해 주세요</div><div class="td-desc">${state.selectedDocument} 발급에 필요한 정보예요.</div></div><div class="auth-info v47u-form">${date}<div class="ir"><label class="k" for="v47UPurpose">제출용도</label><input id="v47UPurpose" class="ir-input" placeholder="예: 금융기관 제출"></div><div class="ir"><label class="k" for="v47UCopies">발급 수</label><input id="v47UCopies" class="ir-input" type="number" min="1" value="1"><span class="v47u-unit">부</span></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-submit>발급 신청</button></div></div>`;
+}
+function renderV47UntactPhone(state){
+  const otp=state.step==='phoneOtp';
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body v47mi-self-auth"><div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>${otp?`<div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UOtp">인증번호</label><input id="v47UOtp" class="ir-input" inputmode="numeric" maxlength="6" placeholder="숫자 6자리"></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-phone-verify>인증완료</button>`:`<div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UName">고객명</label><input id="v47UName" class="ir-input" placeholder="이름 입력"></div><div class="ir"><label class="k" for="v47UDob">생년월일</label><input id="v47UDob" class="ir-input" inputmode="numeric" maxlength="6" placeholder="6자리 (YYMMDD)"></div><div class="ir"><label class="k" for="v47UPhone">휴대폰</label><input id="v47UPhone" class="ir-input" type="tel" maxlength="11" placeholder="'-' 없이 입력"></div></div><button id="v47UAgreement" class="find-agree v47mi-phone-consent${s1state.v47UntactAgree?' on':''}" data-v47u-agree role="checkbox" aria-checked="${s1state.v47UntactAgree}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></button>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-phone-request>인증요청</button>`}</div></div>`;
+}
+function renderV47UntactStatus(state){
+  if(state.flow==='opening') return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌개설 현황이에요</div><div class="td-desc">입력 중인 계좌는 이어서 신청할 수 있어요.</div></div><div class="v47u-card-list">${V47Untact.DATA.openings.map(x=>`<div class="iod-v45-card v47u-status-card"><div class="v45-ci-head"><div class="v45-ci-nm">${x.name}</div><span class="iod-badge ${x.statusClass}">${x.status}</span></div><div class="v45-ci-date">${x.detail}</div>${x.continuable?`<button class="v47u-card-cta" data-v47u-opening="${x.id}">이어하기</button>`:''}</div>`).join('')}</div><div class="v47mi-dual"><button class="v47mi-dual-btn secondary" data-v47u-agent>상담원 연결</button><button class="v47mi-dual-btn primary" data-v47u-app>영웅문S# 확인</button></div></div></div>`;
+  const x=V47Untact.DATA.statuses[state.flow];
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">${x.title} 현황이에요</div><div class="td-desc">현재 접수된 업무의 처리 상태를 확인해요.</div></div><div class="iod-v45-card v47u-status-card"><div class="v45-ci-head"><div class="v45-ci-nm">${x.account}</div><span class="iod-badge ${x.statusClass}">${x.status}</span></div><div class="v45-ci-date">${x.detail}</div></div><div class="v47mi-dual"><button class="v47mi-dual-btn secondary" data-v47u-agent>상담원 연결</button><button class="v47mi-dual-btn primary" data-v47u-app>영웅문S# 확인</button></div></div></div>`;
+}
+function renderV47UntactDone(state){
+  const sent=state.step==='sent',title=sent?'계좌개설 URL을 보냈어요':'서류 신청이 완료됐어요',desc=sent?'입력한 휴대폰의 문자메시지를 확인해 주세요.':`${state.selectedDocument} 신청내역에서 처리 상태를 확인할 수 있어요.`;
+  return `<div class="iod-done-center v45-authpage">${v47UntactTop(state)}<div class="iod-done"><div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div><div class="iod-done-t">${title}</div><div class="iod-done-d">${desc}</div></div><div class="iod-done-btnwrap"><button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-home>확인</button></div></div>`;
+}
+function renderV47Untact(){
+  const s=s1state.v47Untact;if(!s)return'';
+  if(s.step==='document')return renderV47UntactDocuments(s); if(s.step==='history')return renderV47UntactHistory(s); if(s.step==='accountAuth')return renderV47UntactAccount(s); if(s.step==='form')return renderV47UntactForm(s); if(s.step==='status')return renderV47UntactStatus(s); if(s.step==='complete'||s.step==='sent')return renderV47UntactDone(s); return renderV47UntactPhone(s);
+}
 function v47SubMenuPage(){
   const cat = V47_MENU_CATS.find(c=>c.id===s1state.v47Cat);
   if(!cat) return '';
@@ -2854,7 +2913,7 @@ function appFooter(){
 /* ============================================================
    시안 1 화면 렌더
    ============================================================ */
-const s1state = {page:'home', cat:'금융상품', open:-1, open2:-1, title:'', listKey:'', resultKey:'', ivI:-1, ivJ:-1, midOpen:-1, amOpen:-1, amOpen2:-1, amTab:'ars', sarsPath:[], v21Tab:'self', amCat:'self', amTreeOpen:{}, faqOpen:false, priceTab:'hoga', fromFav:false, authNext:'', authMethod:'', acctPw:'', otpSent:false, noBack:false, noHome:false, history:[], v47Cat:null};
+const s1state = {page:'home', cat:'금융상품', open:-1, open2:-1, title:'', listKey:'', resultKey:'', ivI:-1, ivJ:-1, midOpen:-1, amOpen:-1, amOpen2:-1, amTab:'ars', sarsPath:[], v21Tab:'self', amCat:'self', amTreeOpen:{}, faqOpen:false, priceTab:'hoga', fromFav:false, authNext:'', authMethod:'', acctPw:'', otpSent:false, noBack:false, noHome:false, history:[], v47Cat:null, v47Untact:null, v47UntactAgree:false};
 // 본인인증 세션 유지 플래그 (메모리 변수 → 새로고침 시 자동 초기화)
 let sessionAuthed = false;
 
@@ -3088,6 +3147,9 @@ function fillDemoAccountAuthentication(){
   if(document.getElementById('v47MiAccountPwDisp')){
     s1state.acctPw='1234'; document.getElementById('v47MiAccountPwDisp').textContent='●●●●'; v47MyInfoAccountAuthBtnSync(); filled++;
   }
+  if(document.getElementById('v47UAccountPwDisp')){
+    s1state.acctPw='1234'; document.getElementById('v47UAccountPwDisp').textContent='●●●●'; setDemoInput('v47UAccount','52575602'); v47UntactAccountAuthBtnSync(); filled+=2;
+  }
   if(setDemoInput('v47MiFlowAccountPassword','1234')) filled++;
   if(setDemoInput('idpwAcctPw','1234')) filled++;
   const acct=document.getElementById('acctNo');
@@ -3103,9 +3165,9 @@ function fillDemoAccountAuthentication(){
 }
 function fillDemoPhoneAuthentication(){
   let filled=0;
-  [['v47MiName','홍길동'],['v47MiDob','900101'],['v47MiPhone','01012345678'],
+  [['v47MiName','홍길동'],['v47MiDob','900101'],['v47MiPhone','01012345678'],['v47UName','홍길동'],['v47UDob','900101'],['v47UPhone','01012345678'],
    ['idpwName','홍길동'],['idpwDob','900101'],['idpwPhone','01012345678'],
-   ['v47MyInfoOtp','123456'],['idpwOtp','123456'],['otpNo','123456'],
+   ['v47MyInfoOtp','123456'],['v47UOtp','123456'],['idpwOtp','123456'],['otpNo','123456'],
    ['findDemoName','홍길동'],['findDemoDob','900101'],['findDemoGender','1'],
    ['findDemoCarrier','SKT'],['findDemoPhone','01012345678'],['findDemoOtp','123456']].forEach(([id,value])=>{
     if(setDemoInput(id,value)) filled++;
@@ -3117,6 +3179,8 @@ function fillDemoPhoneAuthentication(){
     const state=v47Agree.querySelector('.v47mi-consent-state'); if(state) state.textContent='동의함';
     filled++;
   }
+  const v47uAgree=document.getElementById('v47UAgreement');
+  if(v47uAgree){ s1state.v47UntactAgree=true; v47uAgree.classList.add('on'); v47uAgree.setAttribute('aria-checked','true'); filled++; }
   const idpwAgree=document.querySelector('[data-idpwagree]');
   if(idpwAgree){ s1state.idpwAgree=true; idpwAgree.classList.add('on'); filled++; }
   const findAgree=document.querySelector('#findAcctPop [data-findagree]');
@@ -4479,7 +4543,7 @@ function renderCertStatus(){
       <div class="iod-v45-body">
         <div class="toss-dhead"><div class="td-title">${title}</div><div class="td-desc">${desc}</div></div>
         ${items}
-        ${!has ? `<div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-certapply>서류 발급·신청</div></div>` : ''}
+        ${!has ? `<div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-certapply>${isV47()?'서류신청':'서류 발급·신청'}</div></div>` : ''}
         <div class="iod-note">※ 데모 화면이에요. ${interaction.refreshToggles ? '새로고침 버튼으로 다른 결과를 확인해요.' : '카드를 탭하면 결과를 전환해요.'}</div>
       </div>
     </div>`;
@@ -4692,7 +4756,7 @@ const FIND_ACCTS = [
 const FIND_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>';
 function fmtAcct(no){ return no.replace(/(\d{4})(\d{4})/, '$1-$2'); }
 function findAcctOptions(){
-  return s1state.findTarget==='v47MyInfo'
+  return s1state.findTarget==='v47MyInfo'||s1state.findTarget==='v47Untact'
     ? V47MyInfo.DATA.accounts.map(x=>({t:x.type,no:x.id}))
     : FIND_ACCTS;
 }
@@ -5674,6 +5738,9 @@ function renderS1(){
   else if(s1state.page==='v47myinfo' && isV47()){
     html = renderV47MyInfo();
   }
+  else if(s1state.page==='v47untact' && isV47()){
+    html = renderV47Untact();
+  }
   else if(s1state.page==='ssmore'){
     html = renderSsMore();
   }
@@ -6216,6 +6283,12 @@ document.addEventListener('input', (e)=>{
     v47MyInfoAccountAuthBtnSync();
     return;
   }
+  if(el.id === 'v47UAccount'){
+    const raw=el.value.replace(/\D/g,'').slice(0,8);
+    el.value=raw.length>4 ? raw.slice(0,4)+'-'+raw.slice(4) : raw;
+    v47UntactAccountAuthBtnSync();
+    return;
+  }
   if(el.id === 'v47MiAccountPassword'){
     el.value=el.value.replace(/\D/g,'').slice(0,8);
     v47MyInfoAccountAuthBtnSync();
@@ -6508,6 +6581,9 @@ document.addEventListener('click', (e)=>{
     if(s1state.findTarget==='v47MyInfo'){
       const inp=document.getElementById('v47MiAccount');
       if(inp){ inp.value=no.length===8?no.slice(0,4)+'-'+no.slice(4):no; v47MyInfoAccountAuthBtnSync(); }
+    } else if(s1state.findTarget==='v47Untact'){
+      const inp=document.getElementById('v47UAccount');
+      if(inp){ inp.value=no.length===8?no.slice(0,4)+'-'+no.slice(4):no; v47UntactAccountAuthBtnSync(); }
     } else {
       const inp=document.getElementById('acctNo');
       if(inp){ inp.value=no.length===8?no.slice(0,4)+'-'+no.slice(4):no; v45AuthBtnSync(); }
@@ -6627,6 +6703,7 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-iodpurposedone]')){ s1nav({page:'iodpurposedone', title:'등록 완료', noBack:true, noHome:true}); return; }
   if(t.closest('[data-iodhome]')){ s1state.page='home'; s1state.sarsPath=[]; s1state.history=[]; s1state.authNext=null; renderS1(); return; }
   if(t.closest('[data-certapply]')){   // 서류 신청내역 없음 → '서류신청·제출' 카테고리 중메뉴 리스트로 이동
+    if(isV47()){ startV47Untact('서류신청'); return; }
     const cats = catData(); let idx = cats.findIndex(c => /서류/.test(c.t)); if(idx < 0) idx = 4;
     s1state.page='home'; s1state.sarsPath=[idx]; s1state.history=[]; s1state.authNext=null; renderS1(); return;
   }
@@ -6707,8 +6784,10 @@ document.addEventListener('click', (e)=>{
     const dots = '●'.repeat(s1state.acctPw.length);
     ['acctPwDisp','kpDots'].forEach(id=>{ const d=document.getElementById(id); if(d) d.textContent = dots; });
     const myInfoDots=document.getElementById('v47MiAccountPwDisp'); if(myInfoDots) myInfoDots.textContent=dots;
+    const untactDots=document.getElementById('v47UAccountPwDisp'); if(untactDots) untactDots.textContent=dots;
     v45AuthBtnSync();   // Ver 4.5 계좌인증 확인버튼 활성/비활성 동기화
     v47MyInfoAccountAuthBtnSync();
+    v47UntactAccountAuthBtnSync();
     return;
   }
   // 키패드 취소 → 입력 취소 후 닫기
@@ -6716,7 +6795,9 @@ document.addEventListener('click', (e)=>{
     s1state.acctPw = ''; const d=document.getElementById('acctPwDisp'); if(d) d.textContent='';
     v45AuthBtnSync();
     const myInfoDots=document.getElementById('v47MiAccountPwDisp'); if(myInfoDots) myInfoDots.textContent='';
+    const untactDots=document.getElementById('v47UAccountPwDisp'); if(untactDots) untactDots.textContent='';
     v47MyInfoAccountAuthBtnSync();
+    v47UntactAccountAuthBtnSync();
     closePwKeypad(); return;
   }
   // 인증서 비밀번호 시트 취소·확인
@@ -6731,6 +6812,7 @@ document.addEventListener('click', (e)=>{
     if((s1state.acctPw||'').length < 4){ flash('비밀번호를 4자리 이상 입력해주세요.'); return; }
     closePwKeypad();
     if(pwCtx==='v47MyInfo'){ pwCtx=''; v47MyInfoAccountAuthBtnSync(); return; }
+    if(pwCtx==='v47Untact'){ pwCtx=''; v47UntactAccountAuthBtnSync(); return; }
     if(pwCtx==='pwreset1'){ s1state.acctPw=''; pwCtx=''; flash('증권계좌 비밀번호 확인 완료. (시연용)'); return; }   // 증권계좌 비밀번호 재설정: 확인 후 완료 안내
     if(pwCtx==='change'){           // 거래내역 계좌변경: 다른 계좌 선택 후 비번 확인 → 적용
       s1state.acctPw = '';
@@ -6892,6 +6974,23 @@ document.addEventListener('click', (e)=>{
     if(kind==='accountPassword'){ openPwHelpSheet(); return; }
     return;
   }
+  if(t.closest('[data-v47u-agree]')){ s1state.v47UntactAgree=!s1state.v47UntactAgree; renderS1(); return; }
+  if(t.closest('[data-v47u-history]')){ applyV47UntactEvent({type:'OPEN_HISTORY'}); return; }
+  if(t.closest('[data-v47u-history-back]')){ applyV47UntactEvent({type:'CLOSE_HISTORY'}); return; }
+  if(t.closest('[data-v47u-back]')){ applyV47UntactEvent({type:'BACK'}); return; }
+  const v47uDoc=t.closest('[data-v47u-document]');
+  if(v47uDoc){ s1state.acctPw=''; applyV47UntactEvent({type:'SELECT_DOCUMENT',value:v47uDoc.dataset.v47uDocument}); return; }
+  const v47uHelp=t.closest('[data-v47u-help]');
+  if(v47uHelp){ if(v47uHelp.dataset.v47uHelp==='accountNumber')openFindAcct('v47Untact'); else openPwHelpSheet(); return; }
+  if(t.closest('[data-v47u-account-auth]')){ applyV47UntactEvent({type:'ACCOUNT_AUTH',account:((document.getElementById('v47UAccount')||{}).value||'').replace(/\D/g,''),password:s1state.acctPw||''}); return; }
+  if(t.closest('[data-v47u-submit]')){ applyV47UntactEvent({type:'SUBMIT_DOCUMENT',date:(document.getElementById('v47UDocDate')||{}).value||'',startDate:(document.getElementById('v47UDocStart')||{}).value||'',endDate:(document.getElementById('v47UDocEnd')||{}).value||'',purpose:(document.getElementById('v47UPurpose')||{}).value||'',copies:(document.getElementById('v47UCopies')||{}).value||''}); return; }
+  if(t.closest('[data-v47u-phone-request]')){ applyV47UntactEvent({type:'PHONE_REQUEST',name:(document.getElementById('v47UName')||{}).value||'',dob:(document.getElementById('v47UDob')||{}).value||'',phone:(document.getElementById('v47UPhone')||{}).value||'',agreed:!!s1state.v47UntactAgree}); return; }
+  if(t.closest('[data-v47u-phone-verify]')){ applyV47UntactEvent({type:'PHONE_VERIFY',otp:(document.getElementById('v47UOtp')||{}).value||''}); return; }
+  const v47uOpening=t.closest('[data-v47u-opening]');
+  if(v47uOpening){ applyV47UntactEvent({type:'CONTINUE_OPENING',id:v47uOpening.dataset.v47uOpening}); return; }
+  if(t.closest('[data-v47u-home]')){ s1state.v47Untact=null;s1state.page='home';s1state.history=[];renderS1();return; }
+  if(t.closest('[data-v47u-agent]')){ openConsult((s1state.v47Untact||{}).title||'비대면업무'); return; }
+  if(t.closest('[data-v47u-app]')){ openAppLink('untactstatus'); return; }
   if(t.closest('[data-v47mi-help-account]')){
     applyV47MyInfoEvent({type:'SELECT_HELP_ACCOUNT', value:t.closest('[data-v47mi-help-account]').dataset.v47miHelpAccount});
     return;
@@ -6955,6 +7054,7 @@ document.addEventListener('click', (e)=>{
   const v47s = t.closest('[data-v47sub]');
   if(v47s){
     if(startV47MyInfo(v47s.dataset.v47sub)) return;
+    if(startV47Untact(v47s.dataset.v47sub)) return;
     flash(`'${v47s.dataset.v47sub}' · 이후 절차 정의 예정`);
     return;
   }

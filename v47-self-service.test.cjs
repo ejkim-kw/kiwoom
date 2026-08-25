@@ -155,6 +155,12 @@ test('VER4.7 전체 중메뉴 44개에 간결한 행동형 설명을 제공한�
   assert.equal(service.getSubMenuDescription('v46', '체결조회'), '');
 });
 
+test('VER4.7 서류 발급현황 빈 결과의 서류신청 버튼은 비대면업무 서류신청으로 이동한다', () => {
+  const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+  assert.match(app, /data-certapply>\$\{isV47\(\)\?'서류신청':'서류 발급·신청'\}<\/div>/);
+  assert.match(app, /if\(isV47\(\)\)\{ startV47Untact\('서류신청'\); return; \}/);
+});
+
 test('Ver 4.6은 현재 시안이 아닌 이전버전 접이식 목록에 배치한다', () => {
   const index = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(index, /class="ref-item prev-item" data-sian="s1" data-ver="v46"/);

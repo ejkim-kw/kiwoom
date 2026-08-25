@@ -3854,3 +3854,23 @@ body{
 .flow.toss.v47 .v47mi-help:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px}
 .flow.toss.v47 .v47mi-help-account{width:100%}
 
+/* Ver 4.7 비대면업무 */
+.flow.toss.v47 .v47u-top-action{width:62px;height:44px;padding:0;border:0;background:transparent;color:#1A1A4E;font:700 calc(13px*var(--scale))/1 Pretendard,sans-serif;white-space:nowrap;cursor:pointer}
+.flow.toss.v47 .v47u-document-list{margin-top:18px}
+.flow.toss.v47 .v47u-document-list .v47mi-choice{width:100%}
+.flow.toss.v47 .v47u-document-list .v47-pwreset-chev{width:24px;color:#A6AEBD}
+.flow.toss.v47 .v47u-card-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.flow.toss.v47 .v47u-card-list .iod-v45-card{margin:0}
+.flow.toss.v47 .v47u-status-card{padding:18px 16px;cursor:default}
+.flow.toss.v47 .v47u-status-card .v45-ci-date{margin-top:8px;color:#667085;line-height:1.45}
+.flow.toss.v47 .v47u-card-cta{width:100%;height:44px;margin-top:16px;border:1.5px solid #1A1A4E;border-radius:999px;background:#fff;color:#1A1A4E;font:700 calc(14px*var(--scale))/1 Pretendard,sans-serif;cursor:pointer}
+.flow.toss.v47 .v47u-form{display:flex;flex-direction:column;gap:10px;margin-top:18px;padding:0;border:0;background:transparent}
+.flow.toss.v47 .v47u-form .ir{height:52px;box-sizing:border-box;padding:0 16px;border:1.5px solid #E4E7F0;border-radius:16px;background:#F7F8FA}
+.flow.toss.v47 .v47u-form .k{min-width:72px;color:#8B95A1;font-size:calc(13px*var(--scale));font-weight:600}
+.flow.toss.v47 .v47u-form .ir-input{min-width:0;padding:0;border:0;background:transparent;color:#1A1A4E;font-size:calc(14px*var(--scale));font-weight:600}
+.flow.toss.v47 .v47u-period{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.flow.toss.v47 .v47u-period .ir{padding:0 12px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+.flow.toss.v47 .v47u-period .k{min-width:0;font-size:calc(11px*var(--scale))}
+.flow.toss.v47 .v47u-period .ir-input{width:100%;font-size:calc(12px*var(--scale))}
+.flow.toss.v47 .v47u-unit{color:#667085;font-size:13px}
+

@@ -270,9 +270,9 @@ test('내정보 계좌인증은 셀프서비스와 동일한 입력란과 확인
   assert.match(app, /class="primary-btn v45-authbtn v47mi-cta\$\{\(accountValue/);
   assert.match(app, /function v47MyInfoAccountAuthBtnSync\(\)/);
   assert.ok(app.includes("account:((document.getElementById('v47MiAccount')||{}).value||'').replace(/\\D/g,'')"));
-  assert.match(index, /style\.css\?v=20260825d/);
+  assert.match(index, /style\.css\?v=20260825e/);
   assert.match(index, /v47-myinfo\.js\?v=20260825b/);
-  assert.match(index, /app\.js\?v=20260825h/);
+  assert.match(index, /app\.js\?v=20260825i/);
 });
 
 test('내정보 계좌인증은 셀프서비스의 비밀번호 마스킹과 키패드 구조를 그대로 사용한다', () => {
