@@ -1671,6 +1671,11 @@ body{
 .flow.toss.v47 .v47-cert-refresh:hover{opacity:.72}
 .flow.toss.v47 .v47-cert-refresh:active{opacity:.5}
 .flow.toss.v47 .v47-cert-refresh:focus-visible{outline:3px solid rgba(82,92,230,.28);outline-offset:2px}
+.flow.toss.v47 .v47-header-refresh{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:0;border:0;border-radius:0;background:transparent;color:#1A1A4E;cursor:pointer;font:inherit}
+.flow.toss.v47 .v47-header-refresh svg{width:24px;height:24px}
+.flow.toss.v47 .v47-header-refresh:hover{opacity:.72}
+.flow.toss.v47 .v47-header-refresh:active{opacity:.5}
+.flow.toss.v47 .v47-header-refresh:focus-visible{outline:3px solid rgba(82,92,230,.28);outline-offset:2px}
 .flow.toss.v47 .v47-cert-static{cursor:default}
 .flow.toss.v47 .v47-pwreset-list{display:flex;flex-direction:column;gap:10px;margin:18px 0}
 .flow.toss.v47 .v47-pwreset-choice{width:100%;min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:17px 16px;border:1.5px solid #EAECFF;border-radius:16px;background:#fff;color:#1A1A4E;text-align:left;cursor:pointer;font:inherit;transition:border-color .15s,background .15s,transform .15s}
@@ -3711,11 +3716,11 @@ body{
 .flow.toss.v47 .statusbar{background:#fff}
 .flow.toss.v47:has(.toss-home) .statusbar,
 .flow.toss.v47:has(.v45-authpage) .statusbar{background:#EBEDFF}
-.flow.toss.v47 .v47-hero{padding:4px 22px 8px}
+.flow.toss.v47 .v47-hero{padding:4px var(--v47-detail-inset) 8px}
 /* 셀프서비스 배너 높이 축소 + 그리드와 동일 테두리/그림자 (v47 전용) */
 .flow.toss.v47 .v45ss-card{height:78px;border-radius:18px}
 .flow.toss.v47 .v45ss-track .v45ss-card{border-radius:18px;overflow:hidden}
-.flow.toss.v47 .v45ss-wrap{border:1.5px solid #EAECFF;box-shadow:0 1px 4px rgba(72,72,216,.07);border-radius:18px;overflow:visible;clip-path:inset(-36px 0 0 0 round 18px);margin:0 14px}
+.flow.toss.v47 .v45ss-wrap{border:1.5px solid #EAECFF;box-shadow:0 1px 4px rgba(72,72,216,.07);border-radius:18px;overflow:visible;clip-path:inset(-36px 0 0 0 round 18px);margin:0 var(--v47-detail-inset)}
 /* float 아이콘 카드 (입출금이 안돢요): 배경 이미지 없이 아이콘만 카드 위 플로팅 */
 .flow.toss.v47 .v45ss-card.v47-ic-float{overflow:visible;background:#fff;align-items:center}
 .flow.toss.v47 .v47-ic-float .v45ss-txt{padding:0 16px;position:relative;z-index:3}
@@ -3729,11 +3734,11 @@ body{
 .flow.toss.v47 .v45ss-dots{margin:5px 0 8px}
 .flow.toss.v47 .v45ss-txt{padding:0 16px 12px 16px}
 /* 더보기·중메뉴 리스트: 둥근 직사각형 카드 */
-.flow.toss.v47 .v45ss-txtlist{display:flex;flex-direction:column;gap:8px;padding:4px 14px 28px}
+.flow.toss.v47 .v45ss-txtlist{display:flex;flex-direction:column;gap:8px;padding:4px var(--v47-detail-inset) 28px}
 .flow.toss.v47 .v45ss-txtrow{border:1.5px solid #EAECFF;border-radius:16px;box-shadow:0 1px 4px rgba(72,72,216,.07);background:#fff}
 .flow.toss.v47 .v45ss-txtrow+.v45ss-txtrow{border-top:1.5px solid #EAECFF}
 .flow.toss.v47 .toss-list .toss-cat{border:1.5px solid #EAECFF;border-radius:16px;box-shadow:0 1px 4px rgba(72,72,216,.07);background:#fff;margin-bottom:0}
-.flow.toss.v47 .toss-list{display:flex;flex-direction:column;gap:8px;padding:4px 14px 28px}
+.flow.toss.v47 .toss-list{display:flex;flex-direction:column;gap:8px;padding:4px var(--v47-detail-inset) 28px}
 /* view 하단 패딩 (FAB 영역 확보) */
 .flow.toss.v47 .view{padding-bottom:72px}
 /* FAB 열림 시 배경 블러 오버레이 */
@@ -3788,8 +3793,13 @@ body{
 .flow.toss.v47 .v47mi-error{color:#B42318;font-size:13px;font-weight:600;line-height:1.45;margin-top:8px;overflow-wrap:anywhere}
 .flow.toss.v47 .v47mi-error:empty{display:none}
 .flow.toss.v47{--v47-detail-inset:20px}
+.flow.toss.v47 .toss-stick .toss-dhead{padding-left:var(--v47-detail-inset);padding-right:var(--v47-detail-inset)}
+.flow.toss.v47 .v47-grid{padding-left:var(--v47-detail-inset);padding-right:var(--v47-detail-inset)}
 .flow.toss.v47 .iod-v45-body{padding-left:var(--v47-detail-inset);padding-right:var(--v47-detail-inset)}
 .flow.toss.v47 .iod-v45-body .toss-dhead{padding-left:0;padding-right:0}
+.flow.toss.v47 .v45-iodload-body{padding-left:var(--v47-detail-inset);padding-right:var(--v47-detail-inset)}
+.flow.toss.v47 .v45-iodload-body .toss-dhead{padding-left:0;padding-right:0}
+.flow.toss.v47 .iodresult-body{padding-left:var(--v47-detail-inset);padding-right:var(--v47-detail-inset)}
 .flow.toss.v47 .iod-v45-body .auth-wrap .auth-info,
 .flow.toss.v47 .iod-v45-body .auth-info{margin-left:0;margin-right:0}
 .flow.toss.v47 .iod-v45-body .v45-iod-btn{margin-left:0;margin-right:0}
@@ -3821,6 +3831,14 @@ body{
 .flow.toss.v47 .v47mi-password-form .ir{min-height:58px}
 .flow.toss.v47 .v47mi-auth-fields .ir{padding-right:7px}
 .flow.toss.v47 .v47mi-auth-fields .k{min-width:78px}
+.flow.toss.v47 .v47mi-account-auth .v47mi-auth-fields .ir{padding:0 20px}
+.flow.toss.v47 .v47mi-account-auth .v47mi-auth-fields .k{min-width:76px;font-size:calc(13.5px*var(--scale))}
+.flow.toss.v47 .v47mi-account-auth .v47mi-auth-fields .ir-input{font-size:calc(15px*var(--scale))}
+.flow.toss.v47 .v47mi-account-auth .primary-btn.v45-authbtn{margin-left:0;margin-right:0}
+.flow.toss.v47 .v47mi-help-inline{width:22px;height:22px;flex:none;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#B4BAC6;cursor:pointer}
+.flow.toss.v47 .v47mi-help-inline svg{width:20px;height:20px}
+.flow.toss.v47 .v47mi-help-inline:active{color:#1A1A4E}
+.flow.toss.v47 .v47mi-help-inline:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px;border-radius:50%}
 .flow.toss.v47 .v47mi-self-auth .toss-dhead{padding-bottom:24px}
 .flow.toss.v47 .v47mi-self-auth .v47mi-self-auth-info{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;border:0;background:transparent}
 .flow.toss.v47 .v47mi-self-auth .v47mi-self-auth-info .ir{height:46px;box-sizing:border-box;padding:0 20px;border:1.5px solid #E4E7F0;border-radius:999px;background:#F5F6FA;transition:border-color .15s,background .15s}

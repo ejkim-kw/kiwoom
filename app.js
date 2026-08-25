@@ -2418,7 +2418,19 @@ function renderV47IdSelection(state){
 function renderV47AccountAuth(state){
   const model=V47MyInfo.getAccountAuthModel(state);
   const presentation=V47MyInfo.getAuthPresentation();
-  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body ${presentation.bodyClass}"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">계좌번호와 계좌비밀번호를 직접 입력해 주세요.</div></div><div class="auth-info ${presentation.inputGroupClass} v47mi-auth-fields"><div class="ir"><label class="k" for="v47MiAccount">계좌번호</label><input id="v47MiAccount" class="ir-input" value="${model.account.value}" inputmode="${model.account.inputMode}" maxlength="${model.account.maxLength}" autocomplete="off" placeholder="숫자 8자리"><button type="button" class="v47mi-help" data-v47mi-help="${model.account.helpKind}" aria-label="계좌번호 찾기">?</button></div><div class="ir"><label class="k" for="v47MiAccountPassword">계좌비밀번호</label><input id="v47MiAccountPassword" class="ir-input" type="password" inputmode="${model.password.inputMode}" maxlength="${model.password.maxLength}" autocomplete="current-password" placeholder="숫자 4~8자리"><button type="button" class="v47mi-help" data-v47mi-help="${model.password.helpKind}" aria-label="계좌비밀번호 안내">?</button></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn" data-v47mi-account-auth>인증하기</button></div></div>`;
+  const helpSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.4 2.4 0 1 1 3.4 2.2c-.9.4-1.2 1-1.2 1.8"/><path d="M12 16.7h.01"/></svg>`;
+  const accountValue=(model.account.value||'').replace(/\D/g,'').slice(0,8).replace(/(\d{4})(\d{1,4})/,'$1-$2');
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body auth-wrap ${presentation.bodyClass} v47mi-account-auth"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">계좌번호와 계좌비밀번호를 직접 입력해 주세요.</div></div><div class="auth-info ${presentation.inputGroupClass} v47mi-auth-fields"><div class="ir"><label class="k" for="v47MiAccount">계좌번호</label><input id="v47MiAccount" class="ir-input" value="${accountValue}" inputmode="${model.account.inputMode}" maxlength="9" autocomplete="off"><button type="button" class="ir-qmark v47mi-help-inline" data-v47mi-help="${model.account.helpKind}" aria-label="계좌번호 찾기">${helpSvg}</button></div><div class="ir"><label class="k" for="v47MiAccountPassword">비밀번호</label><input id="v47MiAccountPassword" class="ir-input" type="password" inputmode="${model.password.inputMode}" maxlength="${model.password.maxLength}" autocomplete="current-password"><button type="button" class="ir-qmark v47mi-help-inline" data-v47mi-help="${model.password.helpKind}" aria-label="계좌비밀번호 안내">${helpSvg}</button></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-authbtn is-off" data-v47mi-account-auth disabled>확인</button></div></div>`;
+}
+
+function v47MyInfoAccountAuthBtnSync(){
+  const account=document.getElementById('v47MiAccount');
+  const password=document.getElementById('v47MiAccountPassword');
+  const button=document.querySelector('[data-v47mi-account-auth]');
+  if(!account || !password || !button) return;
+  const enabled=account.value.replace(/\D/g,'').length===8 && /^\d{4,8}$/.test(password.value);
+  button.classList.toggle('is-off',!enabled);
+  button.disabled=!enabled;
 }
 function renderV47HelpAccountList(state){
   const rows=V47MyInfo.DATA.accounts.map(x=>`<button type="button" class="v47mi-choice v47mi-help-account" data-v47mi-help-account="${x.id}"><span><b>${x.type}</b><small>${x.id.slice(0,4)}-${x.id.slice(4)}</small></span><span class="v47mi-check">입력</span></button>`).join('');
@@ -4188,13 +4200,16 @@ function renderIsaResult(){
       none:     {title:'ISA 가입·이전 신청내역이 없어요',     desc:'ISA 가입·계좌이전은 영웅문S# 또는 키움증권 홈페이지에서 신청할 수 있어요.', body:'', cta:'상담원 연결', ctaAttr:'data-staffconnect="ISA 가입·계좌이전"'},
     };
     const s = M45[st];
+    const isaRefresh = isV47()
+      ? `<button type="button" class="v47-header-refresh" data-isacycle aria-label="다른 결과 보기" title="다른 결과 보기">${rfs}</button>`
+      : '';
+    const isaResultHead = isV47()
+      ? `<div class="toss-dhead"><div class="td-title">${s.title}</div><div class="td-desc">${s.desc}</div></div>`
+      : `<div class="v45-isa-head"><div class="toss-dhead"><div class="td-title">${s.title}</div><div class="td-desc">${s.desc}</div></div><div class="v45-cycle-btn" data-isacycle title="다른 결과 보기">${rfs}</div></div>`;
     return `<div class="iodresult-screen v45-authpage">
-      ${v45AuthTop(1)}
+      ${v45AuthTop(1, isaRefresh)}
       <div class="iod-v45-body">
-        <div class="v45-isa-head">
-          <div class="toss-dhead"><div class="td-title">${s.title}</div><div class="td-desc">${s.desc}</div></div>
-          <div class="v45-cycle-btn" data-isacycle title="다른 결과 보기">${rfs}</div>
-        </div>
+        ${isaResultHead}
         ${s.body}
         <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" ${s.ctaAttr}>${s.cta}</div></div>
         <div class="iod-note">※ 데모 화면이에요. 새로고침 버튼으로 다른 상태를 확인해요.</div>
@@ -6140,6 +6155,17 @@ function closeAiChat(){ const e=document.getElementById('aiChatOv'); if(e) e.rem
 document.addEventListener('input', (e)=>{
   const el = e.target;
   if(!el) return;
+  if(el.id === 'v47MiAccount'){
+    const raw=el.value.replace(/\D/g,'').slice(0,8);
+    el.value=raw.length>4 ? raw.slice(0,4)+'-'+raw.slice(4) : raw;
+    v47MyInfoAccountAuthBtnSync();
+    return;
+  }
+  if(el.id === 'v47MiAccountPassword'){
+    el.value=el.value.replace(/\D/g,'').slice(0,8);
+    v47MyInfoAccountAuthBtnSync();
+    return;
+  }
   if(el.closest && el.closest('#findAcctPop')){
     if(el.classList.contains('fir-sel')) el.classList.toggle('has-val', el.value !== '');
     syncFindCtaBtn(); return;
@@ -6807,7 +6833,7 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-v47mi-account-auth]')){
     applyV47MyInfoEvent({
       type:'ACCOUNT_AUTH',
-      account:(document.getElementById('v47MiAccount')||{}).value||'',
+      account:((document.getElementById('v47MiAccount')||{}).value||'').replace(/\D/g,''),
       password:(document.getElementById('v47MiAccountPassword')||{}).value||''
     });
     return;

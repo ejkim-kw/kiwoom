@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 let service;
 try {
@@ -151,4 +153,28 @@ test('VER4.7 전체 중메뉴 44개에 간결한 행동형 설명을 제공한�
   assert.equal(service.getSubMenuDescription('v47', '계좌정보 조회 및 변경'), '등록된 계좌 정보를 확인하고 변경해요');
   assert.equal(service.getSubMenuDescription('v47', '체결조회'), '주문 체결 여부와 내역을 확인해요');
   assert.equal(service.getSubMenuDescription('v46', '체결조회'), '');
+});
+
+test('VER4.7 모든 주요 화면 컨테이너는 좌우 20px 인셋 토큰을 사용한다', () => {
+  const css = fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8');
+
+  assert.match(css, /\.flow\.toss\.v47\{--v47-detail-inset:20px\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.v47-hero\{padding:4px var\(--v47-detail-inset\) 8px\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.toss-stick \.toss-dhead\{padding-left:var\(--v47-detail-inset\);padding-right:var\(--v47-detail-inset\)\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.v45ss-wrap\{[^}]*margin:0 var\(--v47-detail-inset\)/);
+  assert.match(css, /\.flow\.toss\.v47 \.v45ss-txtlist\{[^}]*padding:4px var\(--v47-detail-inset\) 28px\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.toss-list\{[^}]*padding:4px var\(--v47-detail-inset\) 28px\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.v47-grid\{padding-left:var\(--v47-detail-inset\);padding-right:var\(--v47-detail-inset\)\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.v45-iodload-body\{padding-left:var\(--v47-detail-inset\);padding-right:var\(--v47-detail-inset\)\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.v45-iodload-body \.toss-dhead\{padding-left:0;padding-right:0\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.iodresult-body\{padding-left:var\(--v47-detail-inset\);padding-right:var\(--v47-detail-inset\)\}/);
+});
+
+test('VER4.7 ISA 신청현황 새로고침은 뒤로가기 라인의 투명 아이콘 버튼을 사용한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  const css = fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8');
+
+  assert.match(app, /const isaRefresh = isV47\(\)\s*\? `<button type="button" class="v47-header-refresh" data-isacycle/);
+  assert.match(app, /\$\{v45AuthTop\(1, isaRefresh\)\}/);
+  assert.match(css, /\.flow\.toss\.v47 \.v47-header-refresh\{[^}]*background:transparent/);
 });

@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const myInfo = require('./v47-myinfo.js');
 
 test('handles 내정보 detail routes only in VER4.7', () => {
@@ -243,4 +245,17 @@ test('dormant release accepts only a dormant ID and completes after account pass
   const done=myInfo.transition(state,{type:'ACCOUNT_PASSWORD',password:'1234'});
   assert.equal(done.state.step,'complete');
   assert.equal(done.state.completed,true);
+});
+
+test('내정보 계좌인증은 셀프서비스와 동일한 입력란과 확인 버튼을 사용한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  const index = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+  assert.match(app, /iod-v45-body auth-wrap \$\{presentation\.bodyClass\}/);
+  assert.match(app, /class="ir-qmark v47mi-help-inline" data-v47mi-help=/);
+  assert.match(app, /class="primary-btn v45-authbtn is-off" data-v47mi-account-auth disabled>확인<\/button>/);
+  assert.match(app, /function v47MyInfoAccountAuthBtnSync\(\)/);
+  assert.ok(app.includes("account:((document.getElementById('v47MiAccount')||{}).value||'').replace(/\\D/g,'')"));
+  assert.match(index, /style\.css\?v=20260825a/);
+  assert.match(index, /app\.js\?v=20260825a/);
 });
