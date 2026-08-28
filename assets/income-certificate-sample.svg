@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="940" viewBox="0 0 720 940">
+  <rect width="720" height="940" fill="#eef1f5"/>
+  <rect x="55" y="34" width="610" height="872" rx="6" fill="#fff" stroke="#c8ced8" stroke-width="2"/>
+  <text x="360" y="98" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="700" fill="#171b2f">소득확인증명서</text>
+  <text x="360" y="128" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#4c5568">개인종합자산관리계좌 가입용</text>
+  <g font-family="sans-serif" font-size="14" fill="#30384b">
+    <text x="92" y="178">성명</text><text x="248" y="178">홍 ○ 동</text>
+    <text x="92" y="216">주민등록번호</text><text x="248" y="216">900101 - 1******</text>
+    <text x="92" y="254">주소</text><text x="248" y="254">서울특별시 ○○구 ○○로 **</text>
+  </g>
+  <g fill="none" stroke="#adb5c2"><path d="M80 150H640V276H80Z"/><path d="M80 190H640M80 228H640M220 150V276"/></g>
+  <rect x="80" y="312" width="560" height="74" rx="6" fill="#fff4f9" stroke="#e6007f" stroke-width="2"/>
+  <text x="100" y="340" font-family="sans-serif" font-size="13" font-weight="700" fill="#a9005d">발급 용도</text>
+  <text x="100" y="370" font-family="sans-serif" font-size="18" font-weight="700" fill="#171b2f">개인종합자산관리계좌 가입용</text>
+  <rect x="80" y="414" width="260" height="104" rx="6" fill="#f7f5ff" stroke="#7357c6" stroke-width="2"/>
+  <text x="100" y="446" font-family="sans-serif" font-size="13" font-weight="700" fill="#6345b5">귀속연도</text>
+  <text x="100" y="487" font-family="sans-serif" font-size="24" font-weight="700" fill="#171b2f">2025년</text>
+  <rect x="380" y="414" width="260" height="104" rx="6" fill="#eef6ff" stroke="#2976b8" stroke-width="2"/>
+  <text x="400" y="446" font-family="sans-serif" font-size="13" font-weight="700" fill="#1769aa">총급여액</text>
+  <text x="400" y="487" font-family="sans-serif" font-size="24" font-weight="700" fill="#171b2f">42,000,000원</text>
+  <g stroke="#c7cdd7" fill="none"><path d="M80 558H640V748H80Z"/><path d="M80 598H640M80 638H640M80 678H640M80 718H640M260 558V748M470 558V748"/></g>
+  <g font-family="sans-serif" font-size="13" fill="#596273"><text x="98" y="584">구분</text><text x="278" y="584">금액</text><text x="488" y="584">비고</text><text x="98" y="624">근로소득</text><text x="278" y="624">42,000,000</text><text x="488" y="624">확인</text></g>
+  <text x="360" y="800" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#495266">위 사실을 증명합니다.</text>
+  <text x="360" y="836" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#20263a">국 세 청 장</text>
+  <g transform="rotate(-18 360 470)"><text x="360" y="500" text-anchor="middle" font-family="sans-serif" font-size="104" font-weight="800" fill="#e6007f" opacity=".09">예 시</text></g>
+</svg>

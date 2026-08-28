@@ -3211,17 +3211,52 @@ body{
 #dform-phone .df-customer-list{padding-top:8px}
 #dform-phone .df-list{padding:0 20px}
 #dform-phone .df-row{width:100%;padding:16px 0;border:0;border-bottom:1px solid var(--line);background:#fff;text-align:left}
+#dform-phone .df-row-copy{min-width:0;display:flex;align-items:center;gap:8px}
+#dform-phone .df-category{flex:none;display:inline-flex;align-items:center;justify-content:center;min-height:23px;padding:0 9px;border-radius:999px;background:#FDE7F2;color:#C5006C;font-size:calc(10.5px*var(--scale));font-weight:800;white-space:nowrap}
+#dform-phone .df-category.business{background:#FDE7F2;color:#C5006C}
+#dform-phone .df-category.finance{background:#F1ECFF;color:#6941C6}
+#dform-phone .df-category.futures{background:#ECEFFC;color:#35388A}
+#dform-phone .df-category.domestic{background:#E7F7F4;color:#087A69}
+#dform-phone .df-category.overseas{background:#E9F2FF;color:#1769AA}
+#dform-phone .df-title-line{display:flex;align-items:flex-start;gap:8px}
+#dform-phone .df-title-line .df-category{margin-top:2px}
+#dform-phone .df-title-line .df-dtitle{min-width:0}
 #dform-phone .df-head{padding:24px 20px 14px}
+#dform-phone .df-requirement{display:inline-flex;align-items:center;margin-top:12px;padding:6px 10px;border-radius:999px;background:#F3F4F7;color:#50596B;font-size:calc(11px*var(--scale));font-weight:800}
 #dform-phone .df-attach-list{padding:2px 20px}
+#dform-phone .df-attach{align-items:flex-start;padding:17px 0}
+#dform-phone .df-attach-info{min-width:0;flex:1}
+#dform-phone .df-attach-title{display:flex;align-items:center;gap:7px}
+#dform-phone .df-guide-help{flex:none;width:21px;height:21px;padding:0;border:1.5px solid #B9BFCA;border-radius:50%;background:#fff;color:#667085;font:800 12px/1 Pretendard,sans-serif;display:grid;place-items:center;cursor:pointer}
+#dform-phone .df-guide-help:active{background:#F3F4F7;color:#14183C}
+#dform-phone .df-attach-sub{margin-top:6px;color:#667085;line-height:1.55;word-break:keep-all}
+#dform-phone .df-attached-state{margin-top:8px;color:#12864A;font-size:calc(11.5px*var(--scale));font-weight:800}
 #dform-phone .df-foot{padding:12px 20px calc(20px + env(safe-area-inset-bottom,0px))}
 #dform-phone .df-submit{width:100%;height:46px;padding:0;border:0;border-radius:999px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:700 calc(15px*var(--scale))/1 Pretendard,sans-serif}
 #dform-phone .df-submit.disabled{background:#DBDEE7;color:#9299A8;cursor:default;filter:none}
 #dform-phone .df-attach-btn{border:0;font-family:inherit}
 #dform-phone .df-attach-btn.attached{background:#EAF7EE;color:#12864A}
 #dform-phone .df-sheet-ov{position:absolute;inset:0;z-index:30;background:rgba(20,24,60,.35);display:flex;align-items:flex-end}
+#dform-phone .df-guide-ov{background:rgba(20,24,60,.32);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 #dform-phone .df-sheet{width:100%;padding:8px 20px calc(22px + env(safe-area-inset-bottom,0px));border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -16px 40px rgba(20,24,60,.16)}
 #dform-phone .df-sheet-handle{width:38px;height:4px;margin:0 auto 18px;border-radius:3px;background:#D5D9E1}
 #dform-phone .df-sheet-title{margin-bottom:10px;font-size:19px;font-weight:800;color:#14183C}
+#dform-phone .df-method-notice{margin:2px 0 8px;padding:10px 12px;border-radius:10px;background:#FFF4F8;color:#A9005D;font-size:11.5px;font-weight:700;line-height:1.45}
+#dform-phone .df-guide-sheet{max-height:78%;overflow-y:auto;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));scrollbar-width:none;-ms-overflow-style:none}
+#dform-phone .df-guide-sheet::-webkit-scrollbar{display:none}
+#dform-phone .df-guide-head{display:flex;min-height:44px;align-items:center;justify-content:space-between;gap:12px}
+#dform-phone .df-guide-head .df-sheet-title{margin:0}
+#dform-phone .df-guide-sheet .df-guide-head button{flex:none;width:44px;height:44px;margin-right:-6px;padding:0;border:0;border-radius:50%;background:transparent;color:#596273;font:400 24px/1 Pretendard,sans-serif;display:grid;place-items:center;cursor:pointer}
+#dform-phone .df-guide-sheet .df-guide-head button:active{background:#F3F4F7;color:#14183C}
+#dform-phone .df-guide-doc{margin-top:13px;color:#14183C;font-size:16px;font-weight:800}
+#dform-phone .df-guide-desc{margin:7px 0 0;color:#50596B;font-size:12.5px;font-weight:600;line-height:1.55;word-break:keep-all}
+#dform-phone .df-guide-sheet ul{margin:12px 0 0;padding:12px 12px 12px 28px;border-radius:12px;background:#F7F8FA;color:#50596B}
+#dform-phone .df-guide-sheet li{padding:2px 0;font-size:11.5px;font-weight:600;line-height:1.5;word-break:keep-all}
+#dform-phone .df-guide-checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+#dform-phone .df-guide-checks span{padding:6px 9px;border-radius:999px;background:#FFF0F7;color:#B60064;font-size:10.5px;font-weight:800}
+#dform-phone .df-guide-sample-title{display:flex;align-items:center;gap:7px;margin:16px 0 8px;color:#14183C;font-size:13px;font-weight:800}
+#dform-phone .df-guide-sample-title b{padding:3px 7px;border-radius:999px;background:#FDE7F2;color:#C5006C;font-size:9.5px}
+#dform-phone .df-guide-sample{width:100%;height:auto;display:block;border:1px solid #DDE1E8;border-radius:12px;background:#EEF1F5}
 #dform-phone .df-sheet button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 0;border:0;border-bottom:1px solid #F2F4F6;background:#fff;text-align:left;font-family:inherit;color:#14183C}
 #dform-phone .df-sheet button>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:3px}
 #dform-phone .df-sheet button b{font-size:14px}.df-sheet button small{font-size:11.5px;color:#7D8796}

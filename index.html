@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="assets/kiwoom-favicon.ico">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260828a">
+  <link rel="stylesheet" href="style.css?v=20260828f">
 </head>
 <body>
 
@@ -58,6 +58,7 @@
     <div class="func-item" data-skipauth><span class="rf-nm">본인인증 생략</span><span class="rf-tel">클릭 시 이후 인증 생략 (시연용)</span></div>
     <div class="func-item" data-demo-fill-account><span class="rf-nm">계좌번호 자동입력</span><span class="rf-tel">현재 인증화면에 시연정보 입력</span></div>
     <div class="func-item" data-demo-fill-phone><span class="rf-nm">휴대폰인증 자동입력</span><span class="rf-tel">현재 인증화면에 시연정보 입력</span></div>
+    <div class="func-item" data-demo-attach-documents><span class="rf-nm">서류첨부</span><span class="rf-tel">Digital Form에 시연서류 첨부</span></div>
   </div>
   </div><!-- /left-col -->
   <div class="phone-wrap" id="mainStage">
@@ -1463,18 +1464,13 @@
     reset();paint();
   })();
   </script>
-  <script src="digital-form.js?v=20260828a"></script>
+  <script src="digital-form.js?v=20260828j"></script>
   <script>
   /* Digital Form(dform) · 고객용 서류제출 공통 흐름 */
   (function(){
     var phone=document.getElementById('dform-phone'), app=document.getElementById('dform-app'), stepper=document.getElementById('dform-stepper');
     if(!phone||!app||!window.DigitalForm)return;
-    var tasks={
-      isa:{title:'ISA 서민형 증빙서류 제출',desc:'서민형 가입 자격(총급여 5,000만원 또는 종합소득 3,800만원 이하)을 확인하기 위해 아래 서류가 필요해요. 각 항목의 서류를 모두 첨부해 주세요.',docs:[['소득확인증명서','개인종합자산관리계좌 가입용 · 홈택스 발급'],['근로소득 원천징수영수증','직전 과세기간 발급분'],['신분증 사본','주민등록증 · 운전면허증 등']]},
-      rename:{title:'개명',desc:'개명 사실을 확인하고 계좌 명의를 변경하기 위해 아래 서류가 필요해요. 개명 후 발급된 서류를 모두 첨부해 주세요.',docs:[['기본증명서 (상세)','개명 이력 확인용'],['주민등록초본','개명 사실 기재분'],['신분증 사본','개명 후 재발급분']]},
-      agent:{title:'대리인 본인확인 (미성년자)',desc:'미성년자 계좌의 법정대리인과 친권 관계를 확인하기 위해 아래 서류가 필요해요. 미성년자 기준으로 발급된 서류를 모두 첨부해 주세요.',docs:[['가족관계증명서 (상세)','미성년자 기준 · 법정대리인 관계 확인'],['기본증명서 (상세)','미성년자 기준 · 친권자 확인'],['법정대리인 신분증 사본','부모 등 법정대리인']]},
-      otherfirm:{title:'타사 거래확인서 등록',desc:'타 증권사의 거래내역과 기준일 잔고를 확인하기 위해 아래 서류가 필요해요. 타 증권사에서 발급한 서류를 모두 첨부해 주세요.',docs:[['타사 거래확인서','타 증권사 발급 · 원본'],['타사 잔고증명서','기준일 명시분'],['신분증 사본','주민등록증 · 운전면허증 등']]}
-    };
+    var tasks=DigitalForm.TASKS;
     var state={view:'list',taskId:'',session:null,target:-1,method:''};
     var arrow='<svg class="df-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
     function setStepper(step){
@@ -1484,19 +1480,27 @@
     }
     function listView(){
       setStepper(-1);
-      app.innerHTML='<div class="dform-view df-customer-list"><div class="df-list">'+Object.keys(tasks).map(function(id){return '<button type="button" class="df-row" data-dfgo="'+id+'"><span class="df-nm">'+tasks[id].title+'</span>'+arrow+'</button>';}).join('')+'</div></div>';
+      app.innerHTML='<div class="dform-view df-customer-list"><div class="df-list">'+Object.keys(tasks).map(function(id){return '<button type="button" class="df-row" data-dfgo="'+id+'"><span class="df-row-copy"><span class="df-category '+DigitalForm.categoryClass(tasks[id].category)+'">'+tasks[id].category+'</span><span class="df-nm">'+tasks[id].title+'</span></span>'+arrow+'</button>';}).join('')+'</div></div>';
     }
     function detailView(){
-      var task=tasks[state.taskId],ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean);setStepper(hasAttachment?1:0);
-      app.innerHTML='<div class="dform-view"><div class="df-head"><div class="df-dtitle">'+task.title+'</div><div class="df-desc">'+task.desc+'</div></div><div class="df-attach-list">'+task.docs.map(function(doc,i){var file=state.session.documents[i];return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">'+doc[0]+'</div><div class="df-attach-sub">'+(file?'첨부 완료 · '+methodLabel(file.method):doc[1])+'</div></div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div><div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">제출할게요</button></div></div>';
+      var task=tasks[state.taskId],ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean),visibleCount=task.maxAttachments?DigitalForm.visibleAttachmentCount(state.session,task.maxAttachments):task.docs.length;
+      var requirement=DigitalForm.requirementLabel(task);
+      var displayDocs=task.maxAttachments?Array.from({length:visibleCount},function(_,i){return task.docs[0];}):task.docs;
+      app.innerHTML='<div class="dform-view"><div class="df-head"><div class="df-dtitle">'+(task.detailTitle||task.title)+'</div><div class="df-desc">'+task.guide+'</div>'+(requirement?'<div class="df-requirement">'+requirement+'</div>':'')+'</div><div class="df-attach-list">'+displayDocs.map(function(doc,i){var file=state.session.documents[i],name=task.maxAttachments?'첨부서류 '+(i+1):doc.name;return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-title"><div class="df-attach-nm">'+name+'</div>'+(doc.guide?'<button type="button" class="df-guide-help" data-dfguide="'+i+'" aria-label="'+name+' 서류안내">?</button>':'')+'</div><div class="df-attach-sub">'+doc.description+'</div>'+(file?'<div class="df-attached-state">✓ 첨부 완료 · '+methodLabel(file.method)+'</div>':'')+'</div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div><div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">제출할게요</button></div></div>';
     }
     function methodLabel(method){return {camera:'사진 촬영',file:'파일 선택',gallery:'사진첩 선택'}[method]||'첨부';}
     function methodSheet(){
-      detailView();app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov" data-dfclose><div class="df-sheet" role="dialog" aria-modal="true" aria-label="첨부 방법 선택"><div class="df-sheet-handle"></div><div class="df-sheet-title">어떻게 첨부할까요?</div><button type="button" data-dfmethod="camera"><span class="df-method-ic">⌾</span><span><b>사진 촬영</b><small>카메라로 서류를 바로 촬영해요</small></span>'+arrow+'</button><button type="button" data-dfmethod="file"><span class="df-method-ic">▤</span><span><b>파일 선택</b><small>저장된 PDF·이미지 파일을 찾아요</small></span>'+arrow+'</button><button type="button" data-dfmethod="gallery"><span class="df-method-ic">▧</span><span><b>사진첩에서 선택</b><small>사진첩의 서류 이미지를 선택해요</small></span>'+arrow+'</button></div></div>');
+      var task=tasks[state.taskId],doc=task.docs[Math.min(state.target,task.docs.length-1)],methods=doc.methods||['camera','file','gallery'];
+      var options={camera:'<button type="button" data-dfmethod="camera"><span class="df-method-ic">⌾</span><span><b>사진 촬영</b><small>카메라로 서류를 바로 촬영해요</small></span>'+arrow+'</button>',file:'<button type="button" data-dfmethod="file"><span class="df-method-ic">▤</span><span><b>파일 선택</b><small>저장된 PDF·이미지 파일을 찾아요</small></span>'+arrow+'</button>',gallery:'<button type="button" data-dfmethod="gallery"><span class="df-method-ic">▧</span><span><b>사진첩에서 선택</b><small>사진첩의 서류 이미지를 선택해요</small></span>'+arrow+'</button>'};
+      detailView();app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov" data-dfclose><div class="df-sheet" role="dialog" aria-modal="true" aria-label="첨부 방법 선택"><div class="df-sheet-handle"></div><div class="df-sheet-title">어떻게 첨부할까요?</div>'+(methods.length===1?'<div class="df-method-notice">실물 확인이 필요한 서류로 사진 촬영만 가능해요.</div>':'')+methods.map(function(method){return options[method];}).join('')+'</div></div>');
+    }
+    function guideSheet(index){
+      var task=tasks[state.taskId],doc=task.docs[Math.min(index,task.docs.length-1)],guide=doc.guide;if(!guide)return;
+      detailView();app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov df-guide-ov" data-dfguideclose><div class="df-sheet df-guide-sheet" role="dialog" aria-modal="true" aria-label="'+guide.title+'"><div class="df-sheet-handle"></div><div class="df-guide-head"><div class="df-sheet-title">'+guide.title+'</div><button type="button" data-dfguideclose aria-label="서류안내 닫기">×</button></div><div class="df-guide-doc">'+doc.name+'</div><p class="df-guide-desc">'+guide.description+'</p><ul>'+guide.notes.map(function(note){return '<li>'+note+'</li>';}).join('')+'</ul><div class="df-guide-checks">'+guide.checks.map(function(check){return '<span>✓ '+check+'</span>';}).join('')+'</div><div class="df-guide-sample-title">샘플 이미지 <b>예시</b></div><img class="df-guide-sample" src="'+guide.sample+'" alt="'+doc.name+' 예시 이미지"></div></div>');
     }
     function demoView(method){
       state.view='demo';state.method=method;setStepper(1);
-      var task=tasks[state.taskId],doc=task.docs[state.target][0],body='';
+      var task=tasks[state.taskId],doc=(task.docs[Math.min(state.target,task.docs.length-1)]||{}).name,body='';
       if(method==='camera')body='<div class="df-camera"><div class="df-camera-guide"><span></span><b>'+doc+'</b><small>가이드 안에 서류 전체가 보이게 해주세요</small></div></div><button type="button" class="df-demo-submit" data-dfcomplete>촬영하고 사용하기</button>';
       if(method==='file')body='<div class="df-file-list"><button type="button" class="selected" data-dfcomplete><span class="df-file-icon">PDF</span><span><b>'+doc+'.pdf</b><small>1.8 MB · 오늘</small></span><i>✓</i></button><button type="button"><span class="df-file-icon">JPG</span><span><b>최근 스캔 이미지.jpg</b><small>2.4 MB · 어제</small></span></button></div>';
       if(method==='gallery')body='<div class="df-gallery">'+[1,2,3,4,5,6].map(function(n){return '<button type="button" data-dfcomplete class="'+(n===1?'selected':'')+'"><span>서류 '+n+'</span>'+(n===1?'<i>✓</i>':'')+'</button>';}).join('')+'</div>';
@@ -1508,7 +1512,9 @@
     }
     function render(){if(state.view==='list')listView();else if(state.view==='detail')detailView();else if(state.view==='done')doneView();}
     phone.addEventListener('click',function(e){
-      var go=e.target.closest('[data-dfgo]');if(go){state.taskId=go.dataset.dfgo;state.session=DigitalForm.createSession(state.taskId,tasks[state.taskId].docs.length);state.view='detail';return render();}
+    var go=e.target.closest('[data-dfgo]');if(go){state.taskId=go.dataset.dfgo;state.session=DigitalForm.createSession(state.taskId,tasks[state.taskId].maxAttachments||tasks[state.taskId].docs.length,tasks[state.taskId].requirementMode);state.view='detail';return render();}
+      var guide=e.target.closest('[data-dfguide]');if(guide)return guideSheet(Number(guide.dataset.dfguide));
+      if(e.target.classList.contains('df-guide-ov')||e.target.closest('.df-guide-head [data-dfguideclose]'))return detailView();
       var attach=e.target.closest('[data-dfattach]');if(attach){state.target=Number(attach.dataset.dfattach);return methodSheet();}
       var method=e.target.closest('[data-dfmethod]');if(method)return demoView(method.dataset.dfmethod);
       if(e.target.closest('[data-dfclose]')&&e.target.closest('.df-sheet'))return;
@@ -1517,6 +1523,12 @@
       if(e.target.closest('[data-dfcomplete]')){state.session=DigitalForm.attachDocument(state.session,state.target,state.method);state.view='detail';return render();}
       var submit=e.target.closest('[data-dfsubmit]');if(submit){if(submit.getAttribute('aria-disabled')==='true')return;var result=DigitalForm.submit(state.session);if(!result.error){state.session=result.session;state.view='done';render();}return;}
       if(e.target.closest('[data-dfhome]')){state={view:'list',taskId:'',session:null,target:-1,method:''};render();}
+    });
+    document.addEventListener('click',function(e){
+      if(!e.target.closest||!e.target.closest('[data-demo-attach-documents]'))return;
+      if(phone.offsetParent===null||state.view!=='detail'||!state.session){if(typeof window.flash==='function')window.flash('Digital Form 서류 상세화면에서 사용해 주세요.');return;}
+      state.session=DigitalForm.attachDemoDocuments(state.session);render();
+      if(typeof window.flash==='function')window.flash('시연용 서류를 첨부했습니다. 제출할게요 버튼을 눌러 진행해 주세요.');
     });
     window.__dformHome=function(){state={view:'list',taskId:'',session:null,target:-1,method:''};render();};
     render();
@@ -1673,7 +1685,7 @@
 <script src="v47-self-service.js?v=20260828a"></script>
 <script src="v47-myinfo.js?v=20260828a"></script>
 <script src="v47-untact.js?v=20260825a"></script>
-<script src="app.js?v=20260828a"></script>
+<script src="app.js?v=20260828b"></script>
 <script>
 /* 디지털ARS 시안 탭 · 인터랙션 (app.js와 독립) */
 (function(){
