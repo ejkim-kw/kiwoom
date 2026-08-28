@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="assets/kiwoom-favicon.ico">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260825e">
+<link rel="stylesheet" href="style.css?v=20260828a">
 </head>
 <body>
 
@@ -36,10 +36,10 @@
   <div class="ref-list sian-list" id="sianList">
     <div class="ref-title">시안 · 디지털 ARS</div>
     <div class="ref-item" data-sian="s1" data-ver="v47"><span class="rf-nm">Ver 4.7</span><span class="rf-tel">3×3 그리드 메인 · 9대메뉴 구조 (신규 메뉴구조도 기반)</span></div>
-    <div class="ref-item" data-sian="dform"><span class="rf-nm">Digital Form</span><span class="rf-tel">키움증권 로고만 있는 빈 화면 (작업용 템플릿)</span></div>
-    <div class="ref-item" data-sian="dform3"><span class="rf-nm">Digital Form_v0.1</span><span class="rf-tel">서류제출 엔진 흐름 재현 · 5단계(인증→서류준비→첨부→제출→완료) · 업무 11종·상태머신</span></div>
+    <div class="ref-item" data-sian="dform"><span class="rf-nm">Digital Form</span><span class="rf-tel">고객용 서류제출 · 첨부방식 선택 · 접수상태 확인</span></div>
     <!-- 시안 · 이전버전 (접이식 · 우측 [+] 토글) -->
     <div class="ref-title prev-title" data-prevtoggle>시안 · 이전버전<span class="prev-plus" aria-hidden="true">+</span></div>
+    <div class="ref-item prev-item" data-sian="dform3"><span class="rf-nm">Digital Form_v0.1</span><span class="rf-tel">서류제출 엔진 흐름 재현 · 5단계(인증→서류준비→첨부→제출→완료) · 업무 11종·상태머신</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v46"><span class="rf-nm">Ver 4.6</span><span class="rf-tel">Ver 4.5 복사본 · 추가 작업용</span></div>
     <div class="ref-item prev-item" data-sian="dform4"><span class="rf-nm">Digital Form_v0.2</span><span class="rf-tel">iOS HIG 디자인 · SF Pro·8pt 그리드·시맨틱 컬러·다크모드 · 서류제출 엔진 5단계</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v1"><span class="rf-nm">Ver 1.0</span><span class="rf-tel">디지털 ARS + 보이는 ARS (화면구현)</span></div>
@@ -58,11 +58,6 @@
     <div class="func-item" data-skipauth><span class="rf-nm">본인인증 생략</span><span class="rf-tel">클릭 시 이후 인증 생략 (시연용)</span></div>
     <div class="func-item" data-demo-fill-account><span class="rf-nm">계좌번호 자동입력</span><span class="rf-tel">현재 인증화면에 시연정보 입력</span></div>
     <div class="func-item" data-demo-fill-phone><span class="rf-nm">휴대폰인증 자동입력</span><span class="rf-tel">현재 인증화면에 시연정보 입력</span></div>
-    <div class="sp-qr" id="spQrWrap">
-      <div class="sp-title">모바일 접속 QR</div>
-      <img id="spQr" alt="현재 버전 접속 QR">
-      <div class="sp-qrcap" id="spQrCap"></div>
-    </div>
   </div>
   </div><!-- /left-col -->
   <div class="phone-wrap" id="mainStage">
@@ -895,102 +890,14 @@
     </div>
 
   </div>
-  <!-- ====== Digital Form · 키움증권 로고만 있는 빈 화면 (작업용 템플릿) ====== -->
+  <!-- ====== Digital Form · 고객용 서류제출 ====== -->
   <div class="dars-deck" data-scheme="dform">
     <div class="phone-wrap" id="dform-phone">
       <div class="phone"><div class="notch"></div><div class="screen">
         <div class="dform-flow">
           <div class="statusbar"><span>9:41</span><span class="icons">●●● 5G ▮</span></div>
-          <div class="dform-top"><img class="logo-img" src="assets/kiwoom-logo.png" alt="키움증권"></div>
-          <div class="dform-body">
-            <!-- 뷰: 업무 선택(리스트) -->
-            <div class="dform-view" data-dfview="list">
-              <div class="df-head">
-                <div class="df-title">어떤 업무로<br>서류를 제출하시나요?</div>
-                <div class="df-desc">선택하신 업무에 따라 제출할 서류가 달라져요.</div>
-              </div>
-              <div class="df-list">
-                <div class="df-row" data-dfgo="isa"><span class="df-nm">ISA 서민형 증빙서류 제출</span><svg class="df-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
-                <div class="df-row" data-dfgo="rename"><span class="df-nm">개명</span><svg class="df-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
-                <div class="df-row" data-dfgo="agent"><span class="df-nm">대리인 본인확인 (미성년자)</span><svg class="df-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
-                <div class="df-row" data-dfgo="otherfirm"><span class="df-nm">타사 거래확인서 등록</span><svg class="df-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
-              </div>
-            </div>
-            <!-- 뷰: ISA 서민형 증빙서류 제출(상세 · 첨부) -->
-            <div class="dform-view" data-dfview="isa" hidden>
-              <div class="df-head">
-                <div class="df-back" data-dfback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>목록</div>
-                <div class="df-dtitle">ISA 서민형 증빙서류 제출</div>
-                <div class="df-desc">서민형 가입 자격(총급여 5,000만원 또는 종합소득 3,800만원 이하) 확인을 위해 아래 서류가 필요해요.<br>각 항목에 파일을 첨부해 주세요.</div>
-              </div>
-              <div class="df-attach-list">
-                <div class="df-attach">
-                  <div class="df-attach-info"><div class="df-attach-nm">소득확인증명서</div><div class="df-attach-sub">개인종합자산관리계좌 가입용 · 홈택스 발급</div></div>
-                  <span class="df-attach-btn" data-dfattach>+ 첨부</span>
-                </div>
-                <div class="df-attach">
-                  <div class="df-attach-info"><div class="df-attach-nm">근로소득 원천징수영수증</div><div class="df-attach-sub">직전 과세기간 발급분</div></div>
-                  <span class="df-attach-btn" data-dfattach>+ 첨부</span>
-                </div>
-                <div class="df-attach">
-                  <div class="df-attach-info"><div class="df-attach-nm">신분증 사본</div><div class="df-attach-sub">주민등록증 · 운전면허증 등</div></div>
-                  <span class="df-attach-btn" data-dfattach>+ 첨부</span>
-                </div>
-              </div>
-              <div class="df-foot"><div class="df-submit" data-dfsubmit>제출할게요</div></div>
-            </div>
-            <!-- 뷰: 개명(상세 · 첨부) -->
-            <div class="dform-view" data-dfview="rename" hidden>
-              <div class="df-head">
-                <div class="df-back" data-dfback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>목록</div>
-                <div class="df-dtitle">개명</div>
-                <div class="df-desc">개명 사실 확인과 계좌 명의 변경을 위해 아래 서류가 필요해요.<br>각 항목에 파일을 첨부해 주세요.</div>
-              </div>
-              <div class="df-attach-list">
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">기본증명서 (상세)</div><div class="df-attach-sub">개명 이력 확인용</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">주민등록초본</div><div class="df-attach-sub">개명 사실 기재분</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">신분증 사본</div><div class="df-attach-sub">개명 후 재발급분</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-              </div>
-              <div class="df-foot"><div class="df-submit" data-dfsubmit>제출할게요</div></div>
-            </div>
-            <!-- 뷰: 대리인 본인확인 (미성년자)(상세 · 첨부) -->
-            <div class="dform-view" data-dfview="agent" hidden>
-              <div class="df-head">
-                <div class="df-back" data-dfback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>목록</div>
-                <div class="df-dtitle">대리인 본인확인 (미성년자)</div>
-                <div class="df-desc">미성년자 계좌의 법정대리인 확인을 위해 아래 서류가 필요해요.<br>각 항목에 파일을 첨부해 주세요.</div>
-              </div>
-              <div class="df-attach-list">
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">가족관계증명서 (상세)</div><div class="df-attach-sub">미성년자 기준 · 법정대리인 관계 확인</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">기본증명서 (상세)</div><div class="df-attach-sub">미성년자 기준 · 친권자 확인</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">법정대리인 신분증 사본</div><div class="df-attach-sub">부모 등 법정대리인</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-              </div>
-              <div class="df-foot"><div class="df-submit" data-dfsubmit>제출할게요</div></div>
-            </div>
-            <!-- 뷰: 타사 거래확인서 등록(상세 · 첨부) -->
-            <div class="dform-view" data-dfview="otherfirm" hidden>
-              <div class="df-head">
-                <div class="df-back" data-dfback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>목록</div>
-                <div class="df-dtitle">타사 거래확인서 등록</div>
-                <div class="df-desc">타 증권사 거래내역 확인을 위해 아래 서류가 필요해요.<br>각 항목에 파일을 첨부해 주세요.</div>
-              </div>
-              <div class="df-attach-list">
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">타사 거래확인서</div><div class="df-attach-sub">타 증권사 발급 · 원본</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">타사 잔고증명서</div><div class="df-attach-sub">기준일 명시분</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-                <div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">신분증 사본</div><div class="df-attach-sub">주민등록증 · 운전면허증 등</div></div><span class="df-attach-btn" data-dfattach>+ 첨부</span></div>
-              </div>
-              <div class="df-foot"><div class="df-submit" data-dfsubmit>제출할게요</div></div>
-            </div>
-            <!-- 뷰: 제출 완료 -->
-            <div class="dform-view" data-dfview="done" hidden>
-              <div class="df-done">
-                <div class="df-done-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-                <div class="df-done-t">서류를 제출했어요</div>
-                <div class="df-done-d">제출하신 서류를 확인한 뒤<br>결과를 알림톡으로 안내해 드릴게요.</div>
-              </div>
-              <div class="df-foot"><div class="df-submit" data-dfhome>확인</div></div>
-            </div>
-          </div>
+          <div class="dform-top"><img class="logo-img" src="assets/kiwoom-logo.png" alt="키움증권"><div class="df-stepper" id="dform-stepper" hidden></div></div>
+          <div class="dform-body" id="dform-app"></div>
         </div>
       </div></div>
     </div>
@@ -1556,30 +1463,63 @@
     reset();paint();
   })();
   </script>
+  <script src="digital-form.js?v=20260828a"></script>
   <script>
-  /* Digital Form(dform) · 뷰 전환(업무선택 → 상세/첨부 → 제출 완료) — 정적 목업 전용 (Ver 4.3=dform2는 별도 네비게이터 스크립트) */
+  /* Digital Form(dform) · 고객용 서류제출 공통 흐름 */
   (function(){
-    [['dform-phone','__dformHome']].forEach(function(pair){
-      var phone = document.getElementById(pair[0]);
-      if(!phone) return;
-      function show(view){
-        phone.querySelectorAll('.dform-view').forEach(function(v){ v.hidden = (v.dataset.dfview !== view); });
-        var al = phone.querySelector('.df-attach-list'); if(al) al.scrollTop = 0;
-      }
-      window[pair[1]] = function(){ show('list'); };   // 탭 재진입 시 리스트로 리셋(selectSian에서 호출)
-      phone.addEventListener('click', function(e){
-        var go = e.target.closest('[data-dfgo]');   if(go){ show(go.dataset.dfgo); return; }
-        if(e.target.closest('[data-dfback]')){ show('list'); return; }
-        if(e.target.closest('[data-dfsubmit]')){ show('done'); return; }
-        if(e.target.closest('[data-dfhome]')){ show('list'); return; }
-        var att = e.target.closest('[data-dfattach]');
-        if(att){
-          var on = att.classList.toggle('attached');
-          att.textContent = on ? '첨부됨' : '+ 첨부';
-          return;
-        }
-      });
+    var phone=document.getElementById('dform-phone'), app=document.getElementById('dform-app'), stepper=document.getElementById('dform-stepper');
+    if(!phone||!app||!window.DigitalForm)return;
+    var tasks={
+      isa:{title:'ISA 서민형 증빙서류 제출',desc:'서민형 가입 자격(총급여 5,000만원 또는 종합소득 3,800만원 이하)을 확인하기 위해 아래 서류가 필요해요. 각 항목의 서류를 모두 첨부해 주세요.',docs:[['소득확인증명서','개인종합자산관리계좌 가입용 · 홈택스 발급'],['근로소득 원천징수영수증','직전 과세기간 발급분'],['신분증 사본','주민등록증 · 운전면허증 등']]},
+      rename:{title:'개명',desc:'개명 사실을 확인하고 계좌 명의를 변경하기 위해 아래 서류가 필요해요. 개명 후 발급된 서류를 모두 첨부해 주세요.',docs:[['기본증명서 (상세)','개명 이력 확인용'],['주민등록초본','개명 사실 기재분'],['신분증 사본','개명 후 재발급분']]},
+      agent:{title:'대리인 본인확인 (미성년자)',desc:'미성년자 계좌의 법정대리인과 친권 관계를 확인하기 위해 아래 서류가 필요해요. 미성년자 기준으로 발급된 서류를 모두 첨부해 주세요.',docs:[['가족관계증명서 (상세)','미성년자 기준 · 법정대리인 관계 확인'],['기본증명서 (상세)','미성년자 기준 · 친권자 확인'],['법정대리인 신분증 사본','부모 등 법정대리인']]},
+      otherfirm:{title:'타사 거래확인서 등록',desc:'타 증권사의 거래내역과 기준일 잔고를 확인하기 위해 아래 서류가 필요해요. 타 증권사에서 발급한 서류를 모두 첨부해 주세요.',docs:[['타사 거래확인서','타 증권사 발급 · 원본'],['타사 잔고증명서','기준일 명시분'],['신분증 사본','주민등록증 · 운전면허증 등']]}
+    };
+    var state={view:'list',taskId:'',session:null,target:-1,method:''};
+    var arrow='<svg class="df-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
+    function setStepper(step){
+      if(step<0){stepper.hidden=true;stepper.innerHTML='';return;}
+      var labels=['서류확인','첨부','접수완료'];stepper.hidden=false;
+      stepper.innerHTML=labels.map(function(label,i){return '<span class="df-step '+(i<step?'done ':i===step?'current ':'')+'"><i>'+(i<step?'✓':i+1)+'</i><b>'+label+'</b></span>';}).join('');
+    }
+    function listView(){
+      setStepper(-1);
+      app.innerHTML='<div class="dform-view df-customer-list"><div class="df-list">'+Object.keys(tasks).map(function(id){return '<button type="button" class="df-row" data-dfgo="'+id+'"><span class="df-nm">'+tasks[id].title+'</span>'+arrow+'</button>';}).join('')+'</div></div>';
+    }
+    function detailView(){
+      var task=tasks[state.taskId],ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean);setStepper(hasAttachment?1:0);
+      app.innerHTML='<div class="dform-view"><div class="df-head"><div class="df-dtitle">'+task.title+'</div><div class="df-desc">'+task.desc+'</div></div><div class="df-attach-list">'+task.docs.map(function(doc,i){var file=state.session.documents[i];return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-nm">'+doc[0]+'</div><div class="df-attach-sub">'+(file?'첨부 완료 · '+methodLabel(file.method):doc[1])+'</div></div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div><div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">제출할게요</button></div></div>';
+    }
+    function methodLabel(method){return {camera:'사진 촬영',file:'파일 선택',gallery:'사진첩 선택'}[method]||'첨부';}
+    function methodSheet(){
+      detailView();app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov" data-dfclose><div class="df-sheet" role="dialog" aria-modal="true" aria-label="첨부 방법 선택"><div class="df-sheet-handle"></div><div class="df-sheet-title">어떻게 첨부할까요?</div><button type="button" data-dfmethod="camera"><span class="df-method-ic">⌾</span><span><b>사진 촬영</b><small>카메라로 서류를 바로 촬영해요</small></span>'+arrow+'</button><button type="button" data-dfmethod="file"><span class="df-method-ic">▤</span><span><b>파일 선택</b><small>저장된 PDF·이미지 파일을 찾아요</small></span>'+arrow+'</button><button type="button" data-dfmethod="gallery"><span class="df-method-ic">▧</span><span><b>사진첩에서 선택</b><small>사진첩의 서류 이미지를 선택해요</small></span>'+arrow+'</button></div></div>');
+    }
+    function demoView(method){
+      state.view='demo';state.method=method;setStepper(1);
+      var task=tasks[state.taskId],doc=task.docs[state.target][0],body='';
+      if(method==='camera')body='<div class="df-camera"><div class="df-camera-guide"><span></span><b>'+doc+'</b><small>가이드 안에 서류 전체가 보이게 해주세요</small></div></div><button type="button" class="df-demo-submit" data-dfcomplete>촬영하고 사용하기</button>';
+      if(method==='file')body='<div class="df-file-list"><button type="button" class="selected" data-dfcomplete><span class="df-file-icon">PDF</span><span><b>'+doc+'.pdf</b><small>1.8 MB · 오늘</small></span><i>✓</i></button><button type="button"><span class="df-file-icon">JPG</span><span><b>최근 스캔 이미지.jpg</b><small>2.4 MB · 어제</small></span></button></div>';
+      if(method==='gallery')body='<div class="df-gallery">'+[1,2,3,4,5,6].map(function(n){return '<button type="button" data-dfcomplete class="'+(n===1?'selected':'')+'"><span>서류 '+n+'</span>'+(n===1?'<i>✓</i>':'')+'</button>';}).join('')+'</div>';
+      app.innerHTML='<div class="dform-view df-demo"><div class="df-demo-head"><button type="button" data-dfdemoback aria-label="첨부 방법으로 돌아가기">‹</button><div><b>'+methodLabel(method)+'</b><small>'+doc+'</small></div></div>'+body+'</div>';
+    }
+    function doneView(){
+      var task=tasks[state.taskId],current=state.session.status;setStepper(2);
+      app.innerHTML='<div class="dform-view df-receipt"><div class="df-done"><div class="df-done-ic">✓</div><div class="df-done-t">접수가 완료됐어요</div><div class="df-done-d">서류를 확인한 뒤 알림톡으로 진행 상황을 안내해 드릴게요.</div></div><div class="df-receipt-card"><dl><div><dt>업무명</dt><dd>'+task.title+'</dd></div><div><dt>접수번호</dt><dd>'+state.session.receiptNo+'</dd></div><div><dt>접수일시</dt><dd>'+state.session.submittedAt+'</dd></div></dl><div class="df-status-title">접수 상태</div><div class="df-status-flow">'+DigitalForm.STATUSES.map(function(s,i){var active=s.id===current;return '<div class="'+(active?'current':'')+'"><i>'+(active?'●':'○')+'</i><span><b>'+s.label+'</b><small>'+(['서류가 정상적으로 접수됐어요','담당자가 제출 서류를 확인하고 있어요','추가 또는 수정 서류가 필요해요','요청된 서류를 보완하고 있어요','업무 처리가 모두 완료됐어요'][i])+'</small></span></div>';}).join('')+'</div></div><div class="df-foot"><button type="button" class="df-submit" data-dfhome>확인</button></div></div>';
+    }
+    function render(){if(state.view==='list')listView();else if(state.view==='detail')detailView();else if(state.view==='done')doneView();}
+    phone.addEventListener('click',function(e){
+      var go=e.target.closest('[data-dfgo]');if(go){state.taskId=go.dataset.dfgo;state.session=DigitalForm.createSession(state.taskId,tasks[state.taskId].docs.length);state.view='detail';return render();}
+      var attach=e.target.closest('[data-dfattach]');if(attach){state.target=Number(attach.dataset.dfattach);return methodSheet();}
+      var method=e.target.closest('[data-dfmethod]');if(method)return demoView(method.dataset.dfmethod);
+      if(e.target.closest('[data-dfclose]')&&e.target.closest('.df-sheet'))return;
+      if(e.target.classList.contains('df-sheet-ov'))return detailView();
+      if(e.target.closest('[data-dfdemoback]'))return methodSheet();
+      if(e.target.closest('[data-dfcomplete]')){state.session=DigitalForm.attachDocument(state.session,state.target,state.method);state.view='detail';return render();}
+      var submit=e.target.closest('[data-dfsubmit]');if(submit){if(submit.getAttribute('aria-disabled')==='true')return;var result=DigitalForm.submit(state.session);if(!result.error){state.session=result.session;state.view='done';render();}return;}
+      if(e.target.closest('[data-dfhome]')){state={view:'list',taskId:'',session:null,target:-1,method:''};render();}
     });
+    window.__dformHome=function(){state={view:'list',taskId:'',session:null,target:-1,method:''};render();};
+    render();
   })();
   </script>
   <script>
@@ -1721,14 +1661,19 @@
       <div class="sp-desc" id="spDesc" title="더블클릭하여 탭설명 수정"></div>
       <div class="sp-title">시나리오</div>
       <div class="sp-scenario" id="spScenario" data-scenedit title="더블클릭하여 수정"></div>
+      <div class="sp-qr" id="spQrWrap">
+        <div class="sp-title">모바일 접속 QR</div>
+        <img id="spQr" alt="현재 버전 접속 QR">
+        <div class="sp-qrcap" id="spQrCap"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<script src="v47-self-service.js?v=20260824i"></script>
-<script src="v47-myinfo.js?v=20260825b"></script>
+<script src="v47-self-service.js?v=20260828a"></script>
+<script src="v47-myinfo.js?v=20260828a"></script>
 <script src="v47-untact.js?v=20260825a"></script>
-<script src="app.js?v=20260825i"></script>
+<script src="app.js?v=20260828a"></script>
 <script>
 /* 디지털ARS 시안 탭 · 인터랙션 (app.js와 독립) */
 (function(){

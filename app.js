@@ -2383,6 +2383,41 @@ const V47_MYINFO_FIELD_IDS = {
   account:'v47MiAccount',accountPassword:'v47MiAccountPassword',selection:'v47MiSelection',
   flowAccountPassword:'v47MiFlowAccountPassword',newPassword:'v47MiNewIdPassword',newPasswordConfirm:'v47MiNewIdPasswordConfirm'
 };
+const V47_PHONE_AUTH = [
+  {name:'v47MiName',dob:'v47MiDob',phone:'v47MiPhone',agree:'#v47MiAgreement',button:'[data-v47mi-phone-request]'},
+  {name:'v47UName',dob:'v47UDob',phone:'v47UPhone',agree:'#v47UAgreement',button:'[data-v47u-phone-request]'},
+  {name:'idpwName',dob:'idpwDob',phone:'idpwPhone',agree:'[data-idpwagree]',button:'[data-idpwreq]'}
+];
+const V47_PHONE_OTP = [
+  {otp:'v47MyInfoOtp',button:'[data-v47mi-phone-verify]'},
+  {otp:'v47UOtp',button:'[data-v47u-phone-verify]'},
+  {otp:'idpwOtp',button:'[data-idpwotpdone]'},
+  {otp:'otpNo',button:'[data-otpdone]'}
+];
+function syncV47PhoneAuthButtons(){
+  if(!isV47()) return;
+  V47_PHONE_AUTH.forEach(config=>{
+    const name=document.getElementById(config.name), dob=document.getElementById(config.dob), phone=document.getElementById(config.phone);
+    const agree=document.querySelector(config.agree), button=document.querySelector(config.button);
+    if(!name || !dob || !phone || !agree || !button) return;
+    const enabled=V47MyInfo.isPhoneRequestReady({name:name.value,dob:dob.value,phone:phone.value,agreed:agree.classList.contains('on')});
+    button.classList.toggle('is-off',!enabled);
+    button.setAttribute('aria-disabled',String(!enabled));
+  });
+}
+function isV47PhoneRequestDisabled(target){
+  return isV47() && target && target.getAttribute('aria-disabled')==='true';
+}
+function syncV47PhoneOtpButtons(){
+  if(!isV47()) return;
+  V47_PHONE_OTP.forEach(config=>{
+    const otp=document.getElementById(config.otp), button=document.querySelector(config.button);
+    if(!otp || !button) return;
+    const enabled=V47MyInfo.isPhoneOtpReady(otp.value);
+    button.classList.toggle('is-off',!enabled);
+    button.setAttribute('aria-disabled',String(!enabled));
+  });
+}
 function v47MyInfoValidation(){
   return `<div id="v47MiValidation" class="v47mi-error" role="alert" aria-live="assertive" aria-atomic="true"></div>`;
 }
@@ -2407,7 +2442,7 @@ function renderV47MyInfoPhone(state){
   const presentation=V47MyInfo.getAuthPresentation();
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body ${presentation.bodyClass}">
     <div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>
-    ${otp ? `<div class="auth-info ${presentation.inputGroupClass}"><div class="ir"><label class="k" for="v47MyInfoOtp">인증번호</label><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="숫자 6자리"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-phone-verify>인증완료</button>` : `<div class="auth-info ${presentation.inputGroupClass}"><div class="ir"><label class="k" for="v47MiName">고객명</label><input id="v47MiName" class="ir-input" autocomplete="name" placeholder="이름 입력"></div><div class="ir"><label class="k" for="v47MiDob">생년월일</label><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="bday" placeholder="6자리 (YYMMDD)"></div><div class="ir"><label class="k" for="v47MiPhone">휴대폰</label><input id="v47MiPhone" class="ir-input" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" placeholder="'-' 없이 입력"></div></div><button id="v47MiAgreement" type="button" class="find-agree v47mi-phone-consent${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree role="checkbox" aria-checked="${s1state.v47MyInfoAgree}" aria-label="휴대폰 인증 전체 약관동의 (필수), ${s1state.v47MyInfoAgree?'동의함':'동의 전'}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b> · <span class="v47mi-consent-state">${s1state.v47MyInfoAgree?'동의함':'동의 전'}</span></span></button>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-phone-request>인증요청</button>`}
+    ${otp ? `<div class="auth-info ${presentation.inputGroupClass}"><div class="ir"><label class="k" for="v47MyInfoOtp">인증번호</label><input id="v47MyInfoOtp" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="숫자 6자리"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47mi-phone-verify aria-disabled="true">인증완료</button>` : `<div class="auth-info ${presentation.inputGroupClass}"><div class="ir"><label class="k" for="v47MiName">고객명</label><input id="v47MiName" class="ir-input" autocomplete="name" placeholder="이름 입력"></div><div class="ir"><label class="k" for="v47MiDob">생년월일</label><input id="v47MiDob" class="ir-input" inputmode="numeric" maxlength="6" autocomplete="bday" placeholder="6자리 (YYMMDD)"></div><div class="ir"><label class="k" for="v47MiPhone">휴대폰</label><input id="v47MiPhone" class="ir-input" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" placeholder="'-' 없이 입력"></div></div><button id="v47MiAgreement" type="button" class="find-agree v47-phone-consent${s1state.v47MyInfoAgree?' on':''}" data-v47mi-agree role="checkbox" aria-checked="${s1state.v47MyInfoAgree}" aria-label="휴대폰 인증 전체 약관동의 (필수), ${s1state.v47MyInfoAgree?'동의함':'동의 전'}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></button>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47mi-phone-request aria-disabled="true">인증요청</button>`}
   </div></div>`;
 }
 function renderV47IdSelection(state){
@@ -2421,7 +2456,7 @@ function renderV47AccountAuth(state){
   const model=V47MyInfo.getAccountAuthModel(state);
   const helpSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.4 2.4 0 1 1 3.4 2.2c-.9.4-1.2 1-1.2 1.8"/><path d="M12 16.7h.01"/></svg>`;
   const accountValue=(model.account.value||'').replace(/\D/g,'').slice(0,8).replace(/(\d{4})(\d{1,4})/,'$1-$2');
-  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body auth-wrap v47mi-account-auth"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">계좌번호와 계좌비밀번호를 직접 입력해 주세요.</div></div><div class="auth-info"><div class="ir"><label class="k" for="v47MiAccount">계좌번호</label><input id="v47MiAccount" class="ir-input" value="${accountValue}" inputmode="${model.account.inputMode}" maxlength="9" autocomplete="off"><div class="ir-qmark" data-v47mi-help="${model.account.helpKind}" role="button" aria-label="계좌번호 찾기">${helpSvg}</div></div><div class="ir"><span class="k">비밀번호</span><div class="ir-input ir-pw" data-pwopen="v47MyInfo"><span id="v47MiAccountPwDisp" class="acct-dots" data-ph="">${'●'.repeat((s1state.acctPw||'').length)}</span></div><div class="ir-qmark" data-v47mi-help="${model.password.helpKind}" role="button" aria-label="계좌비밀번호 안내">${helpSvg}</div></div></div>${v47MyInfoValidation()}<div class="primary-btn v45-authbtn v47mi-cta${(accountValue && (s1state.acctPw||'').length)?'':' is-off'}" data-v47mi-account-auth role="button" aria-disabled="${!(accountValue && (s1state.acctPw||'').length)}">확인</div></div></div>`;
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body auth-wrap v47mi-account-auth"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">계좌번호와 계좌비밀번호를 직접 입력해 주세요.</div></div><div class="auth-info"><div class="ir"><label class="k" for="v47MiAccount">계좌번호</label><input id="v47MiAccount" class="ir-input v47-account-credential" value="${accountValue}" inputmode="${model.account.inputMode}" maxlength="9" autocomplete="off"><div class="ir-qmark" data-v47mi-help="${model.account.helpKind}" role="button" aria-label="계좌번호 찾기">${helpSvg}</div></div><div class="ir"><span class="k">비밀번호</span><div class="ir-input ir-pw" data-pwopen="v47MyInfo"><span id="v47MiAccountPwDisp" class="acct-dots v47-account-credential" data-ph="">${'●'.repeat((s1state.acctPw||'').length)}</span></div><div class="ir-qmark" data-v47mi-help="${model.password.helpKind}" role="button" aria-label="계좌비밀번호 안내">${helpSvg}</div></div></div>${v47MyInfoValidation()}<div class="primary-btn v45-authbtn v47mi-cta${(accountValue && (s1state.acctPw||'').length)?'':' is-off'}" data-v47mi-account-auth role="button" aria-disabled="${!(accountValue && (s1state.acctPw||'').length)}">확인</div></div></div>`;
 }
 
 function v47MyInfoAccountAuthBtnSync(){
@@ -2450,7 +2485,7 @@ function renderV47AccountPasswordGuide(state){
 }
 function renderV47AccountPassword(state){
   const dormant=state.flow==='dormantRelease';
-  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌비밀번호를 입력해 주세요</div><div class="td-desc">${dormant?'장기미사용 ID 제한을 해제하기 위해 인증해요.':'ID 비밀번호를 재설정하기 위해 인증해요.'}</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiFlowAccountPassword">계좌비밀번호</label><input id="v47MiFlowAccountPassword" class="ir-input" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-account-password>다음</button></div></div>`;
+  return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌비밀번호를 입력해 주세요</div><div class="td-desc">${dormant?'장기미사용 ID 제한을 해제하기 위해 인증해요.':'ID 비밀번호를 재설정하기 위해 인증해요.'}</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiFlowAccountPassword">계좌비밀번호</label><input id="v47MiFlowAccountPassword" class="ir-input v47-account-credential" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-account-password>다음</button></div></div>`;
 }
 function renderV47NewIdPassword(state){
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">새 ID 비밀번호를 설정해 주세요</div><div class="td-desc">영문과 숫자를 조합해 5~8자리로 입력해 주세요.</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiNewIdPassword">새 ID 비밀번호</label><input id="v47MiNewIdPassword" class="ir-input" type="password" maxlength="8" autocomplete="new-password"></div><div class="ir"><label class="k" for="v47MiNewIdPasswordConfirm">새 ID 비밀번호 확인</label><input id="v47MiNewIdPasswordConfirm" class="ir-input" type="password" maxlength="8" autocomplete="new-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-new-id-password>완료</button></div></div>`;
@@ -2505,7 +2540,7 @@ function renderV47UntactHistory(state){
 }
 function renderV47UntactAccount(state){
   const help=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.4 2.4 0 1 1 3.4 2.2c-.9.4-1.2 1-1.2 1.8"/><path d="M12 16.7h.01"/></svg>`;
-  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body auth-wrap v47mi-self-auth"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">서류를 신청할 계좌정보를 입력해 주세요.</div></div><div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UAccount">계좌번호</label><input id="v47UAccount" class="ir-input" inputmode="numeric" maxlength="9"><button class="v47mi-help-inline" data-v47u-help="accountNumber" aria-label="계좌번호 찾기">${help}</button></div><div class="ir"><span class="k">비밀번호</span><div class="ir-input ir-pw" data-pwopen="v47Untact"><span id="v47UAccountPwDisp" class="acct-dots">${'●'.repeat((s1state.acctPw||'').length)}</span></div><button class="v47mi-help-inline" data-v47u-help="accountPassword" aria-label="계좌비밀번호 안내">${help}</button></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47u-account-auth aria-disabled="true">확인</button></div></div>`;
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body auth-wrap v47mi-self-auth"><div class="toss-dhead"><div class="td-title">계좌를 인증해 주세요</div><div class="td-desc">서류를 신청할 계좌정보를 입력해 주세요.</div></div><div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UAccount">계좌번호</label><input id="v47UAccount" class="ir-input v47-account-credential" inputmode="numeric" maxlength="9"><button class="v47mi-help-inline" data-v47u-help="accountNumber" aria-label="계좌번호 찾기">${help}</button></div><div class="ir"><span class="k">비밀번호</span><div class="ir-input ir-pw" data-pwopen="v47Untact"><span id="v47UAccountPwDisp" class="acct-dots v47-account-credential">${'●'.repeat((s1state.acctPw||'').length)}</span></div><button class="v47mi-help-inline" data-v47u-help="accountPassword" aria-label="계좌비밀번호 안내">${help}</button></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47u-account-auth aria-disabled="true">확인</button></div></div>`;
 }
 function v47UntactAccountAuthBtnSync(){
   const a=document.getElementById('v47UAccount'),b=document.querySelector('[data-v47u-account-auth]'); if(!a||!b)return;
@@ -2518,7 +2553,7 @@ function renderV47UntactForm(state){
 }
 function renderV47UntactPhone(state){
   const otp=state.step==='phoneOtp';
-  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body v47mi-self-auth"><div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>${otp?`<div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UOtp">인증번호</label><input id="v47UOtp" class="ir-input" inputmode="numeric" maxlength="6" placeholder="숫자 6자리"></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-phone-verify>인증완료</button>`:`<div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UName">고객명</label><input id="v47UName" class="ir-input" placeholder="이름 입력"></div><div class="ir"><label class="k" for="v47UDob">생년월일</label><input id="v47UDob" class="ir-input" inputmode="numeric" maxlength="6" placeholder="6자리 (YYMMDD)"></div><div class="ir"><label class="k" for="v47UPhone">휴대폰</label><input id="v47UPhone" class="ir-input" type="tel" maxlength="11" placeholder="'-' 없이 입력"></div></div><button id="v47UAgreement" class="find-agree v47mi-phone-consent${s1state.v47UntactAgree?' on':''}" data-v47u-agree role="checkbox" aria-checked="${s1state.v47UntactAgree}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></button>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-phone-request>인증요청</button>`}</div></div>`;
+  return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body v47mi-self-auth"><div class="toss-dhead"><div class="td-title">휴대폰으로 본인인증해요</div><div class="td-desc">본인 명의 휴대폰 정보를 입력해 주세요.</div></div>${otp?`<div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UOtp">인증번호</label><input id="v47UOtp" class="ir-input" inputmode="numeric" maxlength="6" placeholder="숫자 6자리"></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47u-phone-verify aria-disabled="true">인증완료</button>`:`<div class="auth-info v47mi-self-auth-info"><div class="ir"><label class="k" for="v47UName">고객명</label><input id="v47UName" class="ir-input" placeholder="이름 입력"></div><div class="ir"><label class="k" for="v47UDob">생년월일</label><input id="v47UDob" class="ir-input" inputmode="numeric" maxlength="6" placeholder="6자리 (YYMMDD)"></div><div class="ir"><label class="k" for="v47UPhone">휴대폰</label><input id="v47UPhone" class="ir-input" type="tel" maxlength="11" placeholder="'-' 없이 입력"></div></div><button id="v47UAgreement" type="button" class="find-agree v47-phone-consent${s1state.v47UntactAgree?' on':''}" data-v47u-agree role="checkbox" aria-checked="${s1state.v47UntactAgree}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">휴대폰 인증 전체 약관동의 <b>(필수)</b></span></button>${v47UntactValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta is-off" data-v47u-phone-request aria-disabled="true">인증요청</button>`}</div></div>`;
 }
 function renderV47UntactStatus(state){
   if(state.flow==='opening') return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌개설 현황이에요</div><div class="td-desc">입력 중인 계좌는 이어서 신청할 수 있어요.</div></div><div class="v47u-card-list">${V47Untact.DATA.openings.map(x=>`<div class="iod-v45-card v47u-status-card"><div class="v45-ci-head"><div class="v45-ci-nm">${x.name}</div><span class="iod-badge ${x.statusClass}">${x.status}</span></div><div class="v45-ci-date">${x.detail}</div>${x.continuable?`<button class="v47u-card-cta" data-v47u-opening="${x.id}">이어하기</button>`:''}</div>`).join('')}</div><div class="v47mi-dual"><button class="v47mi-dual-btn secondary" data-v47u-agent>상담원 연결</button><button class="v47mi-dual-btn primary" data-v47u-app>영웅문S# 확인</button></div></div></div>`;
@@ -2658,8 +2693,8 @@ function renderIdpwAuth(){
   const step = s1state.idpwStep || 'info';
   const desc = '고객님 본인 확인을 위해 정보를 입력해 주세요.';
   if(isV45()){
-    const otpBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">인증번호</span><input class="ir-input" id="idpwOtp" inputmode="numeric" maxlength="6" placeholder="숫자 6자리" autocomplete="off"></div></div><div class="idpw-guide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwotpdone>인증완료</div></div>`;
-    const infoBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">고객명</span><input class="ir-input" id="idpwName" placeholder="이름 입력" autocomplete="off"></div><div class="ir"><span class="k">생년월일</span><input class="ir-input" id="idpwDob" inputmode="numeric" maxlength="6" placeholder="6자리 (YYMMDD)" autocomplete="off"></div><div class="ir"><span class="k">본인명의 휴대폰</span><input class="ir-input" id="idpwPhone" inputmode="numeric" maxlength="11" placeholder="'-' 없이 입력" autocomplete="off"></div></div><div class="find-agree idpw-agree${s1state.idpwAgree?' on':''}" data-idpwagree><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">개인(신용)정보 수집·이용 필수동의서 <b>(필수)</b></span></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwreq>인증요청</div></div>`;
+    const otpBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">인증번호</span><input class="ir-input" id="idpwOtp" inputmode="numeric" maxlength="6" placeholder="숫자 6자리" autocomplete="off"></div></div><div class="idpw-guide">입력하신 휴대폰으로 인증번호를 보냈어요.<br>3분 이내에 입력해 주세요.</div></div><div class="iod-v45-actions">${isV47()?'<button type="button" class="primary-btn v45-iod-btn is-off" data-idpwotpdone aria-disabled="true">인증완료</button>':'<div class="primary-btn v45-iod-btn" data-idpwotpdone>인증완료</div>'}</div>`;
+    const infoBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">고객명</span><input class="ir-input" id="idpwName" placeholder="이름 입력" autocomplete="off"></div><div class="ir"><span class="k">생년월일</span><input class="ir-input" id="idpwDob" inputmode="numeric" maxlength="6" placeholder="6자리 (YYMMDD)" autocomplete="off"></div><div class="ir"><span class="k">본인명의 휴대폰</span><input class="ir-input" id="idpwPhone" inputmode="numeric" maxlength="11" placeholder="'-' 없이 입력" autocomplete="off"></div></div><div class="find-agree v47-phone-consent idpw-agree${s1state.idpwAgree?' on':''}" data-idpwagree role="checkbox" aria-checked="${s1state.idpwAgree}"><span class="fa-box">${FIND_CHECK}</span><span class="fa-txt">개인(신용)정보 수집·이용 필수동의서 <b>(필수)</b></span></div></div><div class="iod-v45-actions">${isV47()?'<button type="button" class="primary-btn v45-iod-btn is-off" data-idpwreq aria-disabled="true">인증요청</button>':'<div class="primary-btn v45-iod-btn" data-idpwreq>인증요청</div>'}</div>`;
     return `<div class="iodresult-screen v45-authpage">${v45IdpwTop(0)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">본인인증 후<br>ID 비밀번호를 재설정해요</div><div class="td-desc">${desc}</div></div>${step==='otp'?otpBody:infoBody}</div></div>`;
   }
   const title = '본인인증 후 ID 비밀번호 재설정이 가능해요';
@@ -2685,7 +2720,7 @@ function renderIdpwDone(){
   // 본인확인 완료 → ID 표기 + 계좌 인증(콤보 마스킹 + 계좌비번) → 확인 시 같은 자리에 ID 비밀번호 재설정 입력칸
   const reset = !!s1state.idpwReset;
   if(isV45()){
-    const acctBody = `<div class="iod-v45-card"><div class="v45-ir"><span class="v45-ik">회원님의 ID</span><span class="v45-iv">${IDPW_ID}</span></div></div><div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">증권계좌</span><div class="idpw-selwrap"><select class="idpw-sel" id="idpwAcctSel">${IDPW_ACCTS.map(a=>`<option>${a}</option>`).join('')}</select><span class="idpw-selchev">${I.down}</span></div></div><div class="ir"><span class="k">계좌 비밀번호</span><input class="ir-input" id="idpwAcctPw" type="password" inputmode="numeric" maxlength="8" placeholder="숫자 4~8자리" autocomplete="off"></div></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwacctdone>확인</div></div>`;
+    const acctBody = `<div class="iod-v45-card"><div class="v45-ir"><span class="v45-ik">회원님의 ID</span><span class="v45-iv">${IDPW_ID}</span></div></div><div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">증권계좌</span><div class="idpw-selwrap"><select class="idpw-sel" id="idpwAcctSel">${IDPW_ACCTS.map(a=>`<option>${a}</option>`).join('')}</select><span class="idpw-selchev">${I.down}</span></div></div><div class="ir"><span class="k">계좌 비밀번호</span><input class="ir-input v47-account-credential" id="idpwAcctPw" type="password" inputmode="numeric" maxlength="8" placeholder="숫자 4~8자리" autocomplete="off"></div></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwacctdone>확인</div></div>`;
     const resetBody = `<div class="auth-wrap"><div class="auth-info"><div class="ir"><span class="k">새 비밀번호</span><input class="ir-input" id="idpwNew" type="password" maxlength="8" placeholder="영문+숫자 5~8자리" autocomplete="off"></div><div class="ir"><span class="k">비밀번호 확인</span><input class="ir-input" id="idpwNew2" type="password" maxlength="8" placeholder="한 번 더 입력" autocomplete="off"></div></div></div><div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-idpwresetdone>재설정</div></div>`;
     const title45 = reset ? '새 ID 비밀번호를<br>설정해요' : (isV47() ? '본인 확인이 완료됐어요' : '본인 확인이<br>완료됐어요');
     const desc45 = reset ? '새로 사용할 ID 비밀번호를 입력해 주세요.' : '계좌 정보를 인증하면 ID 비밀번호를 재설정할 수 있어요.';
@@ -3007,7 +3042,7 @@ function authStep(method){
           </div>
           <div class="auth-note" style="text-align:center;margin:12px 2px 0;white-space:nowrap;font-size:calc(13px*var(--scale))">${otpNote}</div>
         </div>
-        <div class="primary-btn" data-otpdone>인증 완료</div>`
+        <div class="primary-btn${isV47()?' is-off':''}" data-otpdone${isV47()?' aria-disabled="true"':''}>인증 완료</div>`
       : `<div class="auth-note">${reqNote}</div>
         <div class="primary-btn" data-otpreq>인증 요청하기</div>`;
     // 인증 요청 후에는 '인증번호 입력' 화면처럼 헤딩 전환 + 고객정보카드 숨김
@@ -3090,9 +3125,9 @@ function authStep(method){
     ${heading}
     <div class="auth-info">
       <div class="ir"><span class="k">계좌번호</span>
-        <input class="ir-input" id="acctNo" type="text" inputmode="numeric" autocomplete="off" ${isV45()?'maxlength="9" ':(simple?'maxlength="8" ':'')}placeholder="${isV45()?'':(simple?'숫자 8자리':'계좌번호 입력')}" value="${isV45()&&acctVal?acctVal.replace(/-/g,'').slice(0,8).replace(/(\d{4})(\d{4})/,'$1-$2'):acctVal}">${qmarkAcct}</div>
+        <input class="ir-input v47-account-credential" id="acctNo" type="text" inputmode="numeric" autocomplete="off" ${isV45()?'maxlength="9" ':(simple?'maxlength="8" ':'')}placeholder="${isV45()?'':(simple?'숫자 8자리':'계좌번호 입력')}" value="${isV45()&&acctVal?acctVal.replace(/-/g,'').slice(0,8).replace(/(\d{4})(\d{4})/,'$1-$2'):acctVal}">${qmarkAcct}</div>
       <div class="ir"><span class="k">비밀번호</span>
-        <div class="ir-input ir-pw" data-pwopen><span id="acctPwDisp" class="acct-dots" data-ph="${isV45()?'':(simple?'숫자 4~8자리':'비밀번호 입력 (4~8자리)')}">${'●'.repeat((s1state.acctPw||'').length)}</span></div>${qmarkPw}</div>
+        <div class="ir-input ir-pw" data-pwopen><span id="acctPwDisp" class="acct-dots v47-account-credential" data-ph="${isV45()?'':(simple?'숫자 4~8자리':'비밀번호 입력 (4~8자리)')}">${'●'.repeat((s1state.acctPw||'').length)}</span></div>${qmarkPw}</div>
     </div>
     ${simple ? '' : `<div class="auth-note">${note}</div>`}
     <div class="primary-btn${isV45()?' v45-authbtn'+(((acctVal||'').trim() && (s1state.acctPw||'').length)?'':' is-off'):''}" data-authdone>확인</div>
@@ -3182,9 +3217,11 @@ function fillDemoPhoneAuthentication(){
   const v47uAgree=document.getElementById('v47UAgreement');
   if(v47uAgree){ s1state.v47UntactAgree=true; v47uAgree.classList.add('on'); v47uAgree.setAttribute('aria-checked','true'); filled++; }
   const idpwAgree=document.querySelector('[data-idpwagree]');
-  if(idpwAgree){ s1state.idpwAgree=true; idpwAgree.classList.add('on'); filled++; }
+  if(idpwAgree){ s1state.idpwAgree=true; idpwAgree.classList.add('on'); idpwAgree.setAttribute('aria-checked','true'); filled++; }
   const findAgree=document.querySelector('#findAcctPop [data-findagree]');
   if(findAgree){ s1state.findAgree=true; findAgree.classList.add('on'); syncFindCtaBtn(); filled++; }
+  syncV47PhoneAuthButtons();
+  syncV47PhoneOtpButtons();
   return filled;
 }
 
@@ -3684,31 +3721,32 @@ function openAppLink(key){
   closeAppLink();
   const screen = document.getElementById('screen'); if(!screen) return;
   const c = APP_LINK[key] || {title:'요청하신 업무'};
-  const v40 = isV40(); const v45 = isV45();   // Ver 4.0: 마젠타 / Ver 4.5: 인디고 스킨
+  const v40 = isV40(); const v45 = isV45(); const v47 = isV47();   // Ver 4.0: 마젠타 / Ver 4.5: 인디고 / Ver 4.7: 정돈된 인디고 스킨
   const el = document.createElement('div');
-  el.className = 'app-pop-ov' + (v45 ? ' v45' : v40 ? ' v40' : ''); el.id = 'appPop'; el.dataset.linkTitle = c.title; el.dataset.linkApp = c.app || '영웅문S#';
+  el.className = 'app-pop-ov' + (isV47() ? ' v47' : v45 ? ' v45' : v40 ? ' v40' : ''); el.id = 'appPop'; el.dataset.linkTitle = c.title; el.dataset.linkApp = c.app || '영웅문S#';
   // 앱 이름·로고·문구는 APP_LINK 항목에서 오버라이드 가능(기본=영웅문S#)
   const logoSrc = c.logo || 'assets/ys-icon.png';
-  const logo  = v40 ? `<div class="ap-logo"><img src="${logoSrc}" alt="${c.app||'영웅문S#'}"></div>` : `<div class="ap-logo">S#</div>`;
+  const logo  = v47 ? `<div class="ap-logo"><img src="${logoSrc}" alt="${c.app||'영웅문S#'}"></div>` : v40 ? `<div class="ap-logo"><img src="${logoSrc}" alt="${c.app||'영웅문S#'}"></div>` : `<div class="ap-logo">S#</div>`;
   const v40only = (s1Ver==='v40');   // Ver 4.0: 연동·종료·인증정보 안내 삭제, 선택 메뉴 강조 '바로 이동'만, 버튼 '열기'
-  const title = c.popTitle || (v40 ? '영웅문S#으로 연결할게요' : '영웅문S#으로 연결');
+  const title = c.popTitle || (v47 ? '영웅문S#으로 이동할까요?' : v40 ? '영웅문S#으로 연결할게요' : '영웅문S#으로 연결');
   const desc  = c.popDesc || (
-      v40only ? `<b>${c.title}</b> 화면으로 바로 이동해요.`
+      v47 ? `안전하게 연결한 뒤<br><b>${c.title}</b> 화면으로 이동해요.`
+    : v40only ? `<b>${c.title}</b> 화면으로 바로 이동해요.`
     : v40 ? (bigFont
         ? `<b>${c.title}</b> 화면으로 이동해요.<br><span class="ap-warn">${wipeNote('')}</span>`
         : `입력하신 계좌를 영웅문S#에 연동해서<br><b>${c.title}</b> 화면으로 바로 이동해요.<br><span class="ap-warn">${wipeNote('지금 보고 계신 디지털 ARS는 종료돼요.')}</span>`)
     : `계좌정보를 안전하게 연동하고<br><b>${c.title}</b> 화면으로 바로 이동합니다.`);
   const goTxt = c.popBtn || (v40only ? '연결하기' : '영웅문S# 열기');
   // Ver 4.0은 중간 단계 플로우(앱 실행›계좌 연동›화면 이동) 미노출
-  const flow = v40 ? '' : `<div class="ap-flow"><span class="ap-step">앱 실행</span><span class="ap-arr">›</span><span class="ap-step">계좌 연동</span><span class="ap-arr">›</span><span class="ap-step">화면 이동</span></div>`;
-  el.innerHTML = `<div class="app-pop">
+  const flow = (v40 && !v47) ? '' : `<div class="ap-flow" aria-label="연결 과정"><span class="ap-step">앱 실행</span><span class="ap-arr" aria-hidden="true">›</span><span class="ap-step">계좌 연동</span><span class="ap-arr" aria-hidden="true">›</span><span class="ap-step">화면 이동</span></div>`;
+  el.innerHTML = `<div class="app-pop" role="dialog" aria-modal="true" aria-labelledby="appPopTitle" aria-describedby="appPopDesc">
     ${logo}
-    <div class="ap-title">${title}</div>
-    <div class="ap-desc">${desc}</div>
+    <div class="ap-title" id="appPopTitle">${title}</div>
+    <div class="ap-desc" id="appPopDesc">${desc}</div>
     ${flow}
     <div class="ap-btns">
-      <div class="ap-btn cancel" data-appcancel>취소</div>
-      <div class="ap-btn go" data-appgo>${goTxt}</div>
+      <button type="button" class="ap-btn cancel" data-appcancel>취소</button>
+      <button type="button" class="ap-btn go" data-appgo>${goTxt}</button>
     </div>
   </div>`;
   screen.appendChild(el);
@@ -3735,6 +3773,8 @@ const CS_ICON = {
   // 디지털ARS: 노트북+전구 아이콘(PNG)
   web:'<img src="assets/free-icon-computer-15557961.png" alt="디지털 ARS">',
 };
+/* Ver 4.7 상담방법 목록은 우측 하단 플로팅 메뉴와 같은 선형 아이콘을 사용한다. */
+const V47_CONSULT_ICON = {chat:I.chat, voice:I.phone, call:I.headset};
 const CONSULT_CHANNELS = [
   { k:'hero', nm:'영웅문S#으로 이어보기', ic:'<img src="assets/ys-icon.png" alt="영웅문S#">',
     badges:[{t:'앱 연동',cls:'navy'},{t:'바로 이동',cls:'mag'}],
@@ -3761,29 +3801,33 @@ function openConsult(label, opts){
   const prev = document.getElementById('consultPop'); if(prev) prev.remove();   // 기존 팝업 즉시 제거(중복 id 방지)
   const screen = document.getElementById('screen'); if(!screen) return;
   const el = document.createElement('div');
-  el.className = 'consult-ov' + (bigFont?' bigfont':''); el.id = 'consultPop'; el.dataset.csLabel = label || '';
+  el.className = 'consult-ov' + (isV47()?' v47':'') + (bigFont?' bigfont':''); el.id = 'consultPop'; el.dataset.csLabel = label || '';
   const rows = CONSULT_CHANNELS.filter(c=>!exclude.includes(c.k)).map(c=>{
     const badges = (c.badges||[]).map(b=>`<span class="cs-badge ${b.cls}">${b.t}</span>`).join('');
     const desc = (typeof c.desc==='function') ? c.desc() : (c.desc||'');
-    return `<div class="cs-row${c.soon?' soon':''}" data-cschannel="${c.k}">
-      <div class="cs-ic">${c.ic}</div>
+    const channelIcon = isV47() && V47_CONSULT_ICON[c.k] ? V47_CONSULT_ICON[c.k] : c.ic;
+    const rowOpen = isV47()
+      ? `<button type="button" class="cs-row${c.soon?' soon':''}" data-cschannel="${c.k}"${c.soon?' disabled':''}>`
+      : `<div class="cs-row${c.soon?' soon':''}" data-cschannel="${c.k}">`;
+    return `${rowOpen}
+      <div class="cs-ic">${channelIcon}</div>
       <div class="cs-body">
         <div class="cs-nm">${c.nm}</div>
         <div class="cs-badges">${badges}</div>
         <div class="cs-desc">${desc}</div>
       </div>
       <div class="cs-arw">${I.chev}</div>
-    </div>`;
+    ${isV47()?'</button>':'</div>'}`;
   }).join('');
-  el.innerHTML = `<div class="consult-sheet">
+  el.innerHTML = `<div class="consult-sheet" role="dialog" aria-modal="true" aria-labelledby="consultTitle"${s1Ver==='v40'?'':' aria-describedby="consultDesc"'}>
     <div class="cs-grip"></div>
     <div class="cs-head">
-      <div class="cs-title">어떻게 도와드릴까요?</div>
-      ${s1Ver==='v40'?'':`<div class="cs-sub">편하신 방법으로 상담을 연결해 드려요</div>`}
+      <div class="cs-title" id="consultTitle">${isV47()?'상담 방법을 선택해 주세요':'어떻게 도와드릴까요?'}</div>
+      ${s1Ver==='v40'?'':`<div class="cs-sub" id="consultDesc">편하신 방법으로 상담을 연결해 드려요</div>`}
       ${label?`<div class="cs-ctx">선택하신 업무 · <b>${label}</b></div>`:''}
     </div>
     <div class="cs-list">${rows}</div>
-    <div class="cs-cancel" data-csclose>닫기</div>
+    ${isV47()?'<button type="button" class="cs-cancel" data-csclose>닫기</button>':'<div class="cs-cancel" data-csclose>닫기</div>'}
   </div>`;
   screen.appendChild(el);
   requestAnimationFrame(()=>el.classList.add('on'));
@@ -6277,6 +6321,23 @@ function closeAiChat(){ const e=document.getElementById('aiChatOv'); if(e) e.rem
 document.addEventListener('input', (e)=>{
   const el = e.target;
   if(!el) return;
+  const otpConfig=V47_PHONE_OTP.find(config=>config.otp===el.id);
+  if(otpConfig){
+    el.value=el.value.replace(/\D/g,'').slice(0,6);
+    syncV47PhoneOtpButtons();
+    if(!isV47() && el.id==='otpNo' && el.value.length===6){
+      const btn=document.querySelector('[data-otpdone]');
+      if(btn) btn.click();
+    }
+    return;
+  }
+  const phoneConfig=V47_PHONE_AUTH.find(config=>config.name===el.id || config.dob===el.id || config.phone===el.id);
+  if(phoneConfig){
+    if(phoneConfig.dob===el.id) el.value=el.value.replace(/\D/g,'').slice(0,6);
+    if(phoneConfig.phone===el.id) el.value=el.value.replace(/\D/g,'').slice(0,11);
+    syncV47PhoneAuthButtons();
+    return;
+  }
   if(el.id === 'v47MiAccount'){
     const raw=el.value.replace(/\D/g,'').slice(0,8);
     el.value=raw.length>4 ? raw.slice(0,4)+'-'+raw.slice(4) : raw;
@@ -6310,11 +6371,6 @@ document.addEventListener('input', (e)=>{
     return;
   }
   if(el.id !== 'otpNo') return;
-  el.value = el.value.replace(/\D/g, '').slice(0, 6);   // 숫자만, 최대 6자리
-  if(el.value.length === 6){
-    const btn = document.querySelector('[data-otpdone]');
-    if(btn) btn.click();                                 // 자동 인증 완료(버튼 탭 불필요)
-  }
 });
 document.addEventListener('keydown', (e)=>{
   if(e.target && e.target.id === 'otpNo' && e.key === 'Enter'){
@@ -6396,9 +6452,9 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-chealt]')){ openMethodSheet(CHE_SHEET); return; }   // 체결·주문내역 계좌인증 화면 '다른 방법으로 조회하기' → 매체 플로팅
   if(t.closest('[data-pwreset]')){ if(isV47()){ s1nav({page:'pwresetchoice', title:'비밀번호 재설정', noHome:true}); } else { openMethodSheet(PWRESET_SHEET); } return; }   // VER4.7은 상세화면, 이전 버전은 선택 시트
   // ID 비밀번호 재설정 플로우
-  if(t.closest('[data-idpwagree]')){ s1state.idpwAgree=!s1state.idpwAgree; const a=document.querySelector('.idpw-agree'); if(a) a.classList.toggle('on', s1state.idpwAgree); return; }
-  if(t.closest('[data-idpwreq]')){ if(!s1state.idpwAgree){ flash('개인(신용)정보 수집·이용에 동의해 주세요.'); return; } s1state.idpwStep='otp'; renderS1(); return; }   // 인증요청 → 인증번호 단계
-  if(t.closest('[data-idpwotpdone]')){ s1state.idpwReset=false; s1nav({page:'idpwdone', title:'본인 확인', noHome:true}); return; }   // 인증완료 → 본인확인 완료 화면
+  if(t.closest('[data-idpwagree]')){ s1state.idpwAgree=!s1state.idpwAgree; const a=document.querySelector('.idpw-agree'); if(a){ a.classList.toggle('on', s1state.idpwAgree); a.setAttribute('aria-checked',String(s1state.idpwAgree)); } syncV47PhoneAuthButtons(); return; }
+  if(t.closest('[data-idpwreq]')){ const request=t.closest('[data-idpwreq]'); if(isV47PhoneRequestDisabled(request)) return; if(!s1state.idpwAgree){ flash('개인(신용)정보 수집·이용에 동의해 주세요.'); return; } s1state.idpwStep='otp'; renderS1(); return; }   // 인증요청 → 인증번호 단계
+  if(t.closest('[data-idpwotpdone]')){ if(isV47PhoneRequestDisabled(t.closest('[data-idpwotpdone]'))) return; s1state.idpwReset=false; s1nav({page:'idpwdone', title:'본인 확인', noHome:true}); return; }   // 인증완료 → 본인확인 완료 화면
   if(t.closest('[data-idpwacctdone]')){ s1state.idpwReset=true; renderS1(); return; }   // 계좌인증 확인 → 같은 자리에 ID 비밀번호 재설정 입력칸
   if(t.closest('[data-idpwresetdone]')){ if(isV45()){ s1nav({page:'idpwfinish', noBack:true, noHome:true}); } else { flash('ID 비밀번호가 재설정되었어요. 새 비밀번호로 로그인해 주세요. (시연용)'); s1state.page='home'; s1state.history=[]; s1state.authNext=null; renderS1(); } return; }   // 재설정 완료 → 홈(v40) / 완료페이지(v45)
   const msh = t.closest('[data-mediasheet]');
@@ -6742,6 +6798,7 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-otpreq]')){ s1state.otpSent = true; renderS1(); return; }
   // 휴대폰 인증: 인증 완료 → 계좌 비밀번호 키패드(계좌번호 라인 포함)
   if(t.closest('[data-otpdone]')){
+    if(isV47PhoneRequestDisabled(t.closest('[data-otpdone]'))) return;
     const otp = (document.getElementById('otpNo')||{}).value || '';
     if(!otp.trim()){ flash('인증번호를 입력해주세요.'); return; }
     flash('휴대폰 인증이 완료되었습니다. (시연용)');
@@ -6962,6 +7019,7 @@ document.addEventListener('click', (e)=>{
     agree.setAttribute('aria-label', `휴대폰 인증 전체 약관동의 (필수), ${stateText}`);
     const stateLabel=agree.querySelector('.v47mi-consent-state');
     if(stateLabel) stateLabel.textContent=stateText;
+    syncV47PhoneAuthButtons();
     return;
   }
   if(t.closest('[data-v47mi-help-back]')){
@@ -6974,7 +7032,7 @@ document.addEventListener('click', (e)=>{
     if(kind==='accountPassword'){ openPwHelpSheet(); return; }
     return;
   }
-  if(t.closest('[data-v47u-agree]')){ s1state.v47UntactAgree=!s1state.v47UntactAgree; renderS1(); return; }
+  if(t.closest('[data-v47u-agree]')){ s1state.v47UntactAgree=!s1state.v47UntactAgree; const agree=t.closest('[data-v47u-agree]'); agree.classList.toggle('on',s1state.v47UntactAgree); agree.setAttribute('aria-checked',String(s1state.v47UntactAgree)); syncV47PhoneAuthButtons(); return; }
   if(t.closest('[data-v47u-history]')){ applyV47UntactEvent({type:'OPEN_HISTORY'}); return; }
   if(t.closest('[data-v47u-history-back]')){ applyV47UntactEvent({type:'CLOSE_HISTORY'}); return; }
   if(t.closest('[data-v47u-back]')){ applyV47UntactEvent({type:'BACK'}); return; }
@@ -6984,8 +7042,8 @@ document.addEventListener('click', (e)=>{
   if(v47uHelp){ if(v47uHelp.dataset.v47uHelp==='accountNumber')openFindAcct('v47Untact'); else openPwHelpSheet(); return; }
   if(t.closest('[data-v47u-account-auth]')){ applyV47UntactEvent({type:'ACCOUNT_AUTH',account:((document.getElementById('v47UAccount')||{}).value||'').replace(/\D/g,''),password:s1state.acctPw||''}); return; }
   if(t.closest('[data-v47u-submit]')){ applyV47UntactEvent({type:'SUBMIT_DOCUMENT',date:(document.getElementById('v47UDocDate')||{}).value||'',startDate:(document.getElementById('v47UDocStart')||{}).value||'',endDate:(document.getElementById('v47UDocEnd')||{}).value||'',purpose:(document.getElementById('v47UPurpose')||{}).value||'',copies:(document.getElementById('v47UCopies')||{}).value||''}); return; }
-  if(t.closest('[data-v47u-phone-request]')){ applyV47UntactEvent({type:'PHONE_REQUEST',name:(document.getElementById('v47UName')||{}).value||'',dob:(document.getElementById('v47UDob')||{}).value||'',phone:(document.getElementById('v47UPhone')||{}).value||'',agreed:!!s1state.v47UntactAgree}); return; }
-  if(t.closest('[data-v47u-phone-verify]')){ applyV47UntactEvent({type:'PHONE_VERIFY',otp:(document.getElementById('v47UOtp')||{}).value||''}); return; }
+  if(t.closest('[data-v47u-phone-request]')){ const request=t.closest('[data-v47u-phone-request]'); if(isV47PhoneRequestDisabled(request)) return; applyV47UntactEvent({type:'PHONE_REQUEST',name:(document.getElementById('v47UName')||{}).value||'',dob:(document.getElementById('v47UDob')||{}).value||'',phone:(document.getElementById('v47UPhone')||{}).value||'',agreed:!!s1state.v47UntactAgree}); return; }
+  if(t.closest('[data-v47u-phone-verify]')){ if(isV47PhoneRequestDisabled(t.closest('[data-v47u-phone-verify]'))) return; applyV47UntactEvent({type:'PHONE_VERIFY',otp:(document.getElementById('v47UOtp')||{}).value||''}); return; }
   const v47uOpening=t.closest('[data-v47u-opening]');
   if(v47uOpening){ applyV47UntactEvent({type:'CONTINUE_OPENING',id:v47uOpening.dataset.v47uOpening}); return; }
   if(t.closest('[data-v47u-home]')){ s1state.v47Untact=null;s1state.page='home';s1state.history=[];renderS1();return; }
@@ -6996,6 +7054,7 @@ document.addEventListener('click', (e)=>{
     return;
   }
   if(t.closest('[data-v47mi-phone-request]')){
+    if(isV47PhoneRequestDisabled(t.closest('[data-v47mi-phone-request]'))) return;
     applyV47MyInfoEvent({
       type:'PHONE_REQUEST',
       name:(document.getElementById('v47MiName')||{}).value||'',
@@ -7006,6 +7065,7 @@ document.addEventListener('click', (e)=>{
     return;
   }
   if(t.closest('[data-v47mi-phone-verify]')){
+    if(isV47PhoneRequestDisabled(t.closest('[data-v47mi-phone-verify]'))) return;
     applyV47MyInfoEvent({type:'PHONE_VERIFY', otp:(document.getElementById('v47MyInfoOtp')||{}).value||''});
     return;
   }
@@ -7382,8 +7442,8 @@ const SCHEME_META = {
       kpi:[['3단계','ARS메뉴→계좌조회→확인'],['단일','캡쳐 크롭'],['참고','NH투자증권 레퍼런스']]},
   hk:{cap:'한국투자증권 · 보이는 ARS (참고)', label:'한국투자증권 보이는 ARS · 주문·청약·펀드매매 → 현금매도',
       kpi:[['2단계','주문메뉴→현금매도'],['메인·메뉴','캡쳐'],['참고','한국투자증권 레퍼런스']]},
-  dform:{cap:'Digital Form · 로고만 있는 빈 화면', label:'Digital Form · 키움증권 로고만 있는 빈 화면 (작업용 템플릿)',
-      kpi:[['빈 화면','작업용 템플릿'],['로고','좌상단 배치'],['Digital Form','신규 목업']]},
+  dform:{cap:'Digital Form · 고객용 서류제출', label:'Digital Form · 첨부방식 선택과 접수상태를 제공하는 고객용 서류제출',
+      kpi:[['3단계','서류확인→첨부→접수완료'],['첨부방식','촬영·파일·사진첩'],['접수상태','5단계 진행상태']]},
   dform2:{cap:'Ver 4.3 · 음성ARS 메뉴 네비게이터', label:'Ver 4.3 · 음성ARS 메뉴 네비게이터 (대→중→소 번호 트리 · 음성ARS/상담원 연결)',
       kpi:[['넘버 인덱스','대→중→소 3단 트리'],['최종메뉴','음성ARS 연결 안내'],['0.직원연결','상담원 연결 안내']]},
   dform3:{cap:'Digital Form_v0.1 · 서류제출 엔진 흐름 재현', label:'Digital Form_v0.1 · 서류제출 엔진 흐름 재현 (5단계 상태머신 · 업무 11종)',

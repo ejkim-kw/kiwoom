@@ -104,9 +104,6 @@ body{
 .func-item.on{background:linear-gradient(135deg,#F0188E 0%,#E6007F 100%);color:#fff;border-color:transparent;
   box-shadow:0 4px 12px rgba(230,0,127,.35)}
 .func-item.on .rf-tel{opacity:.9}
-/* 좌측 사이드바로 옮긴 QR 영역 (시연·기능 아래) — 구분선 없이 func-title과 동일 간격 */
-.sian-list .sp-qr.show{margin-top:14px}
-
 /* 우측 패널: 탭명/탭설명(2줄) + 시나리오 */
 .scene-panel{display:none;flex-direction:column;width:180px;margin-top:54px;gap:4px}
 .scene-panel.show{display:flex}
@@ -125,8 +122,9 @@ body{
 .sp-scenario.editing{outline:none;background:rgba(255,255,255,.14);box-shadow:0 0 0 1px rgba(255,255,255,.5)}
 /* 우측 패널: 현재 버전 접속 QR (시안 탭 전용) */
 .sp-qr{display:none}
-.sp-qr.show{display:block}
-.sp-qr img{width:150px;display:block;background:#fff;border-radius:12px;padding:9px;margin:2px auto 0}
+.sp-qr.show{display:block;margin-top:8px}
+.scene-panel .sp-qr .sp-title{margin-bottom:2px}
+.sp-qr img{box-sizing:border-box;width:100%;display:block;background:#fff;border-radius:12px;padding:9px;margin:2px auto 0}
 .sp-qrcap{margin-top:7px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.5);line-height:1.45;text-align:center}
 
 /* ===== 폰 프레임 ===== */
@@ -345,6 +343,25 @@ body{
 .app-pop-ov.v45 .ap-logo.end{background:var(--primary-soft);border-radius:50%}
 .app-pop-ov.v45 .ap-logo.end svg{width:30px;height:30px;color:var(--primary)}
 .app-pop-ov.v45 .ap-btn.go{box-shadow:0 8px 20px rgba(72,72,216,.3)}
+/* Ver 4.7 · 영웅문S# 연결 안내 */
+.app-pop-ov.v47{--primary:#1A1A4E;--primary-soft:#F0F1FF;--ink:#1A1A4E;--ink-2:#35365F;--sub:#667085;background:rgba(26,26,78,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:0 20px}
+.app-pop-ov.v47 .app-pop{max-width:320px;padding:24px 20px 20px;border:1px solid #EAECFF;border-radius:24px;box-shadow:0 20px 48px rgba(26,26,78,.22);transform:translateY(12px) scale(.98);transition:transform .22s cubic-bezier(.22,1,.36,1)}
+.app-pop-ov.v47.on .app-pop{transform:translateY(0) scale(1)}
+.app-pop-ov.v47 .ap-logo{width:58px;height:58px;margin-bottom:16px;border:1px solid #E4E6FF;border-radius:18px;background:#fff;box-shadow:0 8px 20px rgba(72,72,216,.14)}
+.app-pop-ov.v47 .ap-logo img{width:100%;height:100%;border-radius:17px}
+.app-pop-ov.v47 .ap-title{margin-bottom:8px;color:#1A1A4E;font-size:calc(19px*var(--scale));line-height:1.35;letter-spacing:-.35px}
+.app-pop-ov.v47 .ap-desc{margin:0 auto 16px;color:#667085;font-size:calc(13.5px*var(--scale));line-height:1.55}
+.app-pop-ov.v47 .ap-desc b{color:#1A1A4E}
+.app-pop-ov.v47 .ap-flow{gap:6px;margin-bottom:20px;padding:10px 8px;border:1px solid #E4E6FF;border-radius:14px;background:#F5F5FF}
+.app-pop-ov.v47 .ap-step{padding:4px 7px;border-radius:999px;background:#fff;color:#4848A8;font-size:calc(11.5px*var(--scale));box-shadow:0 1px 3px rgba(26,26,78,.06)}
+.app-pop-ov.v47 .ap-arr{color:#8D93B8}
+.app-pop-ov.v47 .ap-btns{gap:8px}
+.app-pop-ov.v47 .ap-btn{height:46px;border-radius:999px;padding:0;border:0;font:700 calc(14px*var(--scale))/1 Pretendard,sans-serif;display:flex;align-items:center;justify-content:center}
+.app-pop-ov.v47 .ap-btn.cancel{border:1.5px solid #1A1A4E;background:#fff;color:#1A1A4E}
+.app-pop-ov.v47 .ap-btn.go{background:#1A1A4E;color:#fff;box-shadow:0 6px 16px rgba(26,26,78,.22)}
+.app-pop-ov.v47 .ap-btn:focus-visible{outline:2px solid #4848D8;outline-offset:2px}
+.app-pop-ov.v47 .ap-btn:active{transform:scale(.98)}
+@media (prefers-reduced-motion:reduce){.app-pop-ov,.app-pop{transition:none!important}}
 .ars-float.v45{background:linear-gradient(135deg,#5E5EF0,#4848D8);animation:arsBlinkV40 1.1s ease-in-out infinite}
 
 /* ===== Ver 4.5 · 홈 배너 (동영상 레퍼런스: 인디고 배경 프로모션 배너) ===== */
@@ -1422,6 +1439,8 @@ body{
 .find-agree b{color:#1A1A4E}
 .v47mi-phone-consent{width:100%;min-height:44px;border:0;background:transparent;text-align:left;font:inherit}
 .v47mi-phone-consent:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px}
+.flow.toss.v47 .v47-phone-consent{width:100%;min-height:44px;margin:8px 0 0;padding:2px 4px 14px;border:0;background:transparent;color:#3A4360;text-align:left;font:inherit}
+.flow.toss.v47 .v47-phone-consent:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px;border-radius:8px}
 .find-ov .cs-cta{background:#1A1A4E;color:#fff;text-align:center;padding:16px;border-radius:14px;
   font-size:calc(16px*var(--scale));font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(26,26,78,.25);transition:opacity .15s}
 .find-ov .cs-cta:active{opacity:.82}
@@ -1519,6 +1538,29 @@ body{
 .cs-cancel{margin-top:12px;text-align:center;padding:15px;border-radius:15px;
   background:#F1F2F6;color:#5A5A70;font-size:calc(15px*var(--scale));font-weight:800;cursor:pointer}
 .cs-cancel:active{transform:scale(.98)}
+/* Ver 4.7 · 상담방법 선택 — 상세화면과 같은 인디고·20px 컴포넌트 체계 */
+.consult-ov.v47{background:rgba(20,24,60,.32);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.consult-ov.v47 .consult-sheet{border-radius:24px 24px 0 0;padding:8px 20px calc(20px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,.72);box-shadow:0 -16px 44px rgba(20,24,60,.22)}
+.consult-ov.v47 .cs-grip{width:36px;height:4px;margin:6px auto 18px;background:#D8DCE7}
+.consult-ov.v47 .cs-head{padding-bottom:16px}
+.consult-ov.v47 .cs-title{font-size:calc(20px*var(--scale));line-height:1.35;letter-spacing:-.4px;color:#14183C}
+.consult-ov.v47 .cs-sub{margin-top:6px;color:#737B8C;line-height:1.45}
+.consult-ov.v47 .cs-ctx{display:block;margin-top:14px;padding:10px 12px;border-radius:12px;background:#F1F2FA;color:#656D82}
+.consult-ov.v47 .cs-ctx b{color:#1A1A4E}
+.consult-ov.v47 .cs-list{gap:10px;margin-top:0}
+.consult-ov.v47 .cs-row{width:100%;min-height:76px;padding:14px 15px;border:1px solid #E7E9F0;border-radius:16px;
+  background:#fff;font:inherit;text-align:left;color:inherit;box-shadow:0 3px 12px rgba(20,24,60,.05)}
+.consult-ov.v47 .cs-row:focus-visible,.consult-ov.v47 .cs-cancel:focus-visible{outline:2px solid #1A1A4E;outline-offset:2px}
+.consult-ov.v47 .cs-row:active{transform:scale(.985);background:#F7F8FC}
+.consult-ov.v47 .cs-ic{width:42px;height:42px;border-radius:13px;background:#EEF0FA;color:#1A1A4E}
+.consult-ov.v47 .cs-ic svg{width:28px;height:28px}
+.consult-ov.v47 .cs-nm{font-size:calc(15px*var(--scale));color:#14183C}
+.consult-ov.v47 .cs-desc{margin-top:4px;color:#737B8C;line-height:1.45}
+.consult-ov.v47 .cs-arw{color:#A5ABBA}
+.consult-ov.v47 .cs-cancel{height:46px;border-radius:999px;margin-top:16px;padding:0;border:1px solid #DDE0E8;background:#fff;
+  color:#1A1A4E;font-family:inherit;font-size:calc(15px*var(--scale));font-weight:700}
+.consult-ov.v47 .cs-cancel:hover{background:#F7F8FC}
 /* Ver 4.5 · 매체 선택 플로팅 — 필 스타일 (method-ov.v45) */
 .method-ov.v45 .v45-msheet-head{padding:2px 0 16px}
 .method-ov.v45 .v45-msh-title{font-size:calc(19px*var(--scale));font-weight:800;color:#1A1A4E;line-height:1.3;letter-spacing:-.3px}
@@ -3154,6 +3196,50 @@ body{
 .df-done-t{font-size:calc(21px*var(--scale));font-weight:800;color:var(--navy);letter-spacing:-.4px}
 .df-done-d{margin-top:12px;font-size:calc(13.5px*var(--scale));color:var(--sub);line-height:1.6}
 
+/* Digital Form · 고객용 서류 제출 흐름 */
+#dform-phone .dform-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px 12px;border-bottom:1px solid #F2F4F6}
+#dform-phone .dform-top .logo-img{height:34px;flex:none}
+#dform-phone .df-stepper{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+#dform-phone .df-stepper[hidden]{display:none}
+#dform-phone .df-step{display:flex;align-items:center;gap:4px;color:#A2A9B5;white-space:nowrap}
+#dform-phone .df-step:not(:last-child)::after{content:'';width:8px;height:1px;margin-left:1px;background:#DDE1E8}
+#dform-phone .df-step i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#EEF0F4;color:#7D8796;font-size:10px;font-style:normal;font-weight:800}
+#dform-phone .df-step b{font-size:10px;font-weight:700}
+#dform-phone .df-step.current{color:#14183C}
+#dform-phone .df-step.current i,#dform-phone .df-step.done i{background:#E6007F;color:#fff}
+#dform-phone .df-step.done b{color:#697386}
+#dform-phone .df-customer-list{padding-top:8px}
+#dform-phone .df-list{padding:0 20px}
+#dform-phone .df-row{width:100%;padding:16px 0;border:0;border-bottom:1px solid var(--line);background:#fff;text-align:left}
+#dform-phone .df-head{padding:24px 20px 14px}
+#dform-phone .df-attach-list{padding:2px 20px}
+#dform-phone .df-foot{padding:12px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+#dform-phone .df-submit{width:100%;height:46px;padding:0;border:0;border-radius:999px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:700 calc(15px*var(--scale))/1 Pretendard,sans-serif}
+#dform-phone .df-submit.disabled{background:#DBDEE7;color:#9299A8;cursor:default;filter:none}
+#dform-phone .df-attach-btn{border:0;font-family:inherit}
+#dform-phone .df-attach-btn.attached{background:#EAF7EE;color:#12864A}
+#dform-phone .df-sheet-ov{position:absolute;inset:0;z-index:30;background:rgba(20,24,60,.35);display:flex;align-items:flex-end}
+#dform-phone .df-sheet{width:100%;padding:8px 20px calc(22px + env(safe-area-inset-bottom,0px));border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -16px 40px rgba(20,24,60,.16)}
+#dform-phone .df-sheet-handle{width:38px;height:4px;margin:0 auto 18px;border-radius:3px;background:#D5D9E1}
+#dform-phone .df-sheet-title{margin-bottom:10px;font-size:19px;font-weight:800;color:#14183C}
+#dform-phone .df-sheet button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 0;border:0;border-bottom:1px solid #F2F4F6;background:#fff;text-align:left;font-family:inherit;color:#14183C}
+#dform-phone .df-sheet button>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:3px}
+#dform-phone .df-sheet button b{font-size:14px}.df-sheet button small{font-size:11.5px;color:#7D8796}
+#dform-phone .df-method-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#FDE7F2;color:#E6007F;font-size:20px;font-weight:800}
+#dform-phone .df-sheet .df-arw{width:18px}
+#dform-phone .df-demo{background:#F6F7F9}
+#dform-phone .df-demo-head{display:flex;align-items:center;gap:10px;padding:14px 20px;background:#fff;border-bottom:1px solid #ECEFF3}
+#dform-phone .df-demo-head button{width:32px;height:32px;border:0;background:transparent;color:#14183C;font-size:30px;line-height:1}
+#dform-phone .df-demo-head div{display:flex;flex-direction:column;gap:2px}.df-demo-head b{font-size:16px;color:#14183C}.df-demo-head small{font-size:11px;color:#7D8796}
+#dform-phone .df-camera{flex:1;display:grid;place-items:center;padding:22px;background:#252936}
+#dform-phone .df-camera-guide{width:86%;aspect-ratio:1.42;border:2px solid rgba(255,255,255,.9);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;position:relative}
+#dform-phone .df-camera-guide span{position:absolute;inset:8px;border:1px dashed rgba(255,255,255,.45);border-radius:7px}.df-camera-guide b{font-size:15px;z-index:1}.df-camera-guide small{margin-top:8px;font-size:11px;z-index:1;color:rgba(255,255,255,.75)}
+#dform-phone .df-demo-submit{margin:16px 20px 24px;padding:15px;border:0;border-radius:14px;background:#E6007F;color:#fff;font:800 15px inherit}
+#dform-phone .df-file-list{padding:16px 20px}.df-file-list button{width:100%;display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #E5E8ED;border-radius:14px;background:#fff;text-align:left;font-family:inherit}.df-file-list button+button{margin-top:10px}.df-file-list button.selected{border-color:#E6007F;background:#FFF7FB}.df-file-list button>span:nth-child(2){display:flex;flex:1;flex-direction:column}.df-file-list b{font-size:13px;color:#14183C}.df-file-list small{margin-top:3px;font-size:11px;color:#7D8796}.df-file-list i{color:#E6007F;font-style:normal;font-weight:900}
+#dform-phone .df-file-icon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:#FDE7F2;color:#E6007F;font-size:10px;font-weight:900}
+#dform-phone .df-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:16px 20px}.df-gallery button{position:relative;aspect-ratio:1;border:0;border-radius:8px;background:linear-gradient(145deg,#E9ECF2,#C8CED9);color:#5D6677;font:700 11px inherit}.df-gallery button:nth-child(even){background:linear-gradient(145deg,#DCE5EA,#B7C7D0)}.df-gallery button.selected{outline:3px solid #E6007F;outline-offset:-3px}.df-gallery i{position:absolute;right:7px;top:7px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#E6007F;color:#fff;font-style:normal}
+#dform-phone .df-receipt{overflow-y:auto}.df-receipt .df-done{flex:none;padding:28px 20px 18px}.df-receipt .df-done-ic{width:54px;height:54px;margin-bottom:14px;font-size:25px}.df-receipt-card{margin:0 20px 8px;padding:18px;border:1px solid #E8EBF0;border-radius:16px;background:#fff}.df-receipt-card dl{margin:0}.df-receipt-card dl div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:12px}.df-receipt-card dt{color:#7D8796}.df-receipt-card dd{margin:0;color:#14183C;font-weight:700;text-align:right}.df-status-title{margin:16px 0 10px;padding-top:15px;border-top:1px solid #ECEFF3;font-size:14px;font-weight:800;color:#14183C}.df-status-flow>div{display:flex;gap:10px;min-height:42px;color:#B0B6C0}.df-status-flow i{font-style:normal}.df-status-flow span{display:flex;flex-direction:column}.df-status-flow b{font-size:12px}.df-status-flow small{margin-top:2px;font-size:10.5px;color:#9299A8}.df-status-flow .current{color:#E6007F}.df-status-flow .current small{color:#596273}
+
 /* ====== Digital Form_v0.1 (dform3) · 서류제출 엔진 흐름 재현 — 서류제출엔진/styles.css 이식, df3- 프리픽스로 목업 전역 CSS와 격리 ====== */
 #dform3-phone{
   --df3-bg:oklch(0.975 0.003 265); --df3-surface:oklch(1 0 0);
@@ -3836,6 +3922,9 @@ body{
 .flow.toss.v47 .v47mi-account-result{cursor:default;transition:none}
 .flow.toss.v47 .v47mi-account-result:active{border-color:#E4E7F0}
 .flow.toss.v47 .v47mi-password-form{margin-top:18px}
+.flow.toss.v47 .v47-account-credential{font-family:inherit!important;font-size:calc(14px*var(--scale))!important;font-weight:500!important;color:#1A1A4E;letter-spacing:0}
+.flow.toss.v47 .v47-account-credential.acct-dots{letter-spacing:5px;font-size:calc(19px*var(--scale))!important;line-height:24px}
+.flow.toss.v47 .v47-account-credential.acct-dots:empty::before{font-family:inherit;font-size:calc(14px*var(--scale));font-weight:500;letter-spacing:0}
 .flow.toss.v47 .v47mi-password-form .ir{min-height:58px}
 .flow.toss.v47 .v47mi-help-inline{width:22px;height:22px;flex:none;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#B4BAC6;cursor:pointer}
 .flow.toss.v47 .v47mi-help-inline svg{width:20px;height:20px}

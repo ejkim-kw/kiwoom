@@ -161,6 +161,73 @@ test('VER4.7 서류 발급현황 빈 결과의 서류신청 버튼은 비대면�
   assert.match(app, /if\(isV47\(\)\)\{ startV47Untact\('서류신청'\); return; \}/);
 });
 
+test('VER4.7 영웅문S# 연결안내는 전용 팝업 구조와 디자인을 사용한다', () => {
+  const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+  const css=fs.readFileSync(path.join(__dirname,'style.css'),'utf8');
+  assert.match(app, /el\.className = 'app-pop-ov' \+ \(isV47\(\) \? ' v47'/);
+  assert.match(app, /v47 \? `<div class="ap-logo"><img src="\$\{logoSrc\}"/);
+  assert.match(app, /v47 \? '영웅문S#으로 이동할까요\?'/);
+  assert.match(app, /\(v40 && !v47\) \? '' : `<div class="ap-flow"/);
+  assert.match(app, /v47 \? `안전하게 연결한 뒤/);
+  assert.match(app, /role="dialog" aria-modal="true"/);
+  assert.match(css, /\.app-pop-ov\.v47\{/);
+  assert.match(css, /\.app-pop-ov\.v47 \.ap-btn\{height:46px;border-radius:999px/);
+  assert.match(css, /@media \(prefers-reduced-motion:reduce\)/);
+});
+
+test('VER4.7 상담방법 선택은 전용 접근성 바텀시트와 공통 버튼 규격을 사용한다', () => {
+  const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+  const css=fs.readFileSync(path.join(__dirname,'style.css'),'utf8');
+  assert.match(app, /el\.className = 'consult-ov' \+ \(isV47\(\)\?' v47':''\)/);
+  assert.match(app, /role="dialog" aria-modal="true" aria-labelledby="consultTitle"/);
+  assert.match(app, /isV47\(\)\?'상담 방법을 선택해 주세요':'어떻게 도와드릴까요\?'/);
+  assert.match(app, /<button type="button" class="cs-row/);
+  assert.match(app, /<button type="button" class="cs-cancel" data-csclose>닫기<\/button>/);
+  assert.match(css, /\.consult-ov\.v47\{/);
+  assert.match(css, /\.consult-ov\.v47 \.consult-sheet\{[^}]*border-radius:24px 24px 0 0[^}]*padding:[^;]*20px/);
+  assert.match(css, /\.consult-ov\.v47 \.cs-cancel\{height:46px;border-radius:999px/);
+});
+
+test('VER4.7 상담방법의 챗봇·음성ARS·상담원 아이콘은 하단 플로팅 메뉴 아이콘을 재사용한다', () => {
+  const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+  assert.match(app, /const V47_CONSULT_ICON = \{chat:I\.chat, voice:I\.phone, call:I\.headset\}/);
+  assert.match(app, /const channelIcon = isV47\(\) && V47_CONSULT_ICON\[c\.k\] \? V47_CONSULT_ICON\[c\.k\] : c\.ic/);
+  assert.match(app, /<div class="cs-ic">\$\{channelIcon\}<\/div>/);
+});
+
+test('VER4.7 모든 계좌인증 화면은 공통 계좌번호·비밀번호 타이포그래피 계약을 사용한다', () => {
+  const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+  const css=fs.readFileSync(path.join(__dirname,'style.css'),'utf8');
+  for(const id of ['acctNo','acctPwDisp','v47MiAccount','v47MiAccountPwDisp','v47UAccount','v47UAccountPwDisp','v47MiFlowAccountPassword','idpwAcctPw']){
+    assert.match(app, new RegExp(`id="${id}"[^>]*class="[^"]*v47-account-credential|class="[^"]*v47-account-credential[^"]*"[^>]*id="${id}"`), `${id}에 공통 인증값 클래스가 필요합니다.`);
+  }
+  assert.match(css, /\.flow\.toss\.v47 \.v47-account-credential\{font-family:inherit!important;font-size:calc\(14px\*var\(--scale\)\)!important;font-weight:500!important/);
+  assert.match(css, /\.flow\.toss\.v47 \.v47-account-credential\.acct-dots\{letter-spacing:/);
+});
+
+test('VER4.7 상세 휴대폰인증은 공통 동의 디자인과 인증요청 활성화 계약을 사용한다', () => {
+  const app=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+  const css=fs.readFileSync(path.join(__dirname,'style.css'),'utf8');
+  assert.match(app, /const V47_PHONE_AUTH = \[/);
+  assert.match(app, /function syncV47PhoneAuthButtons\(\)/);
+  assert.match(app, /V47MyInfo\.isPhoneRequestReady\(/);
+  assert.match(app, /class="find-agree v47-phone-consent/);
+  assert.match(app, /data-v47mi-phone-request[^>]*aria-disabled="true"/);
+  assert.match(app, /data-v47u-phone-request[^>]*aria-disabled="true"/);
+  assert.match(app, /data-idpwreq[^>]*aria-disabled="true"/);
+  assert.match(css, /\.flow\.toss\.v47 \.v47-phone-consent\{/);
+});
+
+test('VER4.7 인증번호 단계는 공통 인증완료 버튼 활성화 계약을 사용한다', () => {
+  const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  assert.match(app, /const V47_PHONE_OTP = \[/);
+  assert.match(app, /function syncV47PhoneOtpButtons\(\)/);
+  assert.match(app, /V47MyInfo\.isPhoneOtpReady\(/);
+  assert.match(app, /data-v47mi-phone-verify[^>]*aria-disabled="true"/);
+  assert.match(app, /data-v47u-phone-verify[^>]*aria-disabled="true"/);
+  assert.match(app, /data-idpwotpdone[^>]*aria-disabled="true"/);
+});
+
 test('Ver 4.6은 현재 시안이 아닌 이전버전 접이식 목록에 배치한다', () => {
   const index = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   assert.match(index, /class="ref-item prev-item" data-sian="s1" data-ver="v46"/);

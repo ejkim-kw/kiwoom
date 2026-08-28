@@ -39,6 +39,16 @@
   function shouldHandle(version, menuTitle){
     return version==='v47' && Object.prototype.hasOwnProperty.call(MENU_KEYS,menuTitle);
   }
+  function isPhoneRequestReady(values){
+    const v=values||{};
+    return !!String(v.name||'').trim()
+      && /^\d{6}$/.test(String(v.dob||'').replace(/\D/g,''))
+      && /^\d{10,11}$/.test(String(v.phone||'').replace(/\D/g,''))
+      && v.agreed===true;
+  }
+  function isPhoneOtpReady(value){
+    return /^\d{6}$/.test(String(value||''));
+  }
   function getTitle(state){
     return (FLOW_META[state && state.flow] || {}).title || '내정보';
   }
@@ -145,5 +155,5 @@
     if(event.type==='COMPLETE') return {state:{...next, step:'complete', completed:true}, error:''};
     return {state, error:''};
   }
-  return {MENU_KEYS, FLOW_META, DATA, shouldHandle, getTitle, getProgress, getHeaderModel, getAccountAuthModel, getAuthPresentation, maskAccount, createState, establishesSessionAuthentication, transition};
+  return {MENU_KEYS, FLOW_META, DATA, shouldHandle, isPhoneRequestReady, isPhoneOtpReady, getTitle, getProgress, getHeaderModel, getAccountAuthModel, getAuthPresentation, maskAccount, createState, establishesSessionAuthentication, transition};
 });

@@ -247,6 +247,21 @@ test('dormant release accepts only a dormant ID and completes after account pass
   assert.equal(done.state.completed,true);
 });
 
+test('휴대폰 인증요청은 이름·생년월일·휴대폰·필수동의가 모두 유효할 때만 활성화한다', () => {
+  assert.equal(myInfo.isPhoneRequestReady({name:'홍길동',dob:'900101',phone:'01012345678',agreed:true}), true);
+  assert.equal(myInfo.isPhoneRequestReady({name:'',dob:'900101',phone:'01012345678',agreed:true}), false);
+  assert.equal(myInfo.isPhoneRequestReady({name:'홍길동',dob:'90010',phone:'01012345678',agreed:true}), false);
+  assert.equal(myInfo.isPhoneRequestReady({name:'홍길동',dob:'900101',phone:'010123456',agreed:true}), false);
+  assert.equal(myInfo.isPhoneRequestReady({name:'홍길동',dob:'900101',phone:'01012345678',agreed:false}), false);
+});
+
+test('휴대폰 인증완료는 인증번호 6자리가 입력된 경우에만 활성화한다', () => {
+  assert.equal(myInfo.isPhoneOtpReady('123456'), true);
+  assert.equal(myInfo.isPhoneOtpReady('12345'), false);
+  assert.equal(myInfo.isPhoneOtpReady('12345a'), false);
+  assert.equal(myInfo.isPhoneOtpReady(''), false);
+});
+
 test('본인인증 생략 상태에서는 내정보 상세메뉴의 최초 인증 단계를 건너뛴다', () => {
   const skipped = title => myInfo.createState(title, {skipAuthentication:true});
 
@@ -270,15 +285,15 @@ test('내정보 계좌인증은 셀프서비스와 동일한 입력란과 확인
   assert.match(app, /class="primary-btn v45-authbtn v47mi-cta\$\{\(accountValue/);
   assert.match(app, /function v47MyInfoAccountAuthBtnSync\(\)/);
   assert.ok(app.includes("account:((document.getElementById('v47MiAccount')||{}).value||'').replace(/\\D/g,'')"));
-  assert.match(index, /style\.css\?v=20260825e/);
-  assert.match(index, /v47-myinfo\.js\?v=20260825b/);
-  assert.match(index, /app\.js\?v=20260825i/);
+  assert.match(index, /style\.css\?v=\d{8}[a-z]?/);
+  assert.match(index, /v47-myinfo\.js\?v=\d{8}[a-z]?/);
+  assert.match(index, /app\.js\?v=\d{8}[a-z]?/);
 });
 
 test('내정보 계좌인증은 셀프서비스의 비밀번호 마스킹과 키패드 구조를 그대로 사용한다', () => {
   const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 
-  assert.match(app, /id="v47MiAccountPwDisp" class="acct-dots"/);
+  assert.match(app, /id="v47MiAccountPwDisp" class="acct-dots[^"]*"/);
   assert.match(app, /data-pwopen="v47MyInfo"/);
   assert.ok(app.includes("password:s1state.acctPw||''"));
   assert.ok(app.includes("if(pwCtx==='v47MyInfo')"));
