@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="assets/kiwoom-favicon.ico">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260828f">
+  <link rel="stylesheet" href="style.css?v=20260831-search">
 </head>
 <body>
 
@@ -1476,23 +1476,27 @@
     function setStepper(step){
       if(step<0){stepper.hidden=true;stepper.innerHTML='';return;}
       var labels=['서류확인','첨부','접수완료'];stepper.hidden=false;
-      stepper.innerHTML=labels.map(function(label,i){return '<span class="df-step '+(i<step?'done ':i===step?'current ':'')+'"><i>'+(i<step?'✓':i+1)+'</i><b>'+label+'</b></span>';}).join('');
+      stepper.innerHTML=labels.map(function(label,i){return '<span class="df-step '+(i<step?'done ':i===step?'current ':'')+'"'+(i===step?' aria-current="step"':'')+'><i>'+(i<step?'✓':i+1)+'</i><b>'+label+'</b></span>';}).join('');
     }
     function listView(){
-      setStepper(-1);
+      setStepper(0);
       app.innerHTML='<div class="dform-view df-customer-list"><div class="df-list">'+Object.keys(tasks).map(function(id){return '<button type="button" class="df-row" data-dfgo="'+id+'"><span class="df-row-copy"><span class="df-category '+DigitalForm.categoryClass(tasks[id].category)+'">'+tasks[id].category+'</span><span class="df-nm">'+tasks[id].title+'</span></span>'+arrow+'</button>';}).join('')+'</div></div>';
     }
     function detailView(){
+      setStepper(0);
       var task=tasks[state.taskId],ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean),visibleCount=task.maxAttachments?DigitalForm.visibleAttachmentCount(state.session,task.maxAttachments):task.docs.length;
       var requirement=DigitalForm.requirementLabel(task);
       var displayDocs=task.maxAttachments?Array.from({length:visibleCount},function(_,i){return task.docs[0];}):task.docs;
-      app.innerHTML='<div class="dform-view"><div class="df-head"><div class="df-dtitle">'+(task.detailTitle||task.title)+'</div><div class="df-desc">'+task.guide+'</div>'+(requirement?'<div class="df-requirement">'+requirement+'</div>':'')+'</div><div class="df-attach-list">'+displayDocs.map(function(doc,i){var file=state.session.documents[i],name=task.maxAttachments?'첨부서류 '+(i+1):doc.name;return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-title"><div class="df-attach-nm">'+name+'</div>'+(doc.guide?'<button type="button" class="df-guide-help" data-dfguide="'+i+'" aria-label="'+name+' 서류안내">?</button>':'')+'</div><div class="df-attach-sub">'+doc.description+'</div>'+(file?'<div class="df-attached-state">✓ 첨부 완료 · '+methodLabel(file.method)+'</div>':'')+'</div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div><div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">제출할게요</button></div></div>';
+      var isRequiredAll=task.requirementMode==='all'&&task.docs.length>1,attachedCount=state.session.documents.filter(Boolean).length;
+      var requirementHtml=isRequiredAll?'<div class="df-requirement is-all" role="status"><span><i>!</i><b>필수 서류를 모두 첨부해야 접수할 수 있어요</b></span><strong>'+attachedCount+'/'+task.docs.length+' 첨부</strong></div>':(requirement?'<div class="df-requirement">'+requirement+'</div>':'');
+      var submitLabel=isRequiredAll&&!ready?'필수 서류를 모두 첨부해 주세요':'제출할게요';
+      app.innerHTML='<div class="dform-view"><div class="df-head"><div class="df-dtitle">'+(task.detailTitle||task.title)+'</div><div class="df-desc">'+task.guide+'</div>'+requirementHtml+'</div><div class="df-attach-list">'+displayDocs.map(function(doc,i){var file=state.session.documents[i],name=task.maxAttachments?'첨부서류 '+(i+1):doc.name;return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-title"><div class="df-attach-nm">'+name+'</div>'+(doc.guide?'<button type="button" class="df-guide-help" data-dfguide="'+i+'" aria-label="'+name+' 서류안내">?</button>':'')+'</div><div class="df-attach-sub">'+(doc.summary||doc.description)+'</div>'+(file?'<div class="df-attached-state">✓ 첨부 완료 · '+methodLabel(file.method)+'</div>':'')+'</div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div><div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">'+submitLabel+'</button></div></div>';
     }
     function methodLabel(method){return {camera:'사진 촬영',file:'파일 선택',gallery:'사진첩 선택'}[method]||'첨부';}
     function methodSheet(){
       var task=tasks[state.taskId],doc=task.docs[Math.min(state.target,task.docs.length-1)],methods=doc.methods||['camera','file','gallery'];
       var options={camera:'<button type="button" data-dfmethod="camera"><span class="df-method-ic">⌾</span><span><b>사진 촬영</b><small>카메라로 서류를 바로 촬영해요</small></span>'+arrow+'</button>',file:'<button type="button" data-dfmethod="file"><span class="df-method-ic">▤</span><span><b>파일 선택</b><small>저장된 PDF·이미지 파일을 찾아요</small></span>'+arrow+'</button>',gallery:'<button type="button" data-dfmethod="gallery"><span class="df-method-ic">▧</span><span><b>사진첩에서 선택</b><small>사진첩의 서류 이미지를 선택해요</small></span>'+arrow+'</button>'};
-      detailView();app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov" data-dfclose><div class="df-sheet" role="dialog" aria-modal="true" aria-label="첨부 방법 선택"><div class="df-sheet-handle"></div><div class="df-sheet-title">어떻게 첨부할까요?</div>'+(methods.length===1?'<div class="df-method-notice">실물 확인이 필요한 서류로 사진 촬영만 가능해요.</div>':'')+methods.map(function(method){return options[method];}).join('')+'</div></div>');
+      detailView();setStepper(1);app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov" data-dfclose><div class="df-sheet" role="dialog" aria-modal="true" aria-label="첨부 방법 선택"><div class="df-sheet-handle"></div><div class="df-sheet-title">어떻게 첨부할까요?</div>'+(methods.length===1?'<div class="df-method-notice">실물 확인이 필요한 서류로 사진 촬영만 가능해요.</div>':'')+methods.map(function(method){return options[method];}).join('')+'</div></div>');
     }
     function guideSheet(index){
       var task=tasks[state.taskId],doc=task.docs[Math.min(index,task.docs.length-1)],guide=doc.guide;if(!guide)return;
@@ -1685,7 +1689,7 @@
 <script src="v47-self-service.js?v=20260828a"></script>
 <script src="v47-myinfo.js?v=20260828a"></script>
 <script src="v47-untact.js?v=20260825a"></script>
-<script src="app.js?v=20260828b"></script>
+<script src="app.js?v=20260831-search"></script>
 <script>
 /* 디지털ARS 시안 탭 · 인터랙션 (app.js와 독립) */
 (function(){

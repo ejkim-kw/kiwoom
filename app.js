@@ -2345,6 +2345,38 @@ const V47_MENU_CATS = [
   {id:8, t:'선물옵션',      sub:'CFD/파생상품',             desc:'CFD와 파생상품 거래를 도와드려요',             ic:'v47-glass-8.png', subs:['국내선물옵션','해외CFD 및 상품선물옵션','국내CFD']},
   {id:9, t:'기타서비스',    sub:'인증/화면문의',            desc:'인증 관리와 화면 문의를 도와드려요',           ic:'v47-glass-9.png', subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스','간편인증·공동인증서','HTS 화면 문의','MTS 화면 문의','사고 등록·해지','금융센터 전화번호 안내']},
 ];
+let v47SearchQuery = '';
+const V47_SEARCH_FEATURED = [
+  {id:'idpw', title:'ID 비밀번호 재설정', desc:'본인인증 후 디지털 ARS에서 바로 재설정해요', badge:'직접 처리', keys:'비밀번호 패스워드 pw id 아이디 로그인', action:'idpw'},
+  {id:'acctpw', title:'계좌 비밀번호 변경', desc:'영웅문S# 앱의 계좌관리 화면에서 처리해요', badge:'앱에서 처리', keys:'비밀번호 패스워드 pw 계좌 증권계좌', action:'acctpw'},
+  {id:'certpw', title:'공동인증서 비밀번호 안내', desc:'비밀번호 조건과 재설정 방법을 확인해요', badge:'안내 확인', keys:'비밀번호 패스워드 pw 인증서 공동인증서', action:'certpw'},
+  {id:'docs', title:'서류 신청·발급', desc:'필요한 서류의 신청과 발급 메뉴를 확인해요', badge:'직접 처리', keys:'서류 증명서 발급 신청 제출', action:'cat:2'},
+  {id:'ipo', title:'공모주·유상청약', desc:'청약 신청과 권리업무 메뉴를 확인해요', badge:'직접 처리', keys:'공모주 청약 유상청약 권리', action:'cat:4'},
+];
+function v47Esc(v){ return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function v47SearchBox(){
+  return `<div class="v47-search-wrap">
+    <div class="v47-search-box"><span class="v47-search-ic">${I.search}</span><input data-v47search type="search" value="${v47Esc(v47SearchQuery)}" placeholder="계좌 비밀번호, 서류 발급, 공모주 청약" aria-label="통합검색"><button type="button" data-v47searchbtn>검색</button></div>
+    <div class="v47-search-results" data-v47searchresults aria-live="polite"></div>
+  </div>`;
+}
+function v47SearchItems(query){
+  const q=String(query||'').trim().toLowerCase().replace(/\s+/g,''); if(!q) return [];
+  const featured=V47_SEARCH_FEATURED.filter(x=>(x.title+x.desc+x.keys).toLowerCase().replace(/\s+/g,'').includes(q));
+  const menu=[];
+  V47_MENU_CATS.forEach(cat=>{ const hay=(cat.t+' '+cat.sub+' '+cat.desc+' '+cat.subs.join(' ')).toLowerCase().replace(/\s+/g,''); if(hay.includes(q)&&!featured.some(x=>x.action===`cat:${cat.id}`)) menu.push({title:cat.t,desc:cat.desc,badge:'메뉴 보기',action:`cat:${cat.id}`}); });
+  return featured.concat(menu).slice(0,5);
+}
+function v47SearchCard(x){ return `<button class="v47-search-result" type="button" data-v47searchresult data-v47searchgo="${x.action}"><span class="v47-sr-copy"><b>${v47Esc(x.title)}</b><small>${v47Esc(x.desc)}</small></span><span class="v47-sr-badge">${v47Esc(x.badge)}</span><span class="v47-sr-arrow">${I.chev}</span></button>`; }
+function runV47Search(){
+  const input=document.querySelector('[data-v47search]'),out=document.querySelector('[data-v47searchresults]'); if(!input||!out)return;
+  v47SearchQuery=input.value.trim();
+  if(!v47SearchQuery){out.innerHTML='<div class="v47-search-hint">검색어를 입력해 주세요.</div>';out.classList.add('show');return;}
+  const items=v47SearchItems(v47SearchQuery);
+  if(items.length){const extras=[{title:`'${v47SearchQuery}' 음성 ARS 안내`,desc:'음성 안내에 따라 관련 메뉴를 찾아요',badge:'음성 ARS',action:'voice'},{title:`'${v47SearchQuery}' 상담 연결`,desc:'직접 해결이 어려우면 가능한 상담 방법을 확인해요',badge:'상담 연결',action:'consult'}];out.innerHTML='<div class="v47-search-count">추천 해결 방법</div>'+items.slice(0,3).concat(extras).map(v47SearchCard).join('');}
+  else{out.innerHTML=`<div class="v47-search-empty"><b>검색 결과를 찾지 못했어요</b><span>다른 단어로 검색하거나 아래 방법을 이용해 주세요.</span></div>`+v47SearchCard({title:'전체 메뉴에서 찾기',desc:'9개 업무 분야에서 원하는 메뉴를 둘러봐요',badge:'전체 메뉴',action:'menu'})+v47SearchCard({title:`'${v47SearchQuery}' 상담 연결`,desc:'가능한 상담 방법을 확인해요',badge:'상담 연결',action:'consult'});}
+  out.classList.add('show');
+}
 /* Ver 4.7 · 3×3 그리드 홈 */
 function v47Grid(){
   return `<div class="v47-grid">` + V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}">
@@ -5738,7 +5770,8 @@ function renderS1(){
       if(path.length===0){
         // 상단 로고~인사말은 고정(sticky), 아래 FAQ·카테고리 리스트만 스크롤
         html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
-          + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div></div>`
+          + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div>`
+          + (isV47() ? v47SearchBox() : '') + `</div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
           + (isV47() ? v47Grid() : isV46() ? v46FlatMenu() : isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v47: 3×3 그리드 / v46: 탭없이 전체 flat / v45: 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
@@ -6373,6 +6406,9 @@ document.addEventListener('input', (e)=>{
   if(el.id !== 'otpNo') return;
 });
 document.addEventListener('keydown', (e)=>{
+  if(e.target && e.target.matches('[data-v47search]') && e.key === 'Enter'){
+    e.preventDefault(); runV47Search(); return;
+  }
   if(e.target && e.target.id === 'otpNo' && e.key === 'Enter'){
     e.preventDefault();
     const btn = document.querySelector('[data-otpdone]');
@@ -6999,6 +7035,19 @@ document.addEventListener('click', (e)=>{
   // Ver 4.5 중메뉴 클릭 → 이후 절차는 추후 정의(현재 안내 placeholder)
   const v45s = t.closest('[data-v45sub]');
   if(v45s){ flash(`'${v45s.dataset.v45sub}' 중메뉴 선택 · 이후 절차 정의 예정`); return; }
+  if(t.closest('[data-v47searchbtn]')){ runV47Search(); return; }
+  const searchGo=t.closest('[data-v47searchgo]');
+  if(searchGo){
+    const action=searchGo.dataset.v47searchgo;
+    if(action==='idpw'){ s1nav({page:'result',resultKey:'idpw',title:'ID 비밀번호 재설정',fromFav:false}); }
+    else if(action==='acctpw'){ openPwHelpSheet(); }
+    else if(action==='certpw'){ openCertInfoSheet(); }
+    else if(action==='voice'){ s1nav({page:'voice',title:'음성 ARS 연결',fromFav:false}); }
+    else if(action==='consult'){ openConsult(v47SearchQuery,{exclude:['voice']}); }
+    else if(action==='menu'){ s1state.amTab='ars';s1state.amOpen=0;s1state.amOpen2=-1;s1state.sarsPath=[];openMenuDrawer(); }
+    else if(action.startsWith('cat:')){ s1nav({page:'v47cat',v47Cat:+action.split(':')[1]}); }
+    return;
+  }
   // Ver 4.7 FAB 토글
   if(t.closest('[data-v47fabtoggle]')){
     const fab=document.getElementById('v47Fab');

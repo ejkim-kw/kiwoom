@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');
+const expect = (condition, message) => { if (!condition) throw new Error(message); };
+(async () => {
+  const browser = await chromium.launch({headless:true,executablePath:'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'});
+  const page = await browser.newPage({viewport:{width:390,height:844}}); page.setDefaultTimeout(5000);
+  const pageErrors=[]; page.on('pageerror',error=>pageErrors.push(error.message));
+  await page.goto('http://127.0.0.1:8877/?v=v47',{waitUntil:'networkidle'});
+  expect(await page.locator('[data-v47search]').isVisible(),'Ver 4.7 search input should be visible');
+  await page.locator('[data-v47search]').fill('비밀번호'); await page.locator('[data-v47search]').press('Enter');
+  expect(await page.locator('[data-v47searchresult]').count()>=4,'password search should offer multiple routes');
+  for(const label of ['직접 처리','앱에서 처리','안내 확인','상담 연결']) expect(await page.getByText(label,{exact:true}).count()>0,`missing route badge: ${label}`);
+  await page.getByText('ID 비밀번호 재설정',{exact:true}).click();
+  expect(await page.locator('[data-s1back]').count()>0,'direct result should open an existing service screen');
+  await page.locator('[data-s1back]').first().click();
+  expect(await page.locator('[data-v47search]').isVisible(),'back should return to search home');
+  await page.locator('[data-v47search]').fill('전혀없는검색어'); await page.locator('[data-v47search]').press('Enter');
+  expect(await page.getByText('검색 결과를 찾지 못했어요',{exact:false}).count()>0,'empty result guidance should be visible');
+  expect(await page.getByText('전체 메뉴에서 찾기',{exact:false}).count()>0,'empty result should suggest full menu');
+  await page.locator('[data-sian="s1"][data-ver="v46"]').evaluate(el=>el.click());
+  expect(await page.locator('[data-v47search]').count()===0,'search should not appear in Ver 4.6');
+  expect(pageErrors.length===0,`page errors: ${pageErrors.join(' | ')}`);
+  await browser.close(); console.log('v47 search tests passed');
+})().catch(error=>{console.error(error);process.exit(1);});

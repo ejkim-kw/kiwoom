@@ -32,41 +32,41 @@
   };
   const TASKS={
     minor:{category:'업무',title:'미성년자 업무처리 (대리인)',requirementMode:'all',guide:'법정대리인 확인을 위해 아래 서류를 모두 첨부해 주세요.',docs:[
-      {name:'법정대리인 신분증',description:'주민등록증 또는 운전면허증 원본을 촬영해 주세요. 실물 촬영만 가능하며 스캔본·사본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.guardianId},
-      {name:'가족관계증명서',description:'미성년자 기준으로 최근 3개월 이내 발급된 서류가 필요해요. 법정대리인 관계가 확인되어야 해요.',methods:ALL_METHODS,guide:GUIDES.family}
+      {name:'법정대리인 신분증',summary:'신분증 원본 · 실물 촬영',description:'주민등록증 또는 운전면허증 원본을 촬영해 주세요. 실물 촬영만 가능하며 스캔본·사본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.guardianId},
+      {name:'가족관계증명서',summary:'미성년자 기준 · 최근 3개월 이내',description:'미성년자 기준으로 최근 3개월 이내 발급된 서류가 필요해요. 법정대리인 관계가 확인되어야 해요.',methods:ALL_METHODS,guide:GUIDES.family}
     ]},
     corporate:{category:'업무',title:'법인계좌 업무처리 (대리인)',requirementMode:'any',guide:'아래 네 가지 증빙 중 제출 가능한 서류 1개를 선택해 첨부해 주세요.',docs:[
-      {name:'법인대표자의 위임장 및 법인인감증명서',description:'법인대표자의 위임장과 법인인감증명서를 함께 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.corporateAuth},
-      {name:'재직증명서',description:'신청 당일 발급된 재직증명서가 필요해요.',methods:ALL_METHODS,guide:GUIDES.employment},
-      {name:'금융거래 요청 공문',description:'법인 명의로 작성된 금융거래 요청 공문을 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.requestLetter},
-      {name:'사원증',description:'소속 법인과 본인 이름을 확인할 수 있는 사원증을 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.employeeCard}
+      {name:'법인대표자의 위임장 및 법인인감증명서',summary:'위임장 · 법인인감증명서 함께',description:'법인대표자의 위임장과 법인인감증명서를 함께 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.corporateAuth},
+      {name:'재직증명서',summary:'신청 당일 발급분',description:'신청 당일 발급된 재직증명서가 필요해요.',methods:ALL_METHODS,guide:GUIDES.employment},
+      {name:'금융거래 요청 공문',summary:'법인 명의 · 문서번호·직인',description:'법인 명의로 작성된 금융거래 요청 공문을 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.requestLetter},
+      {name:'사원증',summary:'회사명 · 성명 · 사진 표시',description:'소속 법인과 본인 이름을 확인할 수 있는 사원증을 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.employeeCard}
     ]},
     identity:{category:'업무',title:'본인확인용',requirementMode:'all',guide:'본인 확인을 위해 신분증 원본을 직접 촬영해 주세요.',docs:[
-      {name:'신분증',description:'주민등록증 또는 운전면허증 실물을 촬영해 주세요. 스캔본·캡처본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.identity}
+      {name:'신분증',summary:'신분증 원본 · 실물 촬영',description:'주민등록증 또는 운전면허증 실물을 촬영해 주세요. 스캔본·캡처본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.identity}
     ]},
     rename:{category:'업무',title:'개명',requirementMode:'all',guide:'개명 사실 확인과 계좌 명의 변경을 위해 아래 서류를 모두 첨부해 주세요.',docs:[
-      {name:'신분증 원본',description:'개명 후 신분증 또는 유효기간 한 달 이내 임시신분증 중 하나를 촬영해 주세요. 주민번호 뒷자리가 표시되어야 하며 스캔본·캡처본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.renamedId},
-      {name:'주민등록초본',description:'90일 이내 발급분으로 변경 전 이름·주민번호 뒷자리·직인이 표시되어야 해요. 개인인적사항 변경내용을 체크해 발급해 주세요. PDF·스캔·캡처본은 가능하지만 열람용·미리보기 화면은 처리할 수 없어요.',methods:ALL_METHODS,guide:GUIDES.residentAbstract}
+      {name:'신분증 원본',summary:'개명 후 성명 · 주민번호 전체',description:'개명 후 신분증 또는 유효기간 한 달 이내 임시신분증 중 하나를 촬영해 주세요. 주민번호 뒷자리가 표시되어야 하며 스캔본·캡처본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.renamedId},
+      {name:'주민등록초본',summary:'90일 이내 · 성명 변경이력',description:'90일 이내 발급분으로 변경 전 이름·주민번호 뒷자리·직인이 표시되어야 해요. 개인인적사항 변경내용을 체크해 발급해 주세요. PDF·스캔·캡처본은 가능하지만 열람용·미리보기 화면은 처리할 수 없어요.',methods:ALL_METHODS,guide:GUIDES.residentAbstract}
     ]},
     isa:{category:'금융상품',title:'ISA 서민형 증빙서류 제출',requirementMode:'all',guide:'서민형 가입 자격 확인을 위해 아래 서류를 첨부해 주세요.',docs:[
-      {name:'소득확인증명서',description:'개인종합자산관리계좌 가입용으로 국세청 홈택스에서 프린터 출력용 2매를 발급해 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.income}
+      {name:'소득확인증명서',summary:'ISA 가입용 · 출력본 2매',description:'개인종합자산관리계좌 가입용으로 국세청 홈택스에서 프린터 출력용 2매를 발급해 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.income}
     ]},
     futuresQualified:{category:'선물옵션',title:'선물옵션 적격투자자',requirementMode:'any',guide:'해당되는 자격 증빙 중 1개 이상을 첨부해 주세요.',docs:[
-      {name:'금융자격증',description:'투자자산운용사·금융투자분석사·재무위험관리사·CFA·FRM 등의 자격증을 제출하면 사전교육 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.financeLicense},
-      {name:'금융투자업계종사자 증빙',description:'금융자격증과 금융투자회사 업무경력 1년 이상을 함께 확인할 수 있어야 해요. 사전교육 및 모의투자 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.industryProof},
-      {name:'타사 거래확인서',description:'1개월 이내 발급된 서류로 하단에 자필서명이 필요해요. 사전교육 및 모의투자 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.tradingConfirmation}
+      {name:'금융자격증',summary:'성명 · 자격명 · 자격번호',description:'투자자산운용사·금융투자분석사·재무위험관리사·CFA·FRM 등의 자격증을 제출하면 사전교육 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.financeLicense},
+      {name:'금융투자업계종사자 증빙',summary:'금융자격증 · 경력 1년 이상',description:'금융자격증과 금융투자회사 업무경력 1년 이상을 함께 확인할 수 있어야 해요. 사전교육 및 모의투자 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.industryProof},
+      {name:'타사 거래확인서',summary:'1개월 이내 · 자필서명 필수',description:'1개월 이내 발급된 서류로 하단에 자필서명이 필요해요. 사전교육 및 모의투자 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.tradingConfirmation}
     ]},
     leverageEtp:{category:'국내주식',title:'레버리지ETP 적격투자자',requirementMode:'all',guide:'적격투자자 등록을 위해 거래확인서를 첨부해 주세요.',docs:[
-      {name:'타사 거래확인서',description:'1개월 이내 발급된 서류로 하단에 자필서명이 필요해요.',methods:ALL_METHODS,guide:GUIDES.tradingConfirmation}
+      {name:'타사 거래확인서',summary:'1개월 이내 · 자필서명 필수',description:'1개월 이내 발급된 서류로 하단에 자필서명이 필요해요.',methods:ALL_METHODS,guide:GUIDES.tradingConfirmation}
     ]},
     overseasLeverageEtp:{category:'해외주식',title:'해외레버리지ETP 적격투자자',requirementMode:'all',guide:'적격투자자 등록을 위해 거래확인서를 첨부해 주세요.',docs:[
-      {name:'타사 거래확인서',description:'1개월 이내 발급된 서류로 하단에 자필서명이 필요해요.',methods:ALL_METHODS,guide:GUIDES.tradingConfirmation}
+      {name:'타사 거래확인서',summary:'1개월 이내 · 자필서명 필수',description:'1개월 이내 발급된 서류로 하단에 자필서명이 필요해요.',methods:ALL_METHODS,guide:GUIDES.tradingConfirmation}
     ]},
     futuresDeposit:{category:'선물옵션',title:'선물옵션 기본예탁금 전입',requirementMode:'all',guide:'기본예탁금 전입을 위해 거래확인서를 첨부해 주세요.',docs:[
-      {name:'파생상품 거래확인서',description:'기본예탁금 유형이 기재된 거래확인서가 필요해요.',methods:ALL_METHODS,guide:GUIDES.derivativesConfirmation}
+      {name:'파생상품 거래확인서',summary:'기본예탁금 유형 표시',description:'기본예탁금 유형이 기재된 거래확인서가 필요해요.',methods:ALL_METHODS,guide:GUIDES.derivativesConfirmation}
     ]},
     other:{category:'업무',title:'기타',detailTitle:'서류를 첨부해주세요',requirementMode:'any',maxAttachments:10,guide:'어떤 양식이든 최대 10개까지 첨부할 수 있어요.',docs:[
-      {name:'서류 첨부',description:'사진 또는 파일 형식의 서류를 자유롭게 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.other}
+      {name:'서류 첨부',summary:'사진·PDF 가능 · 최대 10개',description:'사진 또는 파일 형식의 서류를 자유롭게 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.other}
     ]}
   };
   function categoryClass(category){
