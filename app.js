@@ -2350,7 +2350,7 @@ const V47_SEARCH_FEATURED = [
   {id:'idpw', title:'ID 비밀번호 재설정', desc:'본인인증 후 디지털 ARS에서 바로 재설정해요', badge:'직접 처리', keys:'비밀번호 패스워드 pw id 아이디 로그인', action:'idpw'},
   {id:'acctpw', title:'계좌 비밀번호 변경', desc:'영웅문S# 앱의 계좌관리 화면에서 처리해요', badge:'앱에서 처리', keys:'비밀번호 패스워드 pw 계좌 증권계좌', action:'acctpw'},
   {id:'certpw', title:'공동인증서 비밀번호 안내', desc:'비밀번호 조건과 재설정 방법을 확인해요', badge:'안내 확인', keys:'비밀번호 패스워드 pw 인증서 공동인증서', action:'certpw'},
-  {id:'docs', title:'서류 신청·발급', desc:'필요한 서류의 신청과 발급 메뉴를 확인해요', badge:'직접 처리', keys:'서류 증명서 발급 신청 제출', action:'cat:2'},
+  {id:'docs', title:'서류 신청·발급', desc:'필요한 서류의 신청과 발급 메뉴를 확인해요', badge:'직접 처리', keys:'서류 증명서 발급 신청 제출', action:'untact:서류신청'},
   {id:'ipo', title:'공모주·유상청약', desc:'청약 신청과 권리업무 메뉴를 확인해요', badge:'직접 처리', keys:'공모주 청약 유상청약 권리', action:'cat:4'},
 ];
 function v47Esc(v){ return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -7039,9 +7039,10 @@ document.addEventListener('click', (e)=>{
   const searchGo=t.closest('[data-v47searchgo]');
   if(searchGo){
     const action=searchGo.dataset.v47searchgo;
-    if(action==='idpw'){ s1nav({page:'result',resultKey:'idpw',title:'ID 비밀번호 재설정',fromFav:false}); }
-    else if(action==='acctpw'){ openPwHelpSheet(); }
-    else if(action==='certpw'){ openCertInfoSheet(); }
+    if(action==='idpw'){ startV47MyInfo('ID조회/PW초기화'); }
+    else if(action==='acctpw'){ startV47MyInfo('계좌비밀번호 재설정'); }
+    else if(action==='certpw'){ s1nav({page:'v47cat',v47Cat:9}); }
+    else if(action.startsWith('untact:')){ startV47Untact(action.split(':').slice(1).join(':')); }
     else if(action==='voice'){ s1nav({page:'voice',title:'음성 ARS 연결',fromFav:false}); }
     else if(action==='consult'){ openConsult(v47SearchQuery,{exclude:['voice']}); }
     else if(action==='menu'){ s1state.amTab='ars';s1state.amOpen=0;s1state.amOpen2=-1;s1state.sarsPath=[];openMenuDrawer(); }
