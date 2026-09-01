@@ -2346,6 +2346,16 @@ const V47_MENU_CATS = [
   {id:9, t:'기타서비스',    sub:'인증/화면문의',            desc:'인증 관리와 화면 문의를 도와드려요',           ic:'v47-glass-9.png', subs:['ARS 주문이용신청','ARS 주문비밀번호','ARS 퀵넘버플러스','간편인증·공동인증서','HTS 화면 문의','MTS 화면 문의','사고 등록·해지','금융센터 전화번호 안내']},
 ];
 let v47SearchQuery = '';
+const V47_TRENDING_BY_TIME = {
+  morning:['공모주 청약','계좌 비밀번호','출금 제한','서류 발급'],
+  daytime:['계좌 비밀번호','서류 발급','공모주 청약','비대면 접수'],
+  evening:['비대면 접수','계좌 비밀번호','서류 발급','해외주식']
+};
+let v47RecentMenus = [
+  {title:'비대면업무 신청현황',desc:'접수한 업무의 처리 상태를 확인해요',action:'untact:계좌개설 이어하기'},
+  {title:'서류 신청·발급',desc:'필요한 서류를 신청하고 발급해요',action:'untact:서류신청'},
+  {title:'계좌 비밀번호 재설정',desc:'계좌 비밀번호 안내를 확인해요',action:'acctpw'}
+];
 const V47_SEARCH_FEATURED = [
   {id:'idpw', title:'ID 비밀번호 재설정', desc:'본인인증 후 디지털 ARS에서 바로 재설정해요', badge:'직접 처리', keys:'비밀번호 패스워드 pw id 아이디 로그인', action:'idpw'},
   {id:'acctpw', title:'계좌 비밀번호 변경', desc:'영웅문S# 앱의 계좌관리 화면에서 처리해요', badge:'앱에서 처리', keys:'비밀번호 패스워드 pw 계좌 증권계좌', action:'acctpw'},
@@ -2354,9 +2364,16 @@ const V47_SEARCH_FEATURED = [
   {id:'ipo', title:'공모주·유상청약', desc:'청약 신청과 권리업무 메뉴를 확인해요', badge:'직접 처리', keys:'공모주 청약 유상청약 권리', action:'cat:4'},
 ];
 function v47Esc(v){ return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function v47TrendingKeywords(hour=new Date().getHours()){
+  return hour<12 ? V47_TRENDING_BY_TIME.morning : hour<18 ? V47_TRENDING_BY_TIME.daytime : V47_TRENDING_BY_TIME.evening;
+}
+function v47TrendingSection(){
+  return `<div class="v47-trends" data-v47trends><div class="v47-section-title">지금 시간에 많이 검색 중</div><div class="v47-trend-list">${v47TrendingKeywords().map((keyword,index)=>`<button type="button" class="v47-trend-chip" data-v47trend="${v47Esc(keyword)}"><b>${index+1}</b>${v47Esc(keyword)}</button>`).join('')}</div></div>`;
+}
 function v47SearchBox(){
   return `<div class="v47-search-wrap">
     <div class="v47-search-box"><span class="v47-search-ic">${I.search}</span><input data-v47search type="search" value="${v47Esc(v47SearchQuery)}" placeholder="계좌 비밀번호, 서류 발급, 공모주 청약" aria-label="통합검색"><button type="button" data-v47searchbtn>검색</button></div>
+    ${v47TrendingSection()}
     <div class="v47-search-results" data-v47searchresults aria-live="polite"></div>
   </div>`;
 }
@@ -2367,11 +2384,24 @@ function v47SearchItems(query){
   V47_MENU_CATS.forEach(cat=>{ const hay=(cat.t+' '+cat.sub+' '+cat.desc+' '+cat.subs.join(' ')).toLowerCase().replace(/\s+/g,''); if(hay.includes(q)&&!featured.some(x=>x.action===`cat:${cat.id}`)) menu.push({title:cat.t,desc:cat.desc,badge:'메뉴 보기',action:`cat:${cat.id}`}); });
   return featured.concat(menu).slice(0,5);
 }
-function v47SearchCard(x){ return `<button class="v47-search-result" type="button" data-v47searchresult data-v47searchgo="${x.action}"><span class="v47-sr-copy"><b>${v47Esc(x.title)}</b><small>${v47Esc(x.desc)}</small></span><span class="v47-sr-badge">${v47Esc(x.badge)}</span><span class="v47-sr-arrow">${I.chev}</span></button>`; }
+function v47SearchCard(x){ return `<button class="v47-search-result" type="button" data-v47searchresult data-v47searchgo="${x.action}" data-v47title="${v47Esc(x.title)}"><span class="v47-sr-copy"><b>${v47Esc(x.title)}</b><small>${v47Esc(x.desc)}</small></span><span class="v47-sr-badge">${v47Esc(x.badge)}</span><span class="v47-sr-arrow">${I.chev}</span></button>`; }
+function addV47Recent(title,action,desc='최근 이용한 업무로 다시 이동해요'){
+  if(!title||!action)return;
+  v47RecentMenus=[{title,desc,action}].concat(v47RecentMenus.filter(item=>item.action!==action)).slice(0,3);
+}
+function v47RecentSection(){
+  return `<section class="v47-recent" data-v47recent-section><div class="v47-section-title">최근 이용한 메뉴</div><div class="v47-recent-list">${v47RecentMenus.map(item=>`<button type="button" class="v47-recent-item" data-v47recent data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}"><span><b>${v47Esc(item.title)}</b><small>${v47Esc(item.desc)}</small></span><i aria-hidden="true">${I.chev}</i></button>`).join('')}</div></section>`;
+}
+function closeV47SearchResults(){
+  const out=document.querySelector('[data-v47searchresults]');
+  if(!out)return;
+  out.classList.remove('show');
+  out.innerHTML='';
+}
 function runV47Search(){
   const input=document.querySelector('[data-v47search]'),out=document.querySelector('[data-v47searchresults]'); if(!input||!out)return;
   v47SearchQuery=input.value.trim();
-  if(!v47SearchQuery){out.innerHTML='<div class="v47-search-hint">검색어를 입력해 주세요.</div>';out.classList.add('show');return;}
+  if(!v47SearchQuery){closeV47SearchResults();return;}
   const items=v47SearchItems(v47SearchQuery);
   if(items.length){const extras=[{title:`'${v47SearchQuery}' 음성 ARS 안내`,desc:'음성 안내에 따라 관련 메뉴를 찾아요',badge:'음성 ARS',action:'voice'},{title:`'${v47SearchQuery}' 상담 연결`,desc:'직접 해결이 어려우면 가능한 상담 방법을 확인해요',badge:'상담 연결',action:'consult'}];out.innerHTML='<div class="v47-search-count">추천 해결 방법</div>'+items.slice(0,3).concat(extras).map(v47SearchCard).join('');}
   else{out.innerHTML=`<div class="v47-search-empty"><b>검색 결과를 찾지 못했어요</b><span>다른 단어로 검색하거나 아래 방법을 이용해 주세요.</span></div>`+v47SearchCard({title:'전체 메뉴에서 찾기',desc:'9개 업무 분야에서 원하는 메뉴를 둘러봐요',badge:'전체 메뉴',action:'menu'})+v47SearchCard({title:`'${v47SearchQuery}' 상담 연결`,desc:'가능한 상담 방법을 확인해요',badge:'상담 연결',action:'consult'});}
@@ -2862,7 +2892,7 @@ function v45SelfSolve(){
   ).join('');
   return `<div class="v45-selfsolve">
     <div class="v45ss-toprow">
-      <span class="v45ss-headtxt">혹시 이런 내용이 궁금하신가요?</span>
+      <span class="v45ss-headtxt">${isV47()?'문의가 많은 업무':'혹시 이런 내용이 궁금하신가요?'}</span>
       <span class="v45ss-more" data-ssmore>더보기</span>
     </div>
     <div class="v45ss-wrap"><div class="v45ss-track" id="ssBannerTrack">${slides}</div></div>
@@ -5773,6 +5803,7 @@ function renderS1(){
           + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div>`
           + (isV47() ? v47SearchBox() : '') + `</div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
+          + (isV47() ? v47RecentSection() : '')
           + (isV47() ? v47Grid() : isV46() ? v46FlatMenu() : isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v47: 3×3 그리드 / v46: 탭없이 전체 flat / v45: 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
         // 드릴다운 헤더: 현재 단계 이름을 타이틀로(대메뉴 진입 시 = 대메뉴명), 대메뉴 단계면 설명글도 표기
@@ -6354,6 +6385,11 @@ function closeAiChat(){ const e=document.getElementById('aiChatOv'); if(e) e.rem
 document.addEventListener('input', (e)=>{
   const el = e.target;
   if(!el) return;
+  if(el.matches('[data-v47search]')){
+    v47SearchQuery=el.value.trim();
+    if(!v47SearchQuery)closeV47SearchResults();
+    return;
+  }
   const otpConfig=V47_PHONE_OTP.find(config=>config.otp===el.id);
   if(otpConfig){
     el.value=el.value.replace(/\D/g,'').slice(0,6);
@@ -6418,6 +6454,8 @@ document.addEventListener('keydown', (e)=>{
 
 document.addEventListener('click', (e)=>{
   const t = e.target;
+
+  if(!t.closest('.v47-search-wrap'))closeV47SearchResults();
 
   // AI 챗봇 → '보이는 ARS 열기' 플로팅 버튼: 챗봇 닫고 보이는 ARS 화면으로
   if(t.closest('[data-arsopen]')){ closeAiChat(); closeVoiceCall(); selectSian('s1'); return; }   // AI챗봇/통화화면 '디지털 ARS 열기' → 메인
@@ -7036,9 +7074,16 @@ document.addEventListener('click', (e)=>{
   const v45s = t.closest('[data-v45sub]');
   if(v45s){ flash(`'${v45s.dataset.v45sub}' 중메뉴 선택 · 이후 절차 정의 예정`); return; }
   if(t.closest('[data-v47searchbtn]')){ runV47Search(); return; }
+  const trend=t.closest('[data-v47trend]');
+  if(trend){
+    const input=document.querySelector('[data-v47search]');
+    if(input){input.value=trend.dataset.v47trend;runV47Search();}
+    return;
+  }
   const searchGo=t.closest('[data-v47searchgo]');
   if(searchGo){
     const action=searchGo.dataset.v47searchgo;
+    addV47Recent(searchGo.dataset.v47title,action);
     if(action==='idpw'){ startV47MyInfo('ID조회/PW초기화'); }
     else if(action==='acctpw'){ startV47MyInfo('계좌비밀번호 재설정'); }
     else if(action==='certpw'){ s1nav({page:'v47cat',v47Cat:9}); }
@@ -7159,7 +7204,7 @@ document.addEventListener('click', (e)=>{
   }
   // Ver 4.7 대메뉴 그리드 클릭 → 중메뉴 목록 페이지
   const v47c = t.closest('[data-v47cat]');
-  if(v47c){ s1nav({page:'v47cat', v47Cat:+v47c.dataset.v47cat}); return; }
+  if(v47c){ const cat=V47_MENU_CATS.find(item=>item.id===+v47c.dataset.v47cat); if(cat)addV47Recent(cat.t,`cat:${cat.id}`,cat.desc); s1nav({page:'v47cat', v47Cat:+v47c.dataset.v47cat}); return; }
   // Ver 4.7 중메뉴 클릭 → 내정보 공통 인증·선택 플로우로 진입
   const v47s = t.closest('[data-v47sub]');
   if(v47s){
