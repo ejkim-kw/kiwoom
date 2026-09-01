@@ -2368,11 +2368,11 @@ function v47TrendingKeywords(hour=new Date().getHours()){
   return hour<12 ? V47_TRENDING_BY_TIME.morning : hour<18 ? V47_TRENDING_BY_TIME.daytime : V47_TRENDING_BY_TIME.evening;
 }
 function v47TrendingSection(){
-  return `<div class="v47-trends" data-v47trends><div class="v47-section-title">지금 시간에 많이 검색 중</div><div class="v47-trend-list">${v47TrendingKeywords().map((keyword,index)=>`<button type="button" class="v47-trend-chip" data-v47trend="${v47Esc(keyword)}"><b>${index+1}</b>${v47Esc(keyword)}</button>`).join('')}</div></div>`;
+  return `<div class="v47-trends" data-v47trends><div class="v47-section-title">실시간 검색어 순위</div><div class="v47-trend-list">${v47TrendingKeywords().map((keyword,index)=>`<button type="button" class="v47-trend-chip" data-v47trend="${v47Esc(keyword)}"><b>${index+1}</b>${v47Esc(keyword)}</button>`).join('')}</div></div>`;
 }
 function v47SearchBox(){
   return `<div class="v47-search-wrap">
-    <div class="v47-search-box"><span class="v47-search-ic">${I.search}</span><input data-v47search type="search" value="${v47Esc(v47SearchQuery)}" placeholder="계좌 비밀번호, 서류 발급, 공모주 청약" aria-label="통합검색"><button type="button" data-v47searchbtn>검색</button></div>
+    <div class="v47-search-box"><span class="v47-search-ic">${I.search}</span><input data-v47search type="search" value="${v47Esc(v47SearchQuery)}" placeholder="무엇을 도와드릴까요?" aria-label="통합검색"><button type="button" data-v47searchbtn>검색</button></div>
     ${v47TrendingSection()}
     <div class="v47-search-results" data-v47searchresults aria-live="polite"></div>
   </div>`;
@@ -2390,7 +2390,7 @@ function addV47Recent(title,action,desc='최근 이용한 업무로 다시 이�
   v47RecentMenus=[{title,desc,action}].concat(v47RecentMenus.filter(item=>item.action!==action)).slice(0,3);
 }
 function v47RecentSection(){
-  return `<section class="v47-recent" data-v47recent-section><div class="v47-section-title">최근 이용한 메뉴</div><div class="v47-recent-list">${v47RecentMenus.map(item=>`<button type="button" class="v47-recent-item" data-v47recent data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}"><span><b>${v47Esc(item.title)}</b><small>${v47Esc(item.desc)}</small></span><i aria-hidden="true">${I.chev}</i></button>`).join('')}</div></section>`;
+  return `<section class="v47-recent" data-v47recent-section><div class="v47-section-title">최근 이용 메뉴</div><div class="v47-recent-list">${v47RecentMenus.map(item=>`<button type="button" class="v47-recent-item" data-v47recent data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}"><span><b>${v47Esc(item.title)}</b></span><i aria-hidden="true">${I.chev}</i></button>`).join('')}</div></section>`;
 }
 function closeV47SearchResults(){
   const out=document.querySelector('[data-v47searchresults]');
@@ -2409,11 +2409,11 @@ function runV47Search(){
 }
 /* Ver 4.7 · 3×3 그리드 홈 */
 function v47Grid(){
-  return `<div class="v47-grid">` + V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}">
+  return `<section class="v47-all-menu"><div class="v47-section-title">전체 메뉴</div><div class="v47-grid">` + V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}">
       <div class="v47-cell-ic"><img src="assets/${c.ic}" alt=""></div>
       <div class="v47-cell-nm">${c.t}</div>
       ${c.sub?`<div class="v47-cell-sub">${c.sub}</div>`:''}
-    </div>`).join('') + `</div>`;
+    </div>`).join('') + `</div></section>`;
 }
 /* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
 function v47MyInfoTop(state){
@@ -2892,7 +2892,7 @@ function v45SelfSolve(){
   ).join('');
   return `<div class="v45-selfsolve">
     <div class="v45ss-toprow">
-      <span class="v45ss-headtxt">${isV47()?'문의가 많은 업무':'혹시 이런 내용이 궁금하신가요?'}</span>
+      <span class="v45ss-headtxt">${isV47()?'자주 묻는 질문':'혹시 이런 내용이 궁금하신가요?'}</span>
       <span class="v45ss-more" data-ssmore>더보기</span>
     </div>
     <div class="v45ss-wrap"><div class="v45ss-track" id="ssBannerTrack">${slides}</div></div>
@@ -5800,7 +5800,7 @@ function renderS1(){
       if(path.length===0){
         // 상단 로고~인사말은 고정(sticky), 아래 FAQ·카테고리 리스트만 스크롤
         html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
-          + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div>`
+            + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div>`
           + (isV47() ? v47SearchBox() : '') + `</div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
           + (isV47() ? v47RecentSection() : '')
