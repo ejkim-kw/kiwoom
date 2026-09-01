@@ -3842,7 +3842,7 @@ body{
 .flow.toss.v47 .statusbar{background:#fff}
 .flow.toss.v47:has(.toss-home) .statusbar,
 .flow.toss.v47:has(.v45-authpage) .statusbar{background:#EBEDFF}
-.flow.toss.v47 .v47-hero{height:0;padding:0;overflow:hidden}
+.flow.toss.v47 .v47-hero{padding:4px var(--v47-detail-inset) 8px}
 .v47-search-wrap{padding:0 18px 12px}
 .v47-search-box{display:flex;align-items:center;gap:8px;height:46px;padding:0 8px 0 14px;border:1.5px solid #D9DCEF;border-radius:15px;background:#fff;box-shadow:0 5px 16px rgba(26,26,78,.08);transition:border-color .15s,box-shadow .15s}
 .v47-search-box:focus-within{border-color:#4848D8;box-shadow:0 6px 18px rgba(72,72,216,.14)}
@@ -3851,7 +3851,6 @@ body{
 .v47-search-box button{flex:none;height:32px;padding:0 12px;border:0;border-radius:10px;background:#1A1A4E;color:#fff;font-family:inherit;font-size:12px;font-weight:750;cursor:pointer}
 .v47-section-title{color:#1A1A4E;font-size:calc(13px*var(--scale));font-weight:800;letter-spacing:-.2px}
 .v47-trends{padding:11px 1px 0}.v47-trend-list{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}.v47-trend-list::-webkit-scrollbar{display:none}
-.flow.toss.v47 .v45-selfsolve{margin-top:0;padding-top:1px;background:linear-gradient(180deg,#F0F1FF 0%,#F7F8FF 48%,#fff 100%)}
 .v47-trend-chip{display:flex;align-items:center;gap:5px;flex:none;height:31px;padding:0 10px;border:1px solid #DDE0F3;border-radius:999px;background:rgba(255,255,255,.8);color:#555C7B;font-family:inherit;font-size:11.5px;font-weight:650;white-space:nowrap;cursor:pointer}.v47-trend-chip b{color:#4848D8;font-size:11px}.v47-trend-chip:active{background:#ECEEFF}
 .v47-search-results{display:none;margin-top:10px;padding:10px;border:1px solid #E1E4F2;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(26,26,78,.13);max-height:330px;overflow:auto}.v47-search-results.show{display:block}
 .v47-search-count{padding:2px 4px 8px;color:#7B829D;font-size:11.5px;font-weight:700}
@@ -3875,8 +3874,7 @@ body{
 .flow.toss.v47 .v45ss-sub{color:#8B95A1;margin-top:2px;font-size:calc(11.2px*var(--scale))}
 .flow.toss.v47 .v45ss-dots{margin:5px 0 8px}
 .flow.toss.v47 .v45ss-txt{padding:0 16px 12px 16px}
-.v47-recent{padding:4px var(--v47-detail-inset) 12px}.v47-recent-list{display:flex;flex-direction:column;gap:7px;margin-top:9px}.v47-recent-item{display:flex;align-items:center;width:100%;min-height:54px;padding:10px 13px;border:1px solid #EAECFF;border-radius:15px;background:#fff;box-shadow:0 1px 4px rgba(72,72,216,.06);color:#1A1A4E;text-align:left;font-family:inherit;cursor:pointer}.v47-recent-item>span{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}.v47-recent-item b{font-size:calc(13px*var(--scale))}.v47-recent-item small{display:none}.v47-recent-item i{display:grid;place-items:center;color:#A3A8B8}.v47-recent-item i svg{width:15px;height:15px}
-.v47-all-menu{padding-top:2px}.v47-all-menu>.v47-section-title{padding:0 var(--v47-detail-inset) 8px}
+.v47-recent{padding:4px var(--v47-detail-inset) 12px}.v47-recent-list{display:flex;flex-direction:column;gap:7px;margin-top:9px}.v47-recent-item{display:flex;align-items:center;width:100%;min-height:54px;padding:10px 13px;border:1px solid #EAECFF;border-radius:15px;background:#fff;box-shadow:0 1px 4px rgba(72,72,216,.06);color:#1A1A4E;text-align:left;font-family:inherit;cursor:pointer}.v47-recent-item>span{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}.v47-recent-item b{font-size:calc(13px*var(--scale))}.v47-recent-item small{overflow:hidden;color:#8B95A1;font-size:calc(10.8px*var(--scale));text-overflow:ellipsis;white-space:nowrap}.v47-recent-item i{display:grid;place-items:center;color:#A3A8B8}.v47-recent-item i svg{width:15px;height:15px}
 /* 더보기·중메뉴 리스트: 둥근 직사각형 카드 */
 .flow.toss.v47 .v45ss-txtlist{display:flex;flex-direction:column;gap:8px;padding:4px var(--v47-detail-inset) 28px}
 .flow.toss.v47 .v45ss-txtrow{border:1.5px solid #EAECFF;border-radius:16px;box-shadow:0 1px 4px rgba(72,72,216,.07);background:#fff}
