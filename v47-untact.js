@@ -40,7 +40,7 @@
     limitRelease:[['phone','휴대폰 정보'],['phoneOtp','인증번호'],['status','접수현황']],
     closure:[['phone','휴대폰 정보'],['phoneOtp','인증번호'],['status','접수현황']]
   };
-  function shouldHandle(version,title){return version==='v47'&&Object.prototype.hasOwnProperty.call(MENU_KEYS,title);}
+  function shouldHandle(version,title){return (version==='v47'||version==='v471'||version==='v48')&&Object.prototype.hasOwnProperty.call(MENU_KEYS,title);}
   function createState(title,options){
     const flow=MENU_KEYS[title]; if(!flow)return null;
     const skip=!!(options&&options.skipAuthentication);

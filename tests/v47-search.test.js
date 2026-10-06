@@ -4,12 +4,15 @@ const expect = (condition, message) => { if (!condition) throw new Error(message
   const browser = await chromium.launch({headless:true,executablePath:'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'});
   const page = await browser.newPage({viewport:{width:390,height:844}}); page.setDefaultTimeout(5000);
   const pageErrors=[]; page.on('pageerror',error=>pageErrors.push(error.message));
-  await page.goto('http://127.0.0.1:8877/?v=v47',{waitUntil:'networkidle'});
-  expect(await page.locator('[data-v47search]').isVisible(),'Ver 4.7 search input should be visible');
-  expect(await page.getByText('지금 시간에 많이 검색 중',{exact:true}).isVisible(),'real-time search ranking should appear below search');
+  await page.goto('http://127.0.0.1:8877/?v=v471',{waitUntil:'networkidle'});
+  expect(await page.locator('[data-v47search]').isVisible(),'Ver 4.7.1 search input should be visible');
+  expect(await page.getByText('지금 시간에 많이 검색 중',{exact:true}).isVisible(),'current trending heading should appear below search');
   expect(await page.locator('[data-v47trend]').count()===4,'real-time search ranking should expose four keyword chips');
-  expect(await page.getByText('문의가 많은 업무',{exact:true}).isVisible(),'popular inquiry heading should replace the old self-service copy');
+  expect(await page.getByText('문의가 많은 업무',{exact:true}).isVisible(),'FAQ heading should be visible');
   expect(await page.getByText('최근 이용한 메뉴',{exact:true}).isVisible(),'recent menu section should be visible');
+  expect(await page.locator('[data-v47search]').getAttribute('placeholder')==='계좌 비밀번호, 서류 발급, 공모주 청약','search placeholder should retain the current copy');
+  expect(await page.locator('.th-hi').isVisible(),'main page title should remain visible');
+  expect(await page.locator('[data-v47recent] small').count()===3,'recent menus should retain descriptions');
   const sectionOrder=await page.locator('[data-v47search], [data-v47trends], .v45-selfsolve, [data-v47recent-section]').evaluateAll(els=>els.map(el=>el.getBoundingClientRect().top));
   expect(sectionOrder.length===4 && sectionOrder.every((top,index)=>index===0||top>=sectionOrder[index-1]),'home sections should be ordered search, trends, popular inquiries, recent menus');
   const trendKeyword=await page.locator('[data-v47trend]').first().getAttribute('data-v47trend');
@@ -23,7 +26,7 @@ const expect = (condition, message) => { if (!condition) throw new Error(message
   await page.locator('[data-v47search]').fill('');
   expect(!(await page.locator('[data-v47searchresults]').isVisible()),'clearing the query should hide recommended solutions');
   await page.locator('[data-v47search]').fill('비밀번호'); await page.locator('[data-v47search]').press('Enter');
-  await page.locator('.th-hi').click();
+  await page.locator('.v47-grid').evaluate(el=>el.click());
   expect(!(await page.locator('[data-v47searchresults]').isVisible()),'clicking outside search recommendations should hide them');
   await page.locator('[data-v47search]').fill('비밀번호'); await page.locator('[data-v47search]').press('Enter');
   await page.getByText('ID 비밀번호 재설정',{exact:true}).click();

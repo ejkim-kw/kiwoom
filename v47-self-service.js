@@ -3,6 +3,7 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   root.V47SelfService = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  const isV47Family = version => version === 'v47' || version === 'v471' || version === 'v48';
   const BASE_SELF_SERVICE_ITEMS = [
     { title:'입출금이 안돼요', sub:'한도제한·출금불가 원인을 즉시 확인해요', action:'iodstart', img:'assets/glass3.png', icon:'assets/v47-glass-3.png', v47Float:true },
     { title:'서류 발급현황이 궁금해요', sub:'신청 서류의 발급 상태를 바로 확인해요', action:'certstart', img:'assets/glass5.png', icon:'assets/v47-glass-2.png', v47Float:true },
@@ -81,13 +82,13 @@
   };
 
   function getSelfServiceItems(version) {
-    return version === 'v47'
+    return isV47Family(version)
       ? BASE_SELF_SERVICE_ITEMS.concat(UNTACT_MENU_ITEM)
       : BASE_SELF_SERVICE_ITEMS.slice();
   }
 
   function getStepperModel(version, title, steps, current) {
-    if (version !== 'v47' || !Array.isArray(steps) || !steps.length) return null;
+    if (!isV47Family(version) || !Array.isArray(steps) || !steps.length) return null;
     const safeCurrent = Math.max(0, Math.min(steps.length - 1, Number.isFinite(current) ? current : 0));
     return {
       accessibleTitle:String(title || '셀프서비스'),
@@ -98,7 +99,7 @@
   }
 
   function getCertificateResultInteraction(version) {
-    const refreshToggles = version === 'v47';
+    const refreshToggles = isV47Family(version);
     return {
       cardToggles:!refreshToggles,
       refreshToggles,
@@ -107,7 +108,7 @@
   }
 
   function getPasswordResetChoiceModel(version) {
-    if (version !== 'v47') return null;
+    if (!isV47Family(version)) return null;
     return {
       title:'어떤 비밀번호를 재설정할까요?',
       description:'재설정할 비밀번호를 선택해 주세요.',
@@ -125,7 +126,7 @@
   }
 
   function getPasswordResetGuideModel(version, kind) {
-    if (version !== 'v47') return null;
+    if (!isV47Family(version)) return null;
     const guides = {
       account:{
         title:'증권계좌 비밀번호',
@@ -144,19 +145,19 @@
   }
 
   function getSelfServiceListPresentation(version) {
-    return version === 'v47'
+    return isV47Family(version)
       ? { layout:'choice-cards', interactiveElement:'button' }
       : { layout:'legacy-rows', interactiveElement:'div' };
   }
 
   function getSubMenuListPresentation(version) {
-    return version === 'v47'
+    return isV47Family(version)
       ? { layout:'choice-cards', interactiveElement:'button', density:'compact' }
       : null;
   }
 
   function getSubMenuDescription(version, name) {
-    return version === 'v47' ? (SUBMENU_DESCRIPTIONS[name] || '') : '';
+    return isV47Family(version) ? (SUBMENU_DESCRIPTIONS[name] || '') : '';
   }
 
   return { getSelfServiceItems, getStepperModel, getCertificateResultInteraction, getPasswordResetChoiceModel, getIdPasswordResetStepper, getPasswordResetGuideModel, getSelfServiceListPresentation, getSubMenuListPresentation, getSubMenuDescription, SUBMENU_DESCRIPTIONS, CERTIFICATE_STATUS, UNTACT_STATUS };

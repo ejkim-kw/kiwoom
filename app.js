@@ -1568,9 +1568,11 @@ function openMenuDrawer(){
   closeMenuDrawer();
   const screen = document.getElementById('screen'); if(!screen) return;
   const el = document.createElement('div');
-  el.className = 'menu-ov' + (isV47()?' v47':''); el.id = 'menuDrawer';
+  el.className = 'menu-ov' + (isV47()?' v47':'') + (isV48()?' v48':''); el.id = 'menuDrawer';
   const isV21 = isV21Ver();
-  const head = isV47()
+  const head = isV48()
+    ? `<div class="menu-head v48-menu-head"><div class="page-title">전체메뉴</div><div class="head-spacer"></div><div class="back" data-menuclose title="닫기">${I.x}</div></div><div class="v48-menu-search"><span>${I.search}</span><input type="search" data-v47search data-v48menusearch placeholder="메뉴를 검색해 주세요" aria-label="전체메뉴 검색"><button type="button" data-v47searchbtn>검색</button></div>${v47TrendingSection()}<div class="v47-search-results" data-v47searchresults aria-live="polite"></div>`
+    : isV47()
     ? `<div class="menu-head">
          <div class="page-title">전체메뉴</div>
          <div class="head-spacer"></div>
@@ -1729,6 +1731,16 @@ function renderV47AllMenu(){
     `<div class="am-mid" data-flash="${s} · 이후 절차 정의 예정"><div class="ivt">${s}</div></div>`
   ).join('');
   return `<div class="am2col"><div class="am-left">${left}</div><div class="am-right">${right}</div></div>`;
+}
+function v48Home(){
+  const items=selfServiceItems().slice(0,4);
+  const slides=items.map(it=>v45SsBannerCard(it)).join('');
+  const dots=items.map((_,i)=>`<span class="v48-faq-dot${i===0?' on':''}" data-ssdot="${i}"></span>`).join('');
+  const recent=v47RecentMenus.map(item=>`<button type="button" class="v48-recent-item" data-v47recent data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}"><b>${v47Esc(item.title)}</b></button>`).join('');
+  const grid=V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}"><div class="v47-cell-nm">${c.t}</div><div class="v47-cell-sub">${c.sub||''}</div></div>`).join('');
+  const accReport=`<div class="acc-report" data-mediasheet="accident" title="사고신고" role="button"><span>사고신고</span></div>`;
+  const bigfont=`<div class="bigfont-switch ${bigFont?'on':''}" data-bigfont role="switch" aria-checked="${bigFont?'true':'false'}" title="큰글씨 ${bigFont?'끄기':'켜기'}"><span class="bfs-label">큰글씨</span><span class="bfs-track"><span class="bfs-txt bfs-on">ON</span><span class="bfs-txt bfs-off">OFF</span><span class="bfs-knob"></span></span></div>`;
+  return `<div class="home-wrap toss-home v48-home"><div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${accReport}${bigfont}</div></div><div class="v48-title">안녕하세요, 무엇을 도와드릴까요?</div></div><section class="v45-selfsolve v48-faq"><div class="v45ss-wrap"><div class="v45ss-track" id="ssBannerTrack">${slides}</div></div><div class="v48-faq-footer"><div class="v48-faq-dots">${dots}</div><span class="v48-faq-more" data-ssmore>전체보기</span></div></section><section class="v48-recent"><div class="v48-section-title">최근 이용한 메뉴</div><div class="v48-recent-list">${recent}</div></section><section class="v48-all"><div class="v48-section-title">전체 메뉴</div><div class="v47-grid">${grid}</div></section></div>`;
 }
 function renderAllMenu(forceTab){
   // Ver 4.7 · V47_MENU_CATS 기반 전체메뉴
@@ -2060,7 +2072,7 @@ function renderAgentV40(label){
         <div class="iod-v45-card">
           ${nm ? `<div class="v45-ir"><span class="v45-ik">상담 분야</span><span class="v45-iv">${nm}</span></div>` : ''}
           <div class="v45-ir"><span class="v45-ik">상담 가능 시간</span><span class="v45-iv">평일 08:00~18:00</span></div>
-          <div class="v45-ir"><span class="v45-ik">상담 대기</span><span class="v45-iv">3명</span></div>
+          <div class="v45-ir"><span class="v45-ik">상담 대기</span><span class="v45-iv">3명</span></div>${isV48()?'<div class="v45-ir"><span class="v45-ik">현재 혼잡도</span><span class="v45-iv v48-congestion">보통</span></div>':''}
         </div>
         <div class="iod-v45-actions"><div class="primary-btn v45-iod-btn" data-agentgo>상담원 연결하기</div></div>
       </div>
@@ -2409,11 +2421,11 @@ function runV47Search(){
 }
 /* Ver 4.7 · 3×3 그리드 홈 */
 function v47Grid(){
-  return `<div class="v47-grid">` + V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}">
+  return `<section class="v47-all-menu"><div class="v47-grid">` + V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}">
       <div class="v47-cell-ic"><img src="assets/${c.ic}" alt=""></div>
       <div class="v47-cell-nm">${c.t}</div>
       ${c.sub?`<div class="v47-cell-sub">${c.sub}</div>`:''}
-    </div>`).join('') + `</div>`;
+    </div>`).join('') + `</div></section>`;
 }
 /* Ver 4.7 · 대메뉴 클릭 후 중메뉴 목록 페이지 */
 function v47MyInfoTop(state){
@@ -2892,7 +2904,7 @@ function v45SelfSolve(){
   ).join('');
   return `<div class="v45-selfsolve">
     <div class="v45ss-toprow">
-      <span class="v45ss-headtxt">${isV47()?'문의가 많은 업무':'혹시 이런 내용이 궁금하신가요?'}</span>
+      <span class="v45ss-headtxt">${isV47()&&!isV47Restored()?'문의가 많은 업무':'혹시 이런 내용이 궁금하신가요?'}</span>
       <span class="v45ss-more" data-ssmore>더보기</span>
     </div>
     <div class="v45ss-wrap"><div class="v45ss-track" id="ssBannerTrack">${slides}</div></div>
@@ -2968,6 +2980,9 @@ function banner(){
   </div>`;
 }
 function tabbar(active){
+  if(isV48()){
+    return `<div class="v48-bottom-nav"><div class="v48-nav-item" data-tab="voice">${I.phone}<span>음성ARS</span></div><div class="v48-nav-item" data-tab="chat">${I.chat}<span>챗봇</span></div><div class="v48-nav-item" data-menu>${I.menu}<span>전체메뉴</span></div></div>`;
+  }
   if(isV47()){
     // Ver 4.7 플로팅 FAB: 우하단 [+] 버튼, 클릭 시 메뉴 펼침
     return `<div class="v47-fab" id="v47Fab">
@@ -3041,6 +3056,7 @@ function authSelect(){
     {key:'simple',  ic:'shield', t:'간편(민간인증서) 인증',  d: (iod||che) ? '카카오·네이버·KB 등 간편인증서로 인증해요' : '카카오·네이버·KB 등 민간인증서로 인증'},
     {key:'account', ic:'wallet', t:'계좌번호 인증',          d:'본인 계좌번호·비밀번호로 인증'},
   ];
+  if(isV48()) methods = methods.filter(m=>m.key==='phone');
   if(iod || che) methods = methods.filter(m=>m.key!=='account');   // 계좌번호 찾기(iod)·계좌 조회(che) 단계에서는 계좌번호 인증 제외
   const head = iod ? '계좌번호를 찾아드릴게요<br>본인 인증 방법을 선택해 주세요' : '본인 인증 방법을<br>선택해주세요';
   const selTitle = iod ? '계좌번호 찾기' : (che ? '계좌 조회' : '본인 인증');
@@ -3187,7 +3203,7 @@ function authStep(method){
     ${heading}
     <div class="auth-info">
       <div class="ir"><span class="k">계좌번호</span>
-        <input class="ir-input v47-account-credential" id="acctNo" type="text" inputmode="numeric" autocomplete="off" ${isV45()?'maxlength="9" ':(simple?'maxlength="8" ':'')}placeholder="${isV45()?'':(simple?'숫자 8자리':'계좌번호 입력')}" value="${isV45()&&acctVal?acctVal.replace(/-/g,'').slice(0,8).replace(/(\d{4})(\d{4})/,'$1-$2'):acctVal}">${qmarkAcct}</div>
+        <input class="ir-input v47-account-credential" id="acctNo" type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" ${isV45()?'maxlength="9" ':(simple?'maxlength="8" ':'')}placeholder="${isV45()?'':(simple?'숫자 8자리':'계좌번호 입력')}" value="${isV45()&&acctVal?acctVal.replace(/-/g,'').slice(0,8).replace(/(\d{4})(\d{4})/,'$1-$2'):acctVal}">${qmarkAcct}</div>
       <div class="ir"><span class="k">비밀번호</span>
         <div class="ir-input ir-pw" data-pwopen><span id="acctPwDisp" class="acct-dots v47-account-credential" data-ph="${isV45()?'':(simple?'숫자 4~8자리':'비밀번호 입력 (4~8자리)')}">${'●'.repeat((s1state.acctPw||'').length)}</span></div>${qmarkPw}</div>
     </div>
@@ -5752,9 +5768,12 @@ function renderS1(){
   const flowEl = v && v.closest('.flow'); if(flowEl) flowEl.classList.toggle('toss', isV40());   // Ver 4.0 계열 토스 스킨 (전 화면 var() 토큰 오버라이드)
   if(flowEl){ flowEl.classList.toggle('v45', isV45()); }   // Ver 4.5 인디고 팔레트 오버라이드
   if(flowEl){ flowEl.classList.toggle('v46', isV46()); }   // Ver 4.6 전용 CSS 스코프
-  if(flowEl){ flowEl.classList.toggle('v47', isV47()); }   // Ver 4.7 전용 CSS 스코프
+  if(flowEl){ flowEl.classList.toggle('v47', isV47()); flowEl.classList.toggle('v471', isV471()); flowEl.classList.toggle('v48', isV48()); }   // Ver 4.7 계열 전용 CSS 스코프
   let html = '';
-  if(s1state.page==='home'){
+  if(s1state.page==='home' && isV48()){
+    html = v48Home();
+  }
+  else if(s1state.page==='home'){
     /* 자주 찾는 서비스 9개로 한눈에 구성 */
     // Ver 2.1은 9번째 셀(간편/공동인증 관리)을 셀프서비스 메뉴구조도 9번 '권리업무'로 대체 (v11 등 다른 버전은 원본 유지)
     const favSrc = (isV21Ver())
@@ -5799,11 +5818,13 @@ function renderS1(){
       html = `<div class="home-wrap toss-home${bigFont?' bigfont':''}${v40main}">`;
       if(path.length===0){
         // 상단 로고~인사말은 고정(sticky), 아래 FAQ·카테고리 리스트만 스크롤
-        html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${bf}${isV45()?'':accReport}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
+        const topRight = isV48() ? `${accReport}${bf}` : `${bf}${isV45()?'':accReport}`;
+        html += `<div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${topRight}</div></div>`   // Ver 4.5: 사고신고 아이콘 제거
           + `<div class="toss-hero${isV47()?' v47-hero':''}"><div class="th-hi">안녕하세요,<br>무엇을 도와드릴까요?</div></div>`
-          + (isV47() ? v47SearchBox() : '') + `</div>`
+          // Ver 4.8에서는 검색창·실시간 검색어를 메인에서 제거하고 전체메뉴 드로어에만 표시
+          + (isV47() && !isV47Restored() && !isV48() ? v47SearchBox() : '') + `</div>`
           + (isV45() ? v45SelfSolve() : tossFaqCard())
-          + (isV47() ? v47RecentSection() : '')
+          + (isV47() && !isV47Restored() ? v47RecentSection() : '')
           + (isV47() ? v47Grid() : isV46() ? v46FlatMenu() : isV45() ? (v45MenuTabs() + v45Menu()) : (s1Ver==='v41' && !bigFont) ? tossCatGrid() : tossCatList());   // v47: 3×3 그리드 / v46: 탭없이 전체 flat / v45: 탭(공통/증권/금융상품)메뉴 / v41: 3×3 그리드 / v40: 리스트
       } else {
         // 드릴다운 헤더: 현재 단계 이름을 타이틀로(대메뉴 진입 시 = 대메뉴명), 대메뉴 단계면 설명글도 표기
@@ -6876,6 +6897,8 @@ document.addEventListener('click', (e)=>{
     const otp = (document.getElementById('otpNo')||{}).value || '';
     if(!otp.trim()){ flash('인증번호를 입력해주세요.'); return; }
     flash('휴대폰 인증이 완료되었습니다. (시연용)');
+    if(isV48()){ s1nav({page:'authstep', authMethod:'account', title:'계좌 인증', acctPw:'', otpSent:false, noHome:true}); return; }
+    if(isV48()){ s1nav({page:'authstep', authMethod:'account', title:'계좌 인증', acctPw:'', otpSent:false, noHome:true}); return; }
     if(isIodFlow()){ s1nav({page:'iodacctsel', title:'계좌 선택', otpSent:false, noHome:true}); return; }   // 입출금 플로우: 계좌 선택 리스트로
     if(isCheAuth()){ s1nav({page:'iodacctsel', title:'계좌 선택', otpSent:false, noHome:true}); return; }   // 체결·주문내역: 휴대폰 인증 완료 → 계좌 선택 리스트
     openPwKeypad(true); return;
@@ -7553,11 +7576,14 @@ let s1Ver = 'v47';        // 시안1 기본 버전 = Ver 4.7(v47). 맨 URL(파�
 /* Ver 2.1 — 메인 3탭(셀프서비스/ARS메뉴/상담원연결)·드로어·favSrc 등 v21 전용 동작 게이트 */
 function isV21Ver(){ return s1Ver==='v21'; }
 /* Ver 4.0 계열 — 토스 스킨·9 카테고리(ARS_CAT6)·상담연결 팝업 등 공통 동작 게이트 (v40=리스트 메인 / v41=3×3 그리드 메인, 로직 동일) */
-function isV40(){ return s1Ver==='v40' || s1Ver==='v41' || s1Ver==='v42' || s1Ver==='v45' || s1Ver==='v46' || s1Ver==='v47'; }
+function isV40(){ return s1Ver==='v40' || s1Ver==='v41' || s1Ver==='v42' || s1Ver==='v45' || s1Ver==='v46' || s1Ver==='v47' || s1Ver==='v471' || s1Ver==='v48'; }
 /* Ver 4.5/4.6/4.7 — 인디고 팔레트 게이트 (isV40 포함이지만 색상 오버라이드를 위해 별도 식별) */
-function isV45(){ return s1Ver==='v45' || s1Ver==='v46' || s1Ver==='v47'; }
+function isV45(){ return s1Ver==='v45' || s1Ver==='v46' || s1Ver==='v47' || s1Ver==='v471' || s1Ver==='v48'; }
 function isV46(){ return s1Ver==='v46'; }
-function isV47(){ return s1Ver==='v47'; }
+function isV48(){ return s1Ver==='v48'; }
+function isV471(){ return s1Ver==='v471'; }
+function isV47Restored(){ return s1Ver==='v47'; }
+function isV47(){ return isV47Restored() || isV471() || isV48(); }
 function switchScheme(s){
   closeMenuDrawer();   // 탭/버전 전환 시 열려있던 전체메뉴 드로어 닫기
   scheme = s;
@@ -7667,7 +7693,7 @@ function updateSceneLabel(){
     v40:[LIVE_QR,'Ver 4.0'],
     v41:[LIVE_QR,'Ver 4.1'], v42:[LIVE_QR,'Ver 4.2'],
     v45:[LIVE_QR,'Ver 4.5'], v46:[LIVE_QR,'Ver 4.6'],
-    v47:[LIVE_QR,'Ver 4.7'],
+    v47:[LIVE_QR,'Ver 4.7'], v471:[LIVE_QR,'Ver 4.7.1'], v48:[LIVE_QR,'Ver 4.8'],
     dform:[LIVE_QR,'Digital Form'], dform2:[LIVE_QR,'Ver 4.3'], dform3:[LIVE_QR,'Digital Form_v0.1'],
     dars1:[LIVE_QR,'Ver 3.0'], dars2:[LIVE_QR,'Ver 1.2.1']
   };
@@ -7907,6 +7933,8 @@ switchScheme('sian');
       'v42':['s1','v42'],'4.2':['s1','v42'],'v4.2':['s1','v42'],
       'v45':['s1','v45'],'4.5':['s1','v45'],'v4.5':['s1','v45'],
       'v47':['s1','v47'],'4.7':['s1','v47'],'v4.7':['s1','v47'],
+      'v471':['s1','v471'],'4.7.1':['s1','v471'],'v4.7.1':['s1','v471'],
+      'v48':['s1','v48'],'4.8':['s1','v48'],'v4.8':['s1','v48'],
       'v46':['s1','v46'],'4.6':['s1','v46'],'v4.6':['s1','v46'],
       'dars1':['dars1'],'3.0':['dars1'],'v3':['dars1'],'v30':['dars1'],
       'dars2':['dars2'],'1.2.1':['dars2'],'s3':['dars2'],

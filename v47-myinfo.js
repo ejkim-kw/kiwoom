@@ -37,7 +37,7 @@
     }
   };
   function shouldHandle(version, menuTitle){
-    return version==='v47' && Object.prototype.hasOwnProperty.call(MENU_KEYS,menuTitle);
+    return (version==='v47' || version==='v471' || version==='v48') && Object.prototype.hasOwnProperty.call(MENU_KEYS,menuTitle);
   }
   function isPhoneRequestReady(values){
     const v=values||{};
