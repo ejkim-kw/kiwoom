@@ -33,6 +33,7 @@
     ],
     accountProfile:{
       address:'서울특별시 영등포구 여의나루로 **', phone:'010-****-7980',
+      email:'hong123@example.com',
       marketing:'알림톡 · 이메일', occupation:'회사원', residence:'대한민국'
     }
   };

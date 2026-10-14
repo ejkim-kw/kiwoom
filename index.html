@@ -8,7 +8,8 @@
 <link rel="apple-touch-icon" href="assets/kiwoom-favicon.ico">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260831-search">
+  <link rel="stylesheet" href="style.css?v=20261013-result-cards">
+<link rel="stylesheet" href="v48-home.css?v=20261014-linked-bank-card">
 </head>
 <body>
 
@@ -37,7 +38,7 @@
     <div class="ref-title">시안 · 디지털 ARS</div>
     <div class="ref-item" data-sian="s1" data-ver="v471"><span class="rf-nm">Ver 4.7.1</span><span class="rf-tel">기존 Ver 4.7 메인 · 3×3 그리드 · 상세 설명형</span></div>
     <div class="ref-item" data-sian="s1" data-ver="v47"><span class="rf-nm">Ver 4.7</span><span class="rf-tel">기존 메인 · FAQ 카드 · 3×3 그리드</span></div>
-    <div class="ref-item" data-sian="s1" data-ver="v48"><span class="rf-nm">Ver 4.8</span><span class="rf-tel">Ver 4.7 복사본</span></div>
+    <div class="ref-item" data-sian="s1" data-ver="v48"><span class="rf-nm">Ver 4.8</span><span class="rf-tel">검색 중심 메인 · 9/22 메뉴 취합본 반영</span></div>
     <div class="ref-item" data-sian="dform"><span class="rf-nm">Digital Form</span><span class="rf-tel">고객용 서류제출 · 첨부방식 선택 · 접수상태 확인</span></div>
     <!-- 시안 · 이전버전 (접이식 · 우측 [+] 토글) -->
     <div class="ref-title prev-title" data-prevtoggle>시안 · 이전버전<span class="prev-plus" aria-hidden="true">+</span></div>
@@ -57,6 +58,11 @@
     <div class="ref-item prev-item" data-sian="dars1v44"><span class="rf-nm">Ver 4.4</span><span class="rf-tel">인디고 계열 완전 새 디자인 · oklch 토큰 · pill 탭 · underline 입력 · 바텀시트</span></div>
     <div class="ref-item prev-item" data-sian="s1" data-ver="v45"><span class="rf-nm">Ver 4.5</span><span class="rf-tel">인디고 디자인 · s1 기반 · 탭(공통/국내/그외상품)·글라스 아이콘·리퀴드 탭·하단 네비 (메인)</span></div>
     <div class="ref-title func-title">시연 · 기능</div>
+    <div id="v48DemoControls" class="v48-demo-controls" hidden>
+      <label for="v48DemoCustomer">Ver 4.8 퀵넘버플러스 시연</label>
+      <select id="v48DemoCustomer" data-v48-demo-customer><option value="unregistered">미등록 고객</option><option value="registered">등록 고객</option></select>
+      <button type="button" data-v48-demo-reconnect>새 연결 (인증 초기화)</button>
+    </div>
     <div class="func-item" data-skipauth><span class="rf-nm">본인인증 생략</span><span class="rf-tel">클릭 시 이후 인증 생략 (시연용)</span></div>
     <div class="func-item" data-demo-fill-account><span class="rf-nm">계좌번호 자동입력</span><span class="rf-tel">현재 인증화면에 시연정보 입력</span></div>
     <div class="func-item" data-demo-fill-phone><span class="rf-nm">휴대폰인증 자동입력</span><span class="rf-tel">현재 인증화면에 시연정보 입력</span></div>
@@ -1688,10 +1694,18 @@
   </div>
 </div>
 
-<script src="v47-self-service.js?v=20260828a"></script>
-<script src="v47-myinfo.js?v=20260828a"></script>
-<script src="v47-untact.js?v=20260825a"></script>
-<script src="app.js?v=20260831-search-v2"></script>
+<script src="v47-self-service.js?v=20261014-cert-dates"></script>
+<script src="v47-myinfo.js?v=20261014-document-profile"></script>
+<script src="v47-untact.js?v=20261013-other-documents"></script>
+<script src="v48-documents.js?v=20261014-document-profile"></script>
+<script src="v48-documents-ui.js?v=20261014-document-completion"></script>
+<script src="v48-auth.js?v=20261014-account-reuse"></script>
+<script src="v48-auth-ui.js?v=20261014-account-reuse"></script>
+<script src="v48-menu-data.js?v=20261013-menu-refinement"></script>
+<script src="v48-home.js?v=20261014-linked-bank-direct"></script>
+<script src="v48-search.js?v=20261013-search-badges"></script>
+  <script src="v48-navigation.js?v=20261014-menu-spacing"></script>
+<script src="app.js?v=20261014-linked-bank-card"></script>
 <script>
 /* 디지털ARS 시안 탭 · 인터랙션 (app.js와 독립) */
 (function(){

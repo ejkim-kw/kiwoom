@@ -1040,7 +1040,7 @@ function txFilterBar(){
     : `종목검색 ${I.search}`;
   return `<div class="tx-filter">
     <div class="txf-row">
-      <div class="txf" data-acctchange>${authAcct.type} ${authAcct.no} ${I.down}</div>
+      <div class="txf" data-acctchange>${authAcct.type} ${v48AccountText(authAcct.no)} ${I.down}</div>
       <div class="txf sub stk" data-stocksearch>${stockCell}</div>
     </div>
     <div class="txf-row">
@@ -1068,7 +1068,7 @@ function orderFilterBar(){
     : `종목검색 ${I.search}`;
   return `<div class="tx-filter">
     <div class="txf-row">
-      <div class="txf" data-acctchange>${authAcct.type} ${authAcct.no} ${I.down}</div>
+      <div class="txf" data-acctchange>${authAcct.type} ${v48AccountText(authAcct.no)} ${I.down}</div>
       <div class="txf sub stk" data-stocksearch>${stockCell}</div>
     </div>
     <div class="txf-row">
@@ -1205,6 +1205,12 @@ function orderTypeSheetHTML(){
 }
 function openOrderTypeSheet(){
   closeTxOverlay();
+  if(isV48()){
+    const getTrigger=()=>document.querySelector('[data-ordtypesel]');
+    v48OpenChoiceSheet({title:'주문유형 선택',options:ORDER_TYPES,value:orderState.type,trigger:getTrigger(),restoreTrigger:getTrigger,
+      onSelect:value=>{orderState.type=value;renderS1();}});
+    return;
+  }
   const screen=document.getElementById('screen'); if(!screen) return;
   const el=document.createElement('div'); el.className='tx-ov'; el.id='txOverlay';
   el.innerHTML=orderTypeSheetHTML();
@@ -1571,7 +1577,7 @@ function openMenuDrawer(){
   el.className = 'menu-ov' + (isV47()?' v47':'') + (isV48()?' v48':''); el.id = 'menuDrawer';
   const isV21 = isV21Ver();
   const head = isV48()
-    ? `<div class="menu-head v48-menu-head"><div class="page-title">전체메뉴</div><div class="head-spacer"></div><div class="back" data-menuclose title="닫기">${I.x}</div></div><div class="v48-menu-search"><span>${I.search}</span><input type="search" data-v47search data-v48menusearch placeholder="메뉴를 검색해 주세요" aria-label="전체메뉴 검색"><button type="button" data-v47searchbtn>검색</button></div>${v47TrendingSection()}<div class="v47-search-results" data-v47searchresults aria-live="polite"></div>`
+    ? `<div class="menu-head v48-task-header v48-browse-header"><h1>전체메뉴</h1><button type="button" data-menuclose aria-label="전체메뉴 닫기">${I.x}</button></div>`
     : isV47()
     ? `<div class="menu-head">
          <div class="page-title">전체메뉴</div>
@@ -1591,11 +1597,12 @@ function openMenuDrawer(){
          <div class="back" data-menuclose title="닫기">${I.x}</div>
        </div>
        <div class="menu-pills">${amPills()}</div>`;
-  el.innerHTML = `<div class="menu-panel">
+  el.innerHTML = `<div class="menu-panel"${isV48()?' data-v47searchscope':''}>
     ${head}
     <div class="menu-scroll">${renderAllMenu()}</div>
   </div>`;
   screen.appendChild(el);
+  if(isV48())el.querySelectorAll('.v48-menu-chips').forEach(v48BindChipScroll);
   if(isV47()) screen.classList.add('v47-fab-open');
   requestAnimationFrame(()=>el.classList.add('on'));
 }
@@ -1627,7 +1634,8 @@ function refreshMenu(){
   const dr = document.getElementById('menuDrawer');
   if(dr){
     const p = dr.querySelector('.menu-pills'); if(p) p.innerHTML = amPills();
-    const s = dr.querySelector('.menu-scroll'); if(s) s.innerHTML = renderAllMenu();
+    const s = dr.querySelector('.menu-scroll');
+    if(s){s.innerHTML = renderAllMenu();if(isV48())s.querySelectorAll('.v48-menu-chips').forEach(v48BindChipScroll);}
   } else renderS1();
 }
 
@@ -1732,17 +1740,8 @@ function renderV47AllMenu(){
   ).join('');
   return `<div class="am2col"><div class="am-left">${left}</div><div class="am-right">${right}</div></div>`;
 }
-function v48Home(){
-  const items=selfServiceItems().slice(0,4);
-  const slides=items.map(it=>v45SsBannerCard(it)).join('');
-  const dots=items.map((_,i)=>`<span class="v48-faq-dot${i===0?' on':''}" data-ssdot="${i}"></span>`).join('');
-  const recent=v47RecentMenus.map(item=>`<button type="button" class="v48-recent-item" data-v47recent data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}"><b>${v47Esc(item.title)}</b></button>`).join('');
-  const grid=V47_MENU_CATS.map(c=>`<div class="v47-cell" data-v47cat="${c.id}"><div class="v47-cell-nm">${c.t}</div><div class="v47-cell-sub">${c.sub||''}</div></div>`).join('');
-  const accReport=`<div class="acc-report" data-mediasheet="accident" title="사고신고" role="button"><span>사고신고</span></div>`;
-  const bigfont=`<div class="bigfont-switch ${bigFont?'on':''}" data-bigfont role="switch" aria-checked="${bigFont?'true':'false'}" title="큰글씨 ${bigFont?'끄기':'켜기'}"><span class="bfs-label">큰글씨</span><span class="bfs-track"><span class="bfs-txt bfs-on">ON</span><span class="bfs-txt bfs-off">OFF</span><span class="bfs-knob"></span></span></div>`;
-  return `<div class="home-wrap toss-home v48-home"><div class="toss-stick"><div class="toss-top"><div class="toss-logo"><img src="assets/kiwoom-logo.png" alt="키움증권"></div><div class="th-right">${accReport}${bigfont}</div></div><div class="v48-title">안녕하세요, 무엇을 도와드릴까요?</div></div><section class="v45-selfsolve v48-faq"><div class="v45ss-wrap"><div class="v45ss-track" id="ssBannerTrack">${slides}</div></div><div class="v48-faq-footer"><div class="v48-faq-dots">${dots}</div><span class="v48-faq-more" data-ssmore>전체보기</span></div></section><section class="v48-recent"><div class="v48-section-title">최근 이용한 메뉴</div><div class="v48-recent-list">${recent}</div></section><section class="v48-all"><div class="v48-section-title">전체 메뉴</div><div class="v47-grid">${grid}</div></section></div>`;
-}
 function renderAllMenu(forceTab){
+  if(isV48()) return renderV48AllMenu();
   // Ver 4.7 · V47_MENU_CATS 기반 전체메뉴
   if(isV47()) return renderV47AllMenu();
   // 시안1 V2.1 · 전체메뉴를 3 대메뉴 + 중첩 아코디언 구조로 분기
@@ -2390,6 +2389,7 @@ function v47SearchBox(){
   </div>`;
 }
 function v47SearchItems(query){
+  if(isV48()) return v48SearchItems(query);
   const q=String(query||'').trim().toLowerCase().replace(/\s+/g,''); if(!q) return [];
   const featured=V47_SEARCH_FEATURED.filter(x=>(x.title+x.desc+x.keys).toLowerCase().replace(/\s+/g,'').includes(q));
   const menu=[];
@@ -2398,26 +2398,33 @@ function v47SearchItems(query){
 }
 function v47SearchCard(x){ return `<button class="v47-search-result" type="button" data-v47searchresult data-v47searchgo="${x.action}" data-v47title="${v47Esc(x.title)}"><span class="v47-sr-copy"><b>${v47Esc(x.title)}</b><small>${v47Esc(x.desc)}</small></span><span class="v47-sr-badge">${v47Esc(x.badge)}</span><span class="v47-sr-arrow">${I.chev}</span></button>`; }
 function addV47Recent(title,action,desc='최근 이용한 업무로 다시 이동해요'){
+  if(isV48()){v48AddRecent(title,action);return;}
   if(!title||!action)return;
   v47RecentMenus=[{title,desc,action}].concat(v47RecentMenus.filter(item=>item.action!==action)).slice(0,3);
 }
 function v47RecentSection(){
   return `<section class="v47-recent" data-v47recent-section><div class="v47-section-title">최근 이용한 메뉴</div><div class="v47-recent-list">${v47RecentMenus.map(item=>`<button type="button" class="v47-recent-item" data-v47recent data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}"><span><b>${v47Esc(item.title)}</b><small>${v47Esc(item.desc)}</small></span><i aria-hidden="true">${I.chev}</i></button>`).join('')}</div></section>`;
 }
-function closeV47SearchResults(){
-  const out=document.querySelector('[data-v47searchresults]');
-  if(!out)return;
-  out.classList.remove('show');
-  out.innerHTML='';
+function v47SearchScope(source){
+  return isV48()?(source?.closest('[data-v47searchscope]')||document.querySelector('#menuDrawer.on [data-v47searchscope]')||document.querySelector('.v48-search-page')||document):document;
 }
-function runV47Search(){
-  const input=document.querySelector('[data-v47search]'),out=document.querySelector('[data-v47searchresults]'); if(!input||!out)return;
+function closeV47SearchResults(source){
+  const root=source?v47SearchScope(source):document;
+  root.querySelectorAll('[data-v47searchresults]').forEach(out=>{
+    if(!source&&isV48()&&out.closest('.v48-search-page'))return;
+    out.classList.remove('show');out.innerHTML='';
+  });
+}
+function runV47Search(source,remember=true){
+  const root=v47SearchScope(source);
+  const input=root.querySelector('[data-v47search]'),out=root.querySelector('[data-v47searchresults]'); if(!input||!out)return;
   v47SearchQuery=input.value.trim();
-  if(!v47SearchQuery){closeV47SearchResults();return;}
+  if(!v47SearchQuery){closeV47SearchResults(input);return;}
   const items=v47SearchItems(v47SearchQuery);
   if(items.length){const extras=[{title:`'${v47SearchQuery}' 음성 ARS 안내`,desc:'음성 안내에 따라 관련 메뉴를 찾아요',badge:'음성 ARS',action:'voice'},{title:`'${v47SearchQuery}' 상담 연결`,desc:'직접 해결이 어려우면 가능한 상담 방법을 확인해요',badge:'상담 연결',action:'consult'}];out.innerHTML='<div class="v47-search-count">추천 해결 방법</div>'+items.slice(0,3).concat(extras).map(v47SearchCard).join('');}
   else{out.innerHTML=`<div class="v47-search-empty"><b>검색 결과를 찾지 못했어요</b><span>다른 단어로 검색하거나 아래 방법을 이용해 주세요.</span></div>`+v47SearchCard({title:'전체 메뉴에서 찾기',desc:'9개 업무 분야에서 원하는 메뉴를 둘러봐요',badge:'전체 메뉴',action:'menu'})+v47SearchCard({title:`'${v47SearchQuery}' 상담 연결`,desc:'가능한 상담 방법을 확인해요',badge:'상담 연결',action:'consult'});}
   out.classList.add('show');
+  if(isV48())v48SearchDidRun(root,remember);
 }
 /* Ver 4.7 · 3×3 그리드 홈 */
 function v47Grid(){
@@ -2437,8 +2444,11 @@ function v47MyInfoTop(state){
 }
 function startV47MyInfo(menuTitle){
   if(!V47MyInfo.shouldHandle(s1Ver, menuTitle)) return false;
-  const state = V47MyInfo.createState(menuTitle, {skipAuthentication:sessionAuthed});
+  const phoneOnly=isV48()&&menuTitle==='증권계좌번호확인';
+  if(menuTitle!=='계좌비밀번호 재설정' && v48Require({kind:'myinfo',title:menuTitle,...(phoneOnly?{phoneOnly:true}:{})}))return true;
+  const state = V47MyInfo.createState(menuTitle, {skipAuthentication:phoneOnly?v48Session.phoneVerified:sessionAuthed});
   if(!state) return false;
+  v48PrepareMyInfo(state);
   if(state.step==='accountAuth') s1state.acctPw='';
   s1state.v47MyInfo = state;
   s1state.v47MyInfoAgree = false;
@@ -2548,9 +2558,14 @@ function renderV47HelpAccountList(state){
 function renderV47AccountProfile(state){
   const p=V47MyInfo.DATA.accountProfile;
   const rows=[['주소',p.address],['연락처',p.phone],['마케팅 수신매체',p.marketing],['직업',p.occupation],['거주국가',p.residence]];
+  if(isV48())rows.splice(1,0,['이메일주소',p.email]);
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌정보를 확인해 주세요</div><div class="td-desc">등록된 정보는 영웅문S# 또는 상담원을 통해 변경할 수 있어요.</div></div><div class="iod-v45-card v47mi-profile">${rows.map(([k,v])=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv">${v}</span></div>`).join('')}</div><div class="v47mi-dual"><button type="button" class="v47mi-dual-btn secondary" data-v47mi-agent>상담원 연결</button><button type="button" class="v47mi-dual-btn primary" data-v47mi-hero-profile>영웅문S#에서 변경</button></div></div></div>`;
 }
 function renderV47AccountNumbers(state){
+  if(isV48()){
+    const rows=V48Auth.accounts.slice(0,20).map(x=>`<li class="v48-account-readonly-row"><strong class="v48-account-label">${V48Auth.formatAccount(x.id)} [${v47Esc(x.type)}]</strong></li>`).join('');
+    return `<div class="v45-authpage v48-account-numbers">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><h2 class="td-title">보유 계좌를 확인했어요</h2><p class="td-desc">고객님 명의의 증권계좌 목록이에요.<br>최근 개설된 계좌 20개까지 표시돼요</p></div><ul class="v48-account-list v48-account-readonly" aria-label="보유 증권계좌 목록">${rows}</ul></div></div>`;
+  }
   const rows=V47MyInfo.DATA.accounts.map(x=>`<div class="iod-v45-card v47mi-account-result"><div class="v45-ci-head"><div class="v45-ci-nm">${x.type}</div><span class="iod-badge done">사용 가능</span></div><div class="v45-ci-date">${V47MyInfo.maskAccount(x.id)}</div></div>`).join('');
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">보유 계좌를 확인했어요</div><div class="td-desc">고객님 명의의 증권계좌 목록이에요.</div></div>${rows}</div></div>`;
 }
@@ -2562,6 +2577,17 @@ function renderV47AccountPassword(state){
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌비밀번호를 입력해 주세요</div><div class="td-desc">${dormant?'장기미사용 ID 제한을 해제하기 위해 인증해요.':'ID 비밀번호를 재설정하기 위해 인증해요.'}</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiFlowAccountPassword">계좌비밀번호</label><input id="v47MiFlowAccountPassword" class="ir-input v47-account-credential" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-account-password>다음</button></div></div>`;
 }
 function renderV47NewIdPassword(state){
+  if(isV48())return `<div class="v45-authpage v48-id-password-page">${v47MyInfoTop(state)}<div class="iod-v45-body">
+    <section class="iod-v45-card v48-id-password-card" aria-labelledby="v48IdPasswordTitle">
+      <div class="toss-dhead"><h2 id="v48IdPasswordTitle" class="td-title">새로운 ID 비밀번호를 설정해 주세요</h2><p id="v48IdPasswordGuide" class="td-desc">영문과 숫자를 조합해 5~8자리로 입력해 주세요.</p></div>
+      <div class="v48-input-fields">
+        <div class="v48-input-field"><label for="v48ResetId">ID</label><input id="v48ResetId" value="${v47Esc(state.selectedId)}" autocomplete="username" readonly></div>
+        <div class="v48-input-field"><label for="v47MiNewIdPassword">새 비밀번호</label><input id="v47MiNewIdPassword" type="password" maxlength="8" autocomplete="new-password" aria-describedby="v48IdPasswordGuide" placeholder="5~8자리 입력"></div>
+        <div class="v48-input-field"><label for="v47MiNewIdPasswordConfirm">비밀번호 확인</label><input id="v47MiNewIdPasswordConfirm" type="password" maxlength="8" autocomplete="new-password" placeholder="다시 입력"></div>
+      </div>${v47MyInfoValidation()}
+    </section>
+    <button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-new-id-password>완료</button>
+  </div></div>`;
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">새 ID 비밀번호를 설정해 주세요</div><div class="td-desc">영문과 숫자를 조합해 5~8자리로 입력해 주세요.</div></div><div class="auth-info v47mi-password-form"><div class="ir"><label class="k" for="v47MiNewIdPassword">새 ID 비밀번호</label><input id="v47MiNewIdPassword" class="ir-input" type="password" maxlength="8" autocomplete="new-password"></div><div class="ir"><label class="k" for="v47MiNewIdPasswordConfirm">새 ID 비밀번호 확인</label><input id="v47MiNewIdPasswordConfirm" class="ir-input" type="password" maxlength="8" autocomplete="new-password"></div></div>${v47MyInfoValidation()}<button type="button" class="primary-btn v45-iod-btn v47mi-cta" data-v47mi-new-id-password>완료</button></div></div>`;
 }
 function renderV47MyInfoComplete(state){
@@ -2571,6 +2597,10 @@ function renderV47MyInfoComplete(state){
 function renderV47MyInfo(){
   const state = s1state.v47MyInfo;
   if(!state) return '';
+  if(isV48()&&state.step==='v48DormantConfirm'){
+    const owner=V47MyInfo.DATA.ids.find(x=>x.id===state.selectedId);
+    return `<div class="v45-authpage">${pageTop('장기미사용 ID 제한 해제')}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">${owner?.dormant?'제한 해제를 진행할까요?':'정상 이용 가능한 ID예요'}</div><div class="td-desc">${v47Esc(owner?.id||'')} · 선택한 계좌에 연결된 ID예요.</div></div>${owner?.dormant?'<button type="button" class="primary-btn" data-v48-dormant-confirm>제한 해제</button>':''}</div></div>`;
+  }
   if(state.step==='accountAuth') return renderV47AccountAuth(state);
   if(state.step==='helpAccountList') return renderV47HelpAccountList(state);
   if(state.step==='helpPasswordGuide') return renderV47AccountPasswordGuide(state);
@@ -2586,7 +2616,9 @@ function renderV47MyInfo(){
 /* Ver 4.7 · 비대면업무 상세 플로우 */
 function startV47Untact(menuTitle){
   if(!V47Untact.shouldHandle(s1Ver,menuTitle)) return false;
-  s1state.v47Untact=V47Untact.createState(menuTitle,{skipAuthentication:sessionAuthed});
+  if(v48Require({kind:'untact',title:menuTitle}))return true;
+  s1state.v47Untact=V47Untact.createState(menuTitle,{skipAuthentication:sessionAuthed,...(isV48()&&menuTitle==='서류신청'?{documents:v48DocumentOptions()}:{})});
+  if(isV48())s1state.v47Untact.account=v48Session.accountId;
   s1state.v47UntactAgree=false;
   s1nav({page:'v47untact',title:menuTitle,noHome:true});
   return true;
@@ -2607,7 +2639,12 @@ function v47UntactTop(state,right){
 function v47UntactValidation(){ return `<div class="v47mi-error" aria-live="assertive"></div>`; }
 function renderV47UntactDocuments(state){
   const history=`<button type="button" class="v47u-top-action" data-v47u-history>신청내역</button>`;
-  return `<div class="v45-authpage">${v47UntactTop(state,history)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">어떤 서류가 필요하세요?</div><div class="td-desc">신청할 서류를 선택해 주세요.</div></div><div class="v47mi-list v47u-document-list">${V47Untact.DATA.documents.map(d=>`<button type="button" class="v47mi-choice" data-v47u-document="${d.name}"><span><b>${d.name}</b><small>${d.desc}</small></span><span class="v47-pwreset-chev">${I.chev}</span></button>`).join('')}</div></div></div>`;
+  const documents=V47Untact.getDocuments(state);
+  const title=isV48()?'신청할 서류를 선택해 주세요':'어떤 서류가 필요하세요?';
+  const description=isV48()?'선택 후 신청정보를 입력해주세요.':'신청할 서류를 선택해 주세요.';
+  const top=isV48()?`<div class="page-top iod-top v45-authtop"><button type="button" class="back" data-s1back aria-label="이전 화면">${I.back}</button></div>`:v47UntactTop(state,history);
+  const support=isV48()?`<div class="v48-document-support"><p>찾는 서류가 없으신가요?</p><button type="button" data-staffconnect="기타서류" data-v47title="상담원연결">상담원연결</button></div>`:'';
+  return `<div class="v45-authpage${isV48()?' v48-document-select':''}">${top}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">${title}</div><div class="td-desc">${description}</div></div><div class="v47mi-list v47u-document-list">${documents.map(d=>`<button type="button" class="v47mi-choice" data-v47u-document="${d.name}"><span><b>${d.name}</b>${isV48()?'':`<small>${d.desc}</small>`}</span><span class="v47-pwreset-chev">${I.chev}</span></button>`).join('')}</div>${support}</div></div>`;
 }
 function renderV47UntactHistory(state){
   return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">서류 신청내역이에요</div><div class="td-desc">최근 신청한 서류의 처리 상태를 확인해요.</div></div><div class="v47u-card-list">${V47Untact.DATA.documentHistory.map(x=>`<div class="iod-v45-card v47u-status-card"><div class="v45-ci-head"><div class="v45-ci-nm">${x.name}</div><span class="iod-badge ${x.statusClass}">${x.status}</span></div><div class="v45-ci-date">${x.detail}</div></div>`).join('')}</div></div></div>`;
@@ -2621,7 +2658,8 @@ function v47UntactAccountAuthBtnSync(){
   const on=a.value.replace(/\D/g,'').length===8&&/^\d{4,8}$/.test(s1state.acctPw||''); b.classList.toggle('is-off',!on); b.setAttribute('aria-disabled',String(!on));
 }
 function renderV47UntactForm(state){
-  const doc=V47Untact.DATA.documents.find(x=>x.name===state.selectedDocument);
+  if(isV48())return renderV48DocumentForm(state);
+  const doc=V47Untact.getDocuments(state).find(x=>x.name===state.selectedDocument);
   const date=doc.mode==='date'?`<div class="ir"><label class="k" for="v47UDocDate">기준일자</label><input id="v47UDocDate" class="ir-input" type="date"></div>`:`<div class="v47u-period"><div class="ir"><label class="k" for="v47UDocStart">시작일</label><input id="v47UDocStart" class="ir-input" type="date"></div><div class="ir"><label class="k" for="v47UDocEnd">종료일</label><input id="v47UDocEnd" class="ir-input" type="date"></div></div>`;
   return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">신청정보를 입력해 주세요</div><div class="td-desc">${state.selectedDocument} 발급에 필요한 정보예요.</div></div><div class="auth-info v47u-form">${date}<div class="ir"><label class="k" for="v47UPurpose">제출용도</label><input id="v47UPurpose" class="ir-input" placeholder="예: 금융기관 제출"></div><div class="ir"><label class="k" for="v47UCopies">발급 수</label><input id="v47UCopies" class="ir-input" type="number" min="1" value="1"><span class="v47u-unit">부</span></div></div>${v47UntactValidation()}<button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-submit>발급 신청</button></div></div>`;
 }
@@ -2635,6 +2673,7 @@ function renderV47UntactStatus(state){
   return `<div class="v45-authpage">${v47UntactTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">${x.title} 현황이에요</div><div class="td-desc">현재 접수된 업무의 처리 상태를 확인해요.</div></div><div class="iod-v45-card v47u-status-card"><div class="v45-ci-head"><div class="v45-ci-nm">${x.account}</div><span class="iod-badge ${x.statusClass}">${x.status}</span></div><div class="v45-ci-date">${x.detail}</div></div><div class="v47mi-dual"><button class="v47mi-dual-btn secondary" data-v47u-agent>상담원 연결</button><button class="v47mi-dual-btn primary" data-v47u-app>영웅문S# 확인</button></div></div></div>`;
 }
 function renderV47UntactDone(state){
+  if(isV48()&&state.flow==='documents')return renderV48DocumentDone(state);
   const sent=state.step==='sent',title=sent?'계좌개설 URL을 보냈어요':'서류 신청이 완료됐어요',desc=sent?'입력한 휴대폰의 문자메시지를 확인해 주세요.':`${state.selectedDocument} 신청내역에서 처리 상태를 확인할 수 있어요.`;
   return `<div class="iod-done-center v45-authpage">${v47UntactTop(state)}<div class="iod-done"><div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div><div class="iod-done-t">${title}</div><div class="iod-done-d">${desc}</div></div><div class="iod-done-btnwrap"><button class="primary-btn v45-iod-btn v47mi-cta" data-v47u-home>확인</button></div></div>`;
 }
@@ -2868,6 +2907,7 @@ function v45Banner(){
 }
 /* Ver 4.5 · 자가해결 배너 슬라이더 (1장씩 자동 슬라이딩 + 점 인디케이터 + 더보기) */
 function selfServiceItems(){
+  if(isV48())return v48SelfServiceItems();
   return V47SelfService.getSelfServiceItems(s1Ver).map(it=>({
     t:it.title, sub:it.sub, act:`data-${it.action}`, img:it.img, ic:it.icon,
     v47float:it.v47Float, v47img:it.v47Img
@@ -2981,7 +3021,7 @@ function banner(){
 }
 function tabbar(active){
   if(isV48()){
-    return `<div class="v48-bottom-nav"><div class="v48-nav-item" data-tab="voice">${I.phone}<span>음성ARS</span></div><div class="v48-nav-item" data-tab="chat">${I.chat}<span>챗봇</span></div><div class="v48-nav-item" data-menu>${I.menu}<span>전체메뉴</span></div></div>`;
+    return '';
   }
   if(isV47()){
     // Ver 4.7 플로팅 FAB: 우하단 [+] 버튼, 클릭 시 메뉴 펼침
@@ -3031,17 +3071,30 @@ let sessionAuthed = false;
 
 /* 화면 이동: 현재 상태를 history에 쌓고 새 화면으로 */
 function s1nav(patch){
+  if(isV48()){
+    if(patch.page==='idpwauth'){startV47MyInfo('ID조회/PW초기화');return;}
+    if(patch.page==='result'&&patch.resultKey==='docsubmit'&&patch.docLabel==='금융거래목적확인서'){v48OpenPurpose();return;}
+    if(['authsel','authstep'].includes(patch.page)){
+      const destination=patch.authNext||s1state.authNext;
+      if(!v48Require({kind:'legacy',destination})){s1state.authNext=destination;gotoAuthNext();}
+      return;
+    }
+    if(v48ProtectedPage(patch)&&v48Require({kind:'page',patch}))return;
+  }
   closeMenuDrawer();               // 화면 이동 시 전체메뉴 드로어 닫기
   closeConsult();                  // 상담연결 팝업 열려있으면 닫기
   closeMethodSheet();              // 방법 선택 플로팅 열려있으면 닫기
   closeStkSheet();                 // 주식주문 계단식 플로팅 열려있으면 닫기
   s1state.history.push({page:s1state.page, title:s1state.title, listKey:s1state.listKey, resultKey:s1state.resultKey, fromFav:s1state.fromFav, authNext:s1state.authNext, authMethod:s1state.authMethod, otpSent:s1state.otpSent, noBack:s1state.noBack, noHome:s1state.noHome});
+  if(isV48())Object.assign(s1state.history[s1state.history.length-1],{v48Category:s1state.v48Category,v48MenuId:s1state.v48MenuId});
   s1state.noBack = false;          // 기본은 뒤로가기 표시, 진입 화면만 patch로 숨김
   s1state.noHome = false;          // 기본은 홈/메뉴 표시, 세부페이지만 patch로 숨김
   Object.assign(s1state, patch);
   renderS1();
 }
 function s1back(){
+  if(isV48()&&s1state.page==='v48auth'){v48Apply({type:'BACK'});return;}
+  if(isV48()&&v48MenuContext&&(!s1state.history.length||v48SameLocation(s1state.history.at(-1),v48MenuContext.origin.state))){v48CloseMenu();return;}
   const prev = s1state.history.pop();
   if(prev){ Object.assign(s1state, prev); }
   else { s1state.page='home'; }
@@ -3215,6 +3268,8 @@ function authStep(method){
 }
 /* Ver 4.5 세그먼트 스텝퍼 헤더 — cur: 0=계좌인증 1=계좌조회 2=결과안내. s1state.noBack으로 뒤로가기 제어 */
 function v45AuthTop(cur, rightAction){
+  // Ver 4.8 계좌 조회는 공통 메뉴 헤더와 결과만 표시한다.
+  if(isV48())return `<div class="page-top iod-top v45-authtop"><button type="button" class="back" data-s1back aria-label="이전 화면">${I.back}</button>${rightAction||''}</div>`;
   cur = (cur !== undefined && cur !== null) ? cur : 0;
   const steps = iodStepsFor();
   const v47Model = V47SelfService.getStepperModel(s1Ver, s1state.title, steps, cur);
@@ -3559,6 +3614,7 @@ let pwCtx = '';                                             // 키패드 용도:
 let pendingAcct = -1;                                       // 계좌변경 시 비번 확인 대기 중인 계좌
 function acctLineHTML(){ const a=ACCOUNTS[selAcct]; return `${a.type} ${a.no} ${I.down}`; }
 function openAcctSheet(){
+  if(isV48()){v48AccountChange();return;}
   closeAcctSheet();
   const screen=document.getElementById('screen'); if(!screen) return;
   const el=document.createElement('div'); el.className='tx-ov acct'; el.id='acctSheet';
@@ -3615,6 +3671,12 @@ function certField(key){
 function openCertSheet(key){
   closeCertSheet();
   const o = CERT_OPTS[key]; if(!o) return;
+  if(isV48()){
+    const getTrigger=()=>document.querySelector(`[data-certsel="${key}"]`);
+    v48OpenChoiceSheet({title:`${o.t} 선택`,options:o.opts,value:certVal(key),trigger:getTrigger(),restoreTrigger:getTrigger,
+      onSelect:value=>{certSel[key]=value;renderS1();}});
+    return;
+  }
   const screen=document.getElementById('screen'); if(!screen) return;
   const cur = certVal(key);
   const el=document.createElement('div'); el.className='tx-ov' + (isV45()?' v45':isV40()?' v40':''); el.id='certSheet'; el.dataset.certkey=key;   // v40: 마젠타 / v45: 인디고
@@ -3765,6 +3827,8 @@ function closeCertPwSheet(){
 
 /* ===== 영웅문S# 앱 연결 팝업 (계좌정보 연동 + 해당 화면 바로연동) ===== */
 const APP_LINK = {
+  v48aiinvest:{title:'AI투자 챗봇',popDesc:'<b>AI투자 챗봇</b> 연결을 시연해요.<br>이 시안에는 실제 챗봇 연동이 포함되어 있지 않아요.'},
+  v48quickchange:{title:'퀵넘버플러스 등록 계좌 변경'},
   cdd: {title:'고객확인(CDD/EDD) 정보 등록·갱신'},
   iodpurpose: {title:'금융거래목적확인서 등록'},
   iodpw: {title:'계좌 비밀번호 재설정'},
@@ -4224,6 +4288,7 @@ const IOD_RESULTS = {
   multi: {
     tab:'단기 다수계좌', badge:'출금 제한', badgeCls:'stop',
     title:'지금은 출금이 제한된 계좌예요',
+    titleV48:'단기간 다수계좌 개설로 출금이 제한된 계좌예요',
     body:'최근 짧은 기간에 여러 계좌를 만드셔서, 안전을 위해 출금이 잠시 막혀 있어요.',
     release:'<b>금융거래목적확인서</b>를 등록하시면 바로 풀려요.',
     btn:'금융거래목적확인서 등록하기', sheet: IOD_REG_SHEET,
@@ -4269,8 +4334,13 @@ const IOD_RESULTS = {
   },
 };
 function startIodCheck(){
-  // 인증 완료 → 상태 확인(로딩) → 1.8초 후 결과. 로딩/결과에서 뒤로가기는 홈으로.
   s1state.iodResult = 'idcard';   // 결과안내 첫 화면 = 신분증 진위확인(새로고침 시 다른 사유로 순환)
+  if(isV48()){
+    s1nav({page:'iodresult', title:'계좌 상태', noBack:false, noHome:true, fromFav:false});
+    s1state.history = [];
+    return;
+  }
+  // 이전 버전은 인증 완료 → 상태 확인(로딩) → 결과 흐름을 유지한다.
   s1nav({page:'iodcheck', title:'계좌 조회', noBack:true, noHome:true, fromFav:false});
   s1state.history = [];
   setTimeout(()=>{
@@ -4298,9 +4368,32 @@ function renderIodChecking(){
     </div>
   </div>`;
 }
+function openIodResultAction(){
+  const key=IOD_RESULTS[s1state.iodResult]?s1state.iodResult:'multi';
+  if(isV48()&&['multi','dormant'].includes(key)){
+    s1nav({page:'result',resultKey:'purpose',title:'금융거래목적확인서',noHome:true,v48Purpose:null});
+    return;
+  }
+  openMethodSheet(IOD_RESULTS[key].sheet);
+}
 function renderIodResult(){
   const key = IOD_RESULTS[s1state.iodResult] ? s1state.iodResult : 'multi';
   const r = IOD_RESULTS[key];
+  if(isV48()){
+    const help=r.infoBadge?`<div class="v48-lookup-help"><p>왜 진위확인이 되지 않았나요?</p><button type="button" data-idbadge>안내보기</button></div>`:'';
+    return `<div class="iodresult-screen v45-iodresult v45-authpage v48-iod-result">
+      ${v45AuthTop(2)}
+      <div class="iod-v45-body">
+        <section class="iod-v45-card v48-lookup-summary" aria-labelledby="v48LookupTitle">
+          <button type="button" class="v48-lookup-cycle" data-iodcycle aria-label="다른 결과안내 보기" aria-describedby="v48LookupTitle"></button>
+          <div class="toss-dhead"><h2 class="td-title" id="v48LookupTitle">${r.titleV48||r.title}</h2><p class="td-desc">${r.body}</p></div>
+          <p class="v48-lookup-release">${r.release}</p>
+        </section>
+        <div class="iod-v45-actions"><button type="button" class="v48-auth-button v48-lookup-action" ${r.infoBadge?'data-idurl':'data-iodmethods'}>${r.btn}</button></div>
+        ${help}
+      </div>
+    </div>`;
+  }
   // Ver 4.0: 진행바 없음 / 타이틀=제한사유(클릭 시 순환) / 설명글=본문+해결방법 합침 / 버튼 / 데모설명은 화면 맨 아래
   if(s1Ver==='v40'){
     const cyc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>';
@@ -4323,7 +4416,7 @@ function renderIodResult(){
       </div>
     </div>`;
   }
-  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${fmtAcct(authAcct.no)}` : '위탁종합 1234-5678';
+  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${v48AccountText(fmtAcct(authAcct.no))}` : '위탁종합 1234-5678';
   if(isV45()){
     const v45badge = r.infoBadge ? `<div class="iodres-badge" data-idbadge><span class="ib-q">?</span>왜 진위확인이 되지 않았나요?</div>` : '';
     const v45btnAttr = r.infoBadge ? 'data-idurl' : 'data-iodmethods';
@@ -4416,7 +4509,7 @@ function renderIsaResult(){
   if(isV45()){
     const st = ISA_RESULT_STATES.indexOf(s1state.isaTab) >= 0 ? s1state.isaTab : 'new';
     const rfs = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>';
-    const kv45 = rows => `<div class="iod-v45-card">` + rows.map(r=>`<div class="v45-kv-row"><span class="v45-kv-k">${r[0]}</span><span class="v45-kv-v${r[2]?' '+r[2]:''}">${r[1]}</span></div>`).join('') + `</div>`;
+    const kv45 = rows => `<div class="${isV48()?'v48-isa-details':'iod-v45-card'}">` + rows.map(r=>`<div class="v45-kv-row"><span class="v45-kv-k">${r[0]}</span><span class="v45-kv-v${r[2]?' '+r[2]:''}">${r[1]}</span></div>`).join('') + `</div>`;
     const newCard = kv45([
       ['상품명','중개형ISA'],['신청일자','2026.07.03'],['귀속년도','2026'],['가입유형','서민형'],
       ['신청방법','온라인'],['소득증빙서류','발급번호 확인 필요'],['접수상태','적격','up'],
@@ -4435,7 +4528,18 @@ function renderIsaResult(){
       none:     {title:'ISA 가입·이전 신청내역이 없어요',     desc:'ISA 가입·계좌이전은 영웅문S# 또는 키움증권 홈페이지에서 신청할 수 있어요.', body:'', cta:'상담원 연결', ctaAttr:'data-staffconnect="ISA 가입·계좌이전"'},
     };
     const s = M45[st];
-    const isaRefresh = isV47()
+    if(isV48())return `<div class="iodresult-screen v45-authpage v48-isa-result">
+      ${v45AuthTop(1)}
+      <div class="iod-v45-body">
+        <section class="iod-v45-card v48-lookup-summary" aria-labelledby="v48IsaResultTitle">
+          <button type="button" class="v48-lookup-cycle" data-isacycle aria-label="다른 결과안내 보기" aria-describedby="v48IsaResultTitle"></button>
+          <div class="toss-dhead"><h2 class="td-title" id="v48IsaResultTitle">${s.title}</h2><p class="td-desc">${s.desc}</p></div>
+          ${s.body}
+        </section>
+        <div class="iod-v45-actions"><button type="button" class="v48-auth-button v48-lookup-action" ${s.ctaAttr}>${s.cta}</button></div>
+      </div>
+    </div>`;
+    const isaRefresh = isV47()&&!isV48()
       ? `<button type="button" class="v47-header-refresh" data-isacycle aria-label="다른 결과 보기" title="다른 결과 보기">${rfs}</button>`
       : '';
     const isaResultHead = isV47()
@@ -4472,7 +4576,7 @@ function renderIsaResult(){
   }
   // 비-v40(v41/v42): 기존 탭 기반 유지
   const tab = s1state.isaTab || 'new';
-  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'중개형ISA'} ${authAcct.no}` : '중개형ISA 6320-7376';
+  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'중개형ISA'} ${v48AccountText(authAcct.no)}` : '중개형ISA 6320-7376';
   const tabBar = `<div class="fv-tabs bal-tabs">` + ISA_TABS.map(([k,l])=>`<div class="fv-tab ${tab===k?'on':''}" data-isatab="${k}">${l}</div>`).join('') + `</div>`;
   const M2 = {
     new:      {desc:'접수상태가 <b>적격</b>이면 ISA 상품에 가입할 수 있어요.', body:newBody, cta:'가입서류 제출하기'},
@@ -4575,6 +4679,11 @@ function isaSegInput(el){
 }
 function startIsaCheck(){
   s1state.isaTab = 'new';   // 신청현황 진입 시 신규가입 탭부터
+  if(isV48()){
+    s1nav({page:'isaresult', title:'신청현황', noBack:false, noHome:true, fromFav:false});
+    s1state.history = [];
+    return;
+  }
   s1nav({page:'isacheck', title:'신청현황 조회', noBack:true, noHome:true, fromFav:false});
   s1state.history = [];
   setTimeout(()=>{
@@ -4594,9 +4703,15 @@ const LEGACY_CERT_STATUS = [
 ];
 function certificateStatusData(){
   if(!isV47()) return LEGACY_CERT_STATUS;
-  return V47SelfService.CERTIFICATE_STATUS.map(x=>({n:x.name, st:x.status, stc:x.statusClass, d:x.description, re:x.reissue}));
+  const samples=V47SelfService.CERTIFICATE_STATUS.map(x=>({n:x.name, st:x.status, stc:x.statusClass, d:x.description, re:x.reissue, appliedAt:x.appliedAt, issuedAt:x.issuedAt}));
+  return isV48()?[...v48SubmittedDocuments.filter(item=>item.request.accountId===v48Session.accountId),...samples]:samples;
 }
 function startCertCheck(){
+  if(isV48()){
+    s1nav({page:'certstatus', title:'증명서 발급 현황', certHasRecords:true, noBack:false, noHome:true, fromFav:false});
+    s1state.history = [];
+    return;
+  }
   s1nav({page:'certcheck', title:'발급현황 조회', noBack:true, noHome:true, fromFav:false});
   s1state.history = [];
   setTimeout(()=>{
@@ -4635,10 +4750,28 @@ function renderCertChecking(){
         <div class="iod-load-d">잠시만 기다려 주세요</div>
       </div>`;
 }
-/* 신청내역 표기 — 발급현황 + 재발급 버튼 */
+function v48DemoResultNote(action){
+  return `<button type="button" class="iod-note v48-demo-result-note" ${action}>※ 데모 화면이에요. 이 문구를 누르면 다른 결과를 볼 수 있어요.</button>`;
+}
+function renderV48CertStatus(certStatus){
+  const has=s1state.certHasRecords!==false;
+  const title=has?'서류 신청내역이 조회되었어요':'서류 신청내역이 없어요';
+  const description=has?'최근 1개월 내 신청하신 서류 내역이에요.<br>아래 내역을 선택하면 상세내용을 확인할 수 있어요.':'최근 1개월 내 신청하신 서류가 없어요.';
+  const cards=has?[...certStatus].sort((a,b)=>b.appliedAt.localeCompare(a.appliedAt)).map((item,index)=>renderV48CertificateCard(item,`v48CertDetail${index}`)).join(''):'';
+  return `<div class="iodresult-screen v45-authpage v48-cert-status">
+    ${v45AuthTop(1)}
+    <div class="iod-v45-body"><div class="toss-dhead"><h2 class="td-title">${title}</h2><p class="td-desc">${description}</p></div>
+      ${cards}
+      <div class="iod-v45-actions"><button type="button" class="v48-auth-button v48-lookup-action" data-certapply>서류신청</button></div>
+      ${v48DemoResultNote('data-certstatustoggle')}
+    </div>
+  </div>`;
+}
+/* 신청내역 표기 — Ver 4.8은 상세보기, 이전 버전은 재발급 유지 */
 function renderCertStatus(){
   const v40 = s1Ver==='v40';
   const certStatus = certificateStatusData();
+  if(isV48())return renderV48CertStatus(certStatus);
   const itemHtml = cls => certStatus.map(x=>`<div class="${cls}">
       <div class="fv-it"><div class="fv-nm">${x.n} <span class="fv-tag ${x.stc}">${x.st}</span></div><div class="fv-sub">${x.d}</div></div>
       ${x.re ? `<div class="fv-issue" data-certreissue="${x.n}">재발급</div>` : ''}
@@ -4686,7 +4819,7 @@ function renderCertStatus(){
     </div>`;
   }
   // 비-v40(v41/v42): 기존 유지
-  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${authAcct.no}` : '위탁종합 5257-5602';
+  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${v48AccountText(authAcct.no)}` : '위탁종합 5257-5602';
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     ${untactSteps(CERT_STEPS, 1)}
@@ -4701,6 +4834,11 @@ function renderCertStatus(){
 /* ===== Ver 4.7 비대면 접수현황 플로우 =====
    셀프서비스 더보기 → 계좌인증 → 접수현황 조회 → 업무별 처리 상태 */
 function startUntactStatusCheck(){
+  if(isV48()){
+    s1nav({page:'untactstatusresult', title:'비대면 접수현황', noBack:false, noHome:true, fromFav:false});
+    s1state.history = [];
+    return;
+  }
   s1nav({page:'untactstatuscheck', title:'비대면 접수현황 조회', noBack:true, noHome:true, fromFav:false});
   s1state.history = [];
   setTimeout(()=>{
@@ -4743,8 +4881,9 @@ function renderUntactStatusResult(){
 }
 /* 증명서 재발급 상세화면 — 발급 정보 확인 + 재발급 신청 */
 function renderCertReissue(){
+  if(isV48())return renderCertStatus();
   const nm = s1state.certName || '증명서';
-  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${authAcct.no}` : '위탁종합 5257-5602';
+  const acct = (authAcct && authAcct.no) ? `${authAcct.type||'위탁종합'} ${v48AccountText(authAcct.no)}` : '위탁종합 5257-5602';
   const D = key=>`<div class="ir"><span class="k">${CERT_OPTS[key].t}</span><span class="v sel" data-certsel="${key}">${certVal(key)} ${I.down}</span></div>`;   // 실제 선택 바텀시트(CERT_OPTS/openCertSheet 재사용)
   if(isV45()){
     const Dv45 = key=>`<div class="v45-ir"><span class="v45-ik">${CERT_OPTS[key].t}</span><span class="v45-iv sel" data-certsel="${key}">${certVal(key)} ${I.down}</span></div>`;
@@ -4784,6 +4923,7 @@ function renderCertReissue(){
 }
 /* 서류 재발급 신청 완료 화면 (v40) — [입출금] 완료화면(iod-done-center) 디자인 재사용: 체크 아이콘·타이틀·설명·확인 버튼 */
 function renderCertReissueDone(){
+  if(isV48())return renderCertStatus();
   const nm = s1state.certName || '서류';
   if(isV45()){
     return `<div class="iod-done-center v45-authpage">
@@ -4891,10 +5031,11 @@ function openFindAcct(target){
   el.className = 'consult-ov find-ov' + (isV45() ? ' v45' : ''); el.id = 'findAcctPop';
   el.innerHTML = findAcctSheet(1);
   screen.appendChild(el);
+  v48MountChoiceFields(el);
   requestAnimationFrame(()=>el.classList.add('on'));
 }
-function findAcctStep(n){ const el = document.getElementById('findAcctPop'); if(el) el.innerHTML = findAcctSheet(n); }
-function closeFindAcct(){ const el = document.getElementById('findAcctPop'); s1state.findTarget=''; if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); } }
+function findAcctStep(n){ const el = document.getElementById('findAcctPop'); if(el){v48CloseChoiceSheet(false);el.innerHTML = findAcctSheet(n);v48MountChoiceFields(el);} }
+function closeFindAcct(){ v48CloseChoiceSheet(false);const el = document.getElementById('findAcctPop'); s1state.findTarget=''; if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); } }
 function openPwHelpSheet(){
   const screen = document.getElementById('screen'); if(!screen) return;
   const prev = document.getElementById('pwHelpSheet'); if(prev) prev.remove();
@@ -4952,17 +5093,25 @@ function openBadgeInfo(){
   const screen = document.getElementById('screen'); if(!screen) return;
   const prev = document.getElementById('badgePop'); if(prev) prev.remove();
   const el = document.createElement('div');
-  el.className = 'consult-ov badge-ov'; el.id = 'badgePop';
-  el.innerHTML = `<div class="consult-sheet">
+  const v48=isV48();
+  el.className = 'consult-ov badge-ov'+(v48?' v48-badge-info':''); el.id = 'badgePop';
+  el.innerHTML = `<div class="consult-sheet" ${v48?'role="dialog" aria-modal="true" aria-labelledby="v48BadgeTitle"':''}>
     <div class="cs-grip"></div>
-    <div class="cs-head"><div class="cs-title">${b.title}</div></div>
+    <div class="cs-head">${v48?`<h2 class="cs-title" id="v48BadgeTitle">${b.title}</h2><button type="button" class="v48-badge-close" data-badgeclose aria-label="안내 닫기">${I.x}</button>`:`<div class="cs-title">${b.title}</div>`}</div>
     <div class="badge-points">${b.points.map(p=>`<div class="badge-pt"><span class="bp-dot"></span><span class="bp-txt">${p}</span></div>`).join('')}</div>
-    <div class="cs-cancel" data-badgeclose>닫기</div>
+    ${v48?'':'<div class="cs-cancel" data-badgeclose>닫기</div>'}
   </div>`;
   screen.appendChild(el);
-  requestAnimationFrame(()=>el.classList.add('on'));
+  if(v48){
+    el.returnFocus=document.activeElement;
+    el.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){event.preventDefault();closeBadgeInfo();}
+      if(event.key==='Tab'){event.preventDefault();el.querySelector('[data-badgeclose]').focus();}
+    });
+  }
+  requestAnimationFrame(()=>{el.classList.add('on');if(v48)el.querySelector('[data-badgeclose]').focus({preventScroll:true});});
 }
-function closeBadgeInfo(){ const el = document.getElementById('badgePop'); if(el){ el.classList.remove('on'); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); } }
+function closeBadgeInfo(){ const el = document.getElementById('badgePop'); if(el){ el.classList.remove('on'); if(el.returnFocus?.isConnected)el.returnFocus.focus({preventScroll:true}); setTimeout(()=>{ if(el.parentNode) el.remove(); }, 240); } }
 function findAcctSheet(step){
   const head = `<div class="cs-grip"></div>
     <div class="cs-head"><div class="cs-title">${step===3?'계좌조회가 완료되었어요':'계좌번호를 잊으셨나요?'}</div>
@@ -5151,7 +5300,83 @@ function renderIodAcctSel(){
       </div>`;
 }
 /* 금융거래목적확인서 등록 — [입출금] 플로우와 동일 디자인(iod-top 뒤로가기·auth-wrap 24px 정렬·Ver4.0 톤) */
+function v48PurposeCanRegister(values){
+  return ['장기미사용 거래중지계좌','금융투자상품 거래'].includes(values.purpose)&&values.rental==='아니오'&&values.loan==='아니오'&&values.confirmed===true;
+}
+function renderV48PurposeResult(){
+  const eligible=s1state.v48PurposeResult!=='none';
+  const title=eligible?'금융거래목적확인서 등록이 필요한 계좌예요':'금융거래목적확인서 등록 대상이 아니에요';
+  const description=eligible?'계좌 이용을 위해 금융거래목적을 확인해 주세요. 아래 버튼을 눌러 확인서를 등록할 수 있어요.':'선택하신 계좌는 금융거래목적확인서를 등록하지 않아도 돼요. 계좌 이용에 대해 궁금한 점이 있으시면 상담원에게 문의해 주세요.';
+  return `<div class="iodresult-screen v45-authpage v48-purpose-result">
+    ${v45AuthTop(2)}
+    <div class="iod-v45-body">
+      <section class="iod-v45-card v48-lookup-summary" aria-labelledby="v48PurposeResultTitle">
+        <button type="button" class="v48-lookup-cycle" data-v48-purpose-cycle aria-label="다른 결과안내 보기" aria-describedby="v48PurposeResultTitle"></button>
+        <div class="toss-dhead"><h2 class="td-title" id="v48PurposeResultTitle">${title}</h2><p class="td-desc">${description}</p></div>
+      </section>
+      <div class="iod-v45-actions"><button type="button" class="v48-auth-button v48-lookup-action" ${eligible?'data-v48-purpose-register':'data-staffconnect="금융거래목적확인서"'}>${eligible?'금융거래목적확인서 등록하기':'상담원 연결'}</button></div>
+    </div>
+  </div>`;
+}
+function v48MountPurposeForm(root){
+  if(!isV48())return;
+  const form=root.querySelector('[data-v48-purpose-form]');if(!form)return;
+  const sync=()=>{
+    const values={...s1state.v48Purpose,purpose:form.elements.purpose.value,rental:form.elements.rental.value,loan:form.elements.loan.value,confirmed:form.elements.confirmed.checked};
+    s1state.v48Purpose=values;
+    form.querySelector('[type="submit"]').disabled=!v48PurposeCanRegister(values);
+    return values;
+  };
+  form.querySelectorAll('[data-purpose-question]').forEach(detail=>{
+    detail.addEventListener('toggle',()=>{
+      const values=s1state.v48Purpose||{};
+      s1state.v48Purpose={...values,expanded:{...values.expanded,[detail.dataset.purposeQuestion]:detail.open}};
+    });
+  });
+  const updateAnswer=event=>{
+    const values=sync(),detail=event.target.closest('[data-purpose-question]');
+    if(!detail||event.target.type!=='radio')return;
+    const answer=values[detail.dataset.purposeQuestion],summary=detail.querySelector('summary');
+    detail.dataset.answered='true';detail.querySelector('.v48-purpose-answer').textContent=answer;
+    summary.setAttribute('aria-label',`${detail.querySelector('.v48-purpose-question-text').textContent} 답변: ${answer}`);
+    detail.open=false;summary.focus({preventScroll:true});
+  };
+  form.addEventListener('change',updateAnswer);
+  form.addEventListener('click',event=>{if(event.target.matches('input[type="radio"]'))updateAnswer(event);});
+  form.addEventListener('submit',event=>{
+    event.preventDefault();
+    if(!v48PurposeCanRegister(sync()))return;
+    s1nav({page:'iodpurposedone',title:'등록 완료',noBack:true,noHome:true});
+  });
+  sync();
+}
 function renderIodPurpose(){
+  if(isV48()){
+    const options=['장기미사용 거래중지계좌','금융투자상품 거래'];
+    const values=s1state.v48Purpose||{};
+    const questions=[
+      {name:'rental',text:'타인으로부터 통장대여 요청을 받은 사실이 있습니까?',description:'통장/현금카드 등을 타인에게 양도하여 범죄에 이용되는 경우 미성년자 여부와 상관없이 민형사상 책임을 질 수 있습니다.'},
+      {name:'loan',text:'타인으로부터 신용등급의 상향, 대출 등의 목적으로 통장개설을 요청받은 사실이 있습니까?'}
+    ];
+    return `<section class="v48-auth v48-purpose">
+      <div class="v48-auth-body">
+        <h2>금융거래목적을 확인하고 등록해 드릴게요</h2>
+        <p>자금세탁방지(AML) 제도에 따라 금융거래목적 확인이 필요해요.</p>
+        <form class="v48-purpose-form" data-v48-purpose-form>
+          <label class="v48-phone-pill v48-purpose-field"><span>금융거래목적</span><select name="purpose" required aria-label="금융거래목적">${options.map(option=>`<option${option===(values.purpose||options[0])?' selected':''}>${option}</option>`).join('')}</select><span class="v48-purpose-chevron" aria-hidden="true">${I.down}</span></label>
+          <div class="v48-purpose-questions">${questions.map(({name,text,description})=>{
+            const answer=values[name]||'',expanded=values.expanded?.[name]??!answer;
+            return `<details data-purpose-question="${name}" data-answered="${!!answer}"${expanded?' open':''}>
+              <summary aria-label="${text}${answer?' 답변: '+answer:''}"><span class="v48-purpose-question-text" id="v48Purpose-${name}">${text}</span><span class="v48-purpose-answer">${answer}</span><span class="v48-purpose-question-chevron" aria-hidden="true">${I.down}</span></summary>
+              <div class="v48-purpose-question-body">${description?`<p>${description}</p>`:''}<div class="v48-purpose-answers" role="radiogroup" aria-labelledby="v48Purpose-${name}">${['예','아니오'].map(value=>`<label><input type="radio" name="${name}" value="${value}"${answer===value?' checked':''}><span>${value}</span></label>`).join('')}</div></div>
+            </details>`;
+          }).join('')}</div>
+          <label class="v48-purpose-confirm"><input type="checkbox" name="confirmed"${values.confirmed?' checked':''}><span>본 확인서 내용을 충분히 이해하고 틀림없이 기재하였습니다.</span></label>
+          <button type="submit" class="v48-auth-button v48-lookup-action"${v48PurposeCanRegister(values)?'':' disabled'}>등록하기</button>
+        </form>
+      </div>
+    </section>`;
+  }
   const F = (k,v)=>`<div class="ir"><span class="k">${k}</span><span class="v">${v} ${I.down}</span></div>`;
   if(isV45()){
     const Dv45 = (k,v)=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv sel">${v} ${I.down}</span></div>`;
@@ -5186,6 +5411,14 @@ function renderIodPurpose(){
 }
 /* 금융거래목적확인서 등록 완료 화면 — [입출금] 디자인(iod-top·24px·Ver4.0 톤), 스텝바 완료 */
 function renderIodPurposeDone(){
+  if(isV48())return `<section class="iod-done-center v48-purpose-done">
+    <div class="iod-done">
+      <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
+      <h2 class="iod-done-t">등록이 완료됐어요</h2>
+      <p class="iod-done-d">금융거래목적 확인이 등록되어<br>계좌의 거래제한이 바로 해제됐어요.<br>이제 정상적으로 입출금하실 수 있어요.</p>
+    </div>
+    <div class="iod-done-btnwrap"><button type="button" class="v48-auth-button v48-lookup-action" data-iodhome>확인</button></div>
+  </section>`;
   if(isV45()){
     return `<div class="iod-done-center v45-authpage">
       <div class="iod-done">
@@ -5208,7 +5441,7 @@ function renderIodPurposeDone(){
 /* 음성 ARS 연결 안내 화면 — Ver4.0 플로우 화면 형식(iod-top·헤딩·정보카드·안내·버튼, [입출금]과 동일) */
 function renderVoiceConnect(){
   const label = s1state.voiceLabel || '음성 ARS';
-  const acctVal = sessionAuthed ? `${(authAcct&&authAcct.no)||'인증 계좌'} 연동` : '통화 중 확인';
+  const acctVal = sessionAuthed ? `${v48AccountText((authAcct&&authAcct.no)||'인증 계좌')} 연동` : '통화 중 확인';
   // Ver 4.0: 토스 헤더(뒤로가기만) + 중앙정렬 본문(수화기 아이콘·연결정보·연결 버튼) — renderVoiceV40/renderAgentV40와 동일 구조
   if(isV40()){
     return `<div class="acv-wrap">
@@ -5268,14 +5501,15 @@ function renderHeroDone(){
 }
 /* 신분증 재요청 URL 발송 완료 화면 (입출금 안내 · 신분증 진위확인 결과에서 진입) */
 function renderIdDone(){
-  return `<div class="iod-done-center">
+  const v48=isV48();
+  return `<div class="iod-done-center${v48?' v48-id-done':''}">
       <div class="iod-done">
         <div class="iod-done-ic"><img src="assets/glass4.png" alt=""></div>
         <div class="iod-done-t">재요청 URL을 보내드렸어요</div>
         <div class="iod-done-d"><b>신분증 재요청 URL</b>을 알림톡으로 발송했어요.<br>링크에서 신분증을 재접수하시면,<br>진위확인 후 거래 제한이 풀려요.</div>
       </div>
       <div class="iod-done-note">※ 알림톡이 오지 않으면 잠시 후 다시 시도해 주세요.</div>
-      <div class="iod-done-btnwrap"><div class="primary-btn iddone-confirm" data-iodhome>확인</div></div>
+      <div class="iod-done-btnwrap">${v48?'<button type="button" class="v48-auth-button v48-lookup-action" data-iodhome>확인</button>':'<div class="primary-btn iddone-confirm" data-iodhome>확인</div>'}</div>
     </div>`;
 }
 
@@ -5353,7 +5587,7 @@ function renderFilledV40(){
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">체결내역</div><div class="td-desc">선택한 날짜의 주문 및 체결내역을 확인해요</div></div>
     <div class="fv-filter">
-      <div class="fv-chip full" data-acctchange><span class="fv-cv">${authAcct.type} ${authAcct.no}</span>${I.down}</div>
+      <div class="fv-chip full" data-acctchange><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span>${I.down}</div>
       <div class="fv-grid2">
         <div class="fv-chip" data-stocksearch>${stockCell}</div>
         ${dateChip}
@@ -5386,7 +5620,7 @@ function renderHoldingsV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">예수금 · 주문가능금액</div><div class="td-desc">인증하신 계좌의 예수금과 주문가능금액을 확인해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="hv-summary">
       <div class="hv-row"><span>예수금 (D+0)</span><b>${won(dep)}원</b></div>
       <div class="hv-row"><span>출금가능금액</span><b>${won(withdrawable)}원</b></div>
@@ -5432,7 +5666,7 @@ function renderBalanceV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">주식·신용·금융상품 잔고</div><div class="td-desc">인증하신 계좌의 보유 잔고를 확인해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="hv-summary">
       <div class="hv-row"><span>총 평가금액</span><b>${won(totEval)}원</b></div>
       <div class="hv-row"><span>총 평가손익</span><b class="${uc}">${us}${won(totPl)}원 (${us}${totRt.toFixed(1)}%)</b></div>
@@ -5466,7 +5700,7 @@ function renderTradesV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">거래내역</div><div class="td-desc">선택한 기간의 거래내역을 확인해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="fv-chip hv-period" data-flash="조회 기간을 선택합니다. (시연용)"><span class="fv-ck">조회 기간</span><span class="fv-cv">2026.06.01 ~ 2026.06.24</span>${I.down}</div>
     <div class="hv-secttl">거래내역 ${tx.length}</div>
     <div class="fv-card"><div class="fv-list">${listHTML}</div></div>
@@ -5508,7 +5742,7 @@ function renderRightsV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">유상청약</div><div class="td-desc">보유 종목의 유상증자 청약 권리를 확인해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="fv-note">청약 신청은 <b>영웅문S#</b> 또는 <b>음성 ARS</b>에서 진행할 수 있어요. 이 화면에서는 청약 권리를 조회해요.</div>
     <div class="hv-secttl">청약 대상 권리 ${rights.length}</div>
     <div class="fv-card"><div class="fv-list">${listHTML}</div></div>
@@ -5531,7 +5765,7 @@ function renderCertV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">증명서 발급</div><div class="td-desc">필요한 증명서를 발급받아요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="hv-secttl">발급 가능 증명서 ${certs.length}</div>
     <div class="fv-card"><div class="fv-list">${listHTML}</div></div>
     <div class="fv-foot"><div class="primary-btn" data-staffconnect="증명서 발급">상담원 연결</div></div>
@@ -5544,7 +5778,7 @@ function renderDocSubmitV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">${label}</div><div class="td-desc">서류를 촬영하거나 파일로 제출해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="doc-card">
       <div class="doc-ic">${I.doc}</div>
       <div class="doc-h">${label} 제출</div>
@@ -5568,7 +5802,7 @@ function renderApplyGroupV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">${g.title}</div><div class="td-desc">${g.desc}</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="hv-secttl">${g.sectl || '신청 가능 업무'} ${g.items.length}</div>
     <div class="fv-card"><div class="fv-list">${listHTML}</div></div>
     <div class="fv-foot"><div class="primary-btn" data-staffconnect="${g.title}">상담원 연결</div></div>
@@ -5603,7 +5837,7 @@ function renderMisuV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">미수·반대매매</div><div class="td-desc">미수금과 반대매매 예정을 확인해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="hv-summary">
       <div class="hv-row"><span>미수금</span><b class="up">1,240,000원</b></div>
       <div class="hv-row"><span>연체이자</span><b>3,200원</b></div>
@@ -5618,8 +5852,9 @@ function renderMisuV40(){
 
 /* Ver 4.0 · 계좌번호·MY계좌 정보(디지털 ARS 조회) 전용 화면 — 토스톤 헤더 + 계좌 정보 카드 + MY계좌 설정 카드 + 상담원 연결 */
 function renderMyAcctV40(){
+  if(isV48())return renderV48LinkedBank();
   const info = [
-    ['계좌번호', authAcct.no],
+    ['계좌번호', v48AccountText(authAcct.no)],
     ['예금주', '홍길동'],
     ['계좌 종류', authAcct.type],
     ['개설일', '2020.03.15'],
@@ -5634,7 +5869,7 @@ function renderMyAcctV40(){
   return `<div class="fv-wrap">
     <div class="toss-top"><div class="toss-back" data-s1back title="이전">${I.chev}</div><div class="head-spacer"></div></div>
     <div class="toss-dhead"><div class="td-title">계좌번호·MY계좌</div><div class="td-desc">인증하신 계좌의 정보와 MY계좌 설정을 확인해요</div></div>
-    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${authAcct.no}</span></div>
+    <div class="fv-chip hv-acct"><span class="fv-cv">${authAcct.type} ${v48AccountText(authAcct.no)}</span></div>
     <div class="my-body">
       <div class="hv-secttl">계좌 정보</div>
       <div class="hv-summary">${rows(info)}</div>
@@ -5643,6 +5878,21 @@ function renderMyAcctV40(){
     </div>
     <div class="fv-foot"><div class="primary-btn" data-staffconnect="계좌번호·MY계좌 정보확인">상담원 연결</div></div>
   </div>`;
+}
+
+function renderV48LinkedBank(){
+  // Demo bank information contains only the five digits allowed in this lookup.
+  const bank={name:'우리은행',accountLastFive:'12345'};
+  return `<div class="v45-authpage v48-linked-bank-page">${pageTop('연결 은행계좌정보 조회')}<div class="iod-v45-body">
+    <section class="iod-v45-card v48-linked-bank-card" aria-labelledby="v48LinkedBankTitle">
+      <div class="toss-dhead"><h2 id="v48LinkedBankTitle" class="td-title">은행계좌정보가 조회되었어요</h2><p class="td-desc">공동인증서 발급용 연계은행 계좌번호 마지막 5자리만 조회 가능해요</p></div>
+      <dl class="v48-linked-bank-details">
+        <div class="v45-kv-row"><dt class="v45-kv-k">연계은행</dt><dd class="v45-kv-v">${v47Esc(bank.name)}</dd></div>
+        <div class="v45-kv-row"><dt class="v45-kv-k">계좌번호</dt><dd class="v45-kv-v">******** ${v47Esc(bank.accountLastFive)}</dd></div>
+      </dl>
+    </section>
+    <div class="iod-v45-actions"><button type="button" class="v48-auth-button v48-lookup-action" data-staffconnect="연결 은행계좌정보 조회">상담원 연결</button></div>
+  </div></div>`;
 }
 
 /* ===== 간편비밀번호(PIN) 변경 — 2단계 입력(새 PIN → 확인) ===== */
@@ -5716,6 +5966,7 @@ function startOtpTimer(sec){
 
 /* 인증 완료 후 원래 자주 찾는 서비스 목적지로 이동 */
 function gotoAuthNext(deep){
+  if(v48Require({kind:'legacy',destination:s1state.authNext}))return;
   sessionAuthed = true;            // 이후 다른 자주 찾는 서비스는 추가 인증 생략
   const d = s1state.authNext || {};
   const fk = d.fk || '';
@@ -5764,13 +6015,34 @@ function pageTop(title, hideTitle, rightHtml){
 }
 
 function renderS1(){
+  v48CloseChoiceSheet(false);
   const v = document.getElementById('s1view');
   const flowEl = v && v.closest('.flow'); if(flowEl) flowEl.classList.toggle('toss', isV40());   // Ver 4.0 계열 토스 스킨 (전 화면 var() 토큰 오버라이드)
   if(flowEl){ flowEl.classList.toggle('v45', isV45()); }   // Ver 4.5 인디고 팔레트 오버라이드
   if(flowEl){ flowEl.classList.toggle('v46', isV46()); }   // Ver 4.6 전용 CSS 스코프
   if(flowEl){ flowEl.classList.toggle('v47', isV47()); flowEl.classList.toggle('v471', isV471()); flowEl.classList.toggle('v48', isV48()); }   // Ver 4.7 계열 전용 CSS 스코프
+  if(flowEl)flowEl.classList.toggle('v48-search-active',isV48()&&s1state.page==='v48search');
+  if(flowEl)flowEl.classList.toggle('v48-browse-active',isV48()&&['v48search','allmenu'].includes(s1state.page));
   let html = '';
-  if(s1state.page==='home' && isV48()){
+  if(isV48()&&s1state.page==='v48auth'){
+    html=renderV48Auth();
+  }
+  else if(isV48()&&s1state.page==='v48search'){
+    html=renderV48Search();
+  }
+  else if(isV48()&&s1state.page==='v48category'){
+    html=renderV48Category();
+  }
+  else if(isV48()&&s1state.page==='v48notice'){
+    html=renderV48Notice();
+  }
+  else if(isV48()&&s1state.page==='v48menu'){
+    html=renderV48MenuGuide();
+  }
+  else if(isV48()&&s1state.page==='v48congestion'){
+    html=renderV48Congestion();
+  }
+  else if(s1state.page==='home' && isV48()){
     html = v48Home();
   }
   else if(s1state.page==='home'){
@@ -5995,7 +6267,9 @@ function renderS1(){
   }
   else if(s1state.page==='result'){
     // Ver 4.0 계열 · 금융거래목적확인서(purpose)는 [입출금] 플로우와 동일 디자인 적용
-    if(isV40() && s1state.resultKey==='purpose'){
+    if(isV48() && s1state.resultKey==='purposestatus'){
+      html = renderV48PurposeResult();
+    } else if(isV40() && s1state.resultKey==='purpose'){
       html = renderIodPurpose();
     } else if(isV40() && s1state.resultKey==='filled'){
       html = renderFilledV40();   // Ver 4.0 · 체결내역(디지털ARS 조회) 전용 화면
@@ -6088,7 +6362,22 @@ function renderS1(){
       ${amPills()}
     </div>` + renderAllMenu();
   }
+  if(isV48()&&v48ShowAccountBar())html=v48AccountBar()+html;
   v.innerHTML = html;
+  v48MountHeaderMenu(v);
+  v48MountTaskHeader(v);
+  v48MountPhoneAuth();
+  v48MountChoiceFields(v);
+  v48MountPurposeForm(v);
+  v48MountDocumentForm(v);
+  v48MountPrimaryActions(v);
+  if(isV48()){
+    // Account pages now share the outer scroll; new results still open at their heading.
+    if(v48ShowAccountBar())v.scrollTop=0;
+    if(s1state.page==='home')v48BindRecentScroll(v);
+    if(s1state.page==='v48search'&&v48SearchSubmitted)runV47Search(v.querySelector('[data-v47search]'),false);
+  }
+  v48UpdateDemoControls();
   setTab('s1', s1state.page==='home'?'home':'');
   if(isV45() && s1state.page==='home') requestAnimationFrame(initSsBanner);
   // 휴대폰 인증번호 화면이면 카운트다운 시작
@@ -6408,7 +6697,8 @@ document.addEventListener('input', (e)=>{
   if(!el) return;
   if(el.matches('[data-v47search]')){
     v47SearchQuery=el.value.trim();
-    if(!v47SearchQuery)closeV47SearchResults();
+    if(isV48())v48SearchChanged(el);
+    if(!v47SearchQuery)closeV47SearchResults(el);
     return;
   }
   const otpConfig=V47_PHONE_OTP.find(config=>config.otp===el.id);
@@ -6464,7 +6754,7 @@ document.addEventListener('input', (e)=>{
 });
 document.addEventListener('keydown', (e)=>{
   if(e.target && e.target.matches('[data-v47search]') && e.key === 'Enter'){
-    e.preventDefault(); runV47Search(); return;
+    e.preventDefault(); runV47Search(e.target); return;
   }
   if(e.target && e.target.id === 'otpNo' && e.key === 'Enter'){
     e.preventDefault();
@@ -6475,17 +6765,22 @@ document.addEventListener('keydown', (e)=>{
 
 document.addEventListener('click', (e)=>{
   const t = e.target;
+  v48TrackMenuClick(t);
+  if(handleV48Click(t))return;
+  if(handleV48SearchClick(t))return;
+  if(handleV48MenuClick(t))return;
 
-  if(!t.closest('.v47-search-wrap'))closeV47SearchResults();
+  if(!t.closest('.v47-search-wrap, [data-v47searchscope]'))closeV47SearchResults();
 
   // AI 챗봇 → '보이는 ARS 열기' 플로팅 버튼: 챗봇 닫고 보이는 ARS 화면으로
   if(t.closest('[data-arsopen]')){ closeAiChat(); closeVoiceCall(); selectSian('s1'); return; }   // AI챗봇/통화화면 '디지털 ARS 열기' → 메인
 
   // 음성 ARS 연결 안내 팝업 → 연결하기: Ver 4.0은 휴대폰 통화화면(다이얼패드), 그 외는 기존 연결화면
   if(t.closest('[data-mok]')){ closeModal(); if(s1Ver==='v40'){ openVoiceCall(); return; } s1nav({page:'voice', title:'음성 ARS 연결', fromFav:false}); return; }
-  if(t.closest('[data-callend]')){ closeVoiceCall(); selectSian('s1'); return; }   // 통화 종료 → 디지털 ARS 메인
+  if(t.closest('[data-callend]')){ closeVoiceCall(); if(isV48())v48ResetSession(); selectSian('s1'); return; }   // 통화 종료 → 디지털 ARS 메인
   if(t.closest('[data-endok]')){   // 서비스 종료: 세션·입력 인증정보 폐기(저장 안 함) 후 메인 초기화
     closeModal();
+    if(isV48())v48ResetSession();
     sessionAuthed = false;
     authAcct = {type:ACCOUNTS[0].type, no:ACCOUNTS[0].no};   // 입력 인증계좌 초기화
     s1state.page='home'; s1state.fromFav=false; s1state.history=[]; s1state.sarsPath=[];
@@ -6791,20 +7086,23 @@ document.addEventListener('click', (e)=>{
   }
   // 발급현황 재발급 버튼 → 재발급 상세화면
   const creis = t.closest('[data-certreissue]');
-  if(creis){ s1nav({page:'certreissue', title:creis.dataset.certreissue+' 재발급', certName:creis.dataset.certreissue, noHome:true}); return; }
+  if(creis){ if(isV48())return; s1nav({page:'certreissue', title:creis.dataset.certreissue+' 재발급', certName:creis.dataset.certreissue, noHome:true}); return; }
   // 재발급 신청 → 접수 안내
   const creisdone = t.closest('[data-certreissuedone]');
   if(creisdone){
+    if(isV48())return;
     if(isV40()){ s1nav({page:'certreissuedone', title:'재발급 완료', certName:creisdone.dataset.certreissuedone, noBack:true, noHome:true}); return; }
     flash(`${creisdone.dataset.certreissuedone} 재발급이 접수되었어요. 등록된 이메일로 보내드릴게요. (시연용)`); return;
   }
   // 신청현황 → 가입서류 제출방법 선택 플로팅
   if(t.closest('[data-isamethod]')){ openMethodSheet(ISA_METHOD_SHEET); return; }
-  // 신청현황 결과(v40) 상단 새로고침 → 4상태(신규가입/계좌이전/만기연장/없음) 순환
+  // 신청현황 결과 카드(v48) 또는 새로고침 버튼 → 신규가입/계좌이전/만기연장/없음 순환
   if(t.closest('[data-isacycle]')){
     const cur = ISA_RESULT_STATES.indexOf(s1state.isaTab);
     s1state.isaTab = ISA_RESULT_STATES[(cur+1) % ISA_RESULT_STATES.length] || 'new';
-    renderS1(); return;
+    renderS1();
+    if(isV48())document.querySelector('.v48-lookup-cycle[data-isacycle]')?.focus({preventScroll:true});
+    return;
   }
   // 신청현황 탭 전환(신규가입/계좌이전/만기연장) — v41/v42 탭
   const isatab = t.closest('[data-isatab]');
@@ -6836,19 +7134,35 @@ document.addEventListener('click', (e)=>{
     if(acctNo.trim()){ openMethodSheet(IOD_PW_SHEET); return; }   // 계좌번호 입력됨 → '계좌비밀번호를 모르겠어요' → 재설정 방법 선택
     s1nav({page:'authsel', title:'계좌 조회', acctPw:'', otpSent:false, noHome:true}); return;
   }
+  const certDetail=t.closest('[data-v48-cert-detail]');
+  if(isV48()&&certDetail){
+    const detail=document.getElementById(certDetail.dataset.v48CertDetail);if(!detail)return;
+    const expanded=certDetail.getAttribute('aria-expanded')!=='true';
+    certDetail.setAttribute('aria-expanded',String(expanded));detail.hidden=!expanded;
+    const card=certDetail.closest('.v48-cert-item');card.classList.toggle('is-expanded',expanded);
+    const name=card.querySelector('.v48-cert-name').textContent;
+    certDetail.setAttribute('aria-label',`${name} 상세내용 ${expanded?'접기':'펼치기'}`);
+    return;
+  }
   const certtog = t.closest('[data-certstatustoggle]');
-  if(certtog){ s1state.certHasRecords = (s1state.certHasRecords === false); renderS1(); return; }   // 서류 신청내역 결과 데모: 조회됨 ↔ 없음 전환
+  if(certtog){
+    s1state.certHasRecords = (s1state.certHasRecords === false);renderS1();
+    if(isV48())document.querySelector('.v48-demo-result-note[data-certstatustoggle]')?.focus({preventScroll:true});
+    return;
+  }   // 서류 신청내역 결과 데모: 조회됨 ↔ 없음 전환
   const iodc = t.closest('[data-iodcycle]');
   if(iodc){
+    const restoreFocus=isV48()&&document.activeElement===iodc;
     const keys = Object.keys(IOD_RESULTS);
     const cur = keys.indexOf(IOD_RESULTS[s1state.iodResult] ? s1state.iodResult : keys[0]);
     s1state.iodResult = keys[(cur+1) % keys.length];   // 클릭마다 다음 사유로 순환
-    renderS1(); return;
+    renderS1();
+    if(restoreFocus)document.querySelector('.v48-lookup-cycle')?.focus({preventScroll:true});
+    return;
   }
   // 결과 버튼 → 방법 선택 플로팅 열기
   if(t.closest('[data-iodmethods]')){
-    const key = IOD_RESULTS[s1state.iodResult] ? s1state.iodResult : 'multi';
-    openMethodSheet(IOD_RESULTS[key].sheet); return;
+    openIodResultAction(); return;
   }
   // 금융거래목적확인서 등록 → 완료 화면 / 완료 화면 '확인' → 메인
   if(t.closest('[data-iodpurposedone]')){ s1nav({page:'iodpurposedone', title:'등록 완료', noBack:true, noHome:true}); return; }
@@ -7096,20 +7410,21 @@ document.addEventListener('click', (e)=>{
   // Ver 4.5 중메뉴 클릭 → 이후 절차는 추후 정의(현재 안내 placeholder)
   const v45s = t.closest('[data-v45sub]');
   if(v45s){ flash(`'${v45s.dataset.v45sub}' 중메뉴 선택 · 이후 절차 정의 예정`); return; }
-  if(t.closest('[data-v47searchbtn]')){ runV47Search(); return; }
+  if(t.closest('[data-v47searchbtn]')){ runV47Search(t); return; }
   const trend=t.closest('[data-v47trend]');
   if(trend){
-    const input=document.querySelector('[data-v47search]');
-    if(input){input.value=trend.dataset.v47trend;runV47Search();}
+    const input=v47SearchScope(trend).querySelector('[data-v47search]');
+    if(input){input.value=trend.dataset.v47trend;runV47Search(input);}
     return;
   }
   const searchGo=t.closest('[data-v47searchgo]');
   if(searchGo){
+    if(isV48())v47SearchQuery=v47SearchScope(searchGo).querySelector('[data-v47search]')?.value.trim()||v47SearchQuery;
     const action=searchGo.dataset.v47searchgo;
     addV47Recent(searchGo.dataset.v47title,action);
     if(action==='idpw'){ startV47MyInfo('ID조회/PW초기화'); }
     else if(action==='acctpw'){ startV47MyInfo('계좌비밀번호 재설정'); }
-    else if(action==='certpw'){ s1nav({page:'v47cat',v47Cat:9}); }
+    else if(action==='certpw'){ if(isV48())v48OpenMenuItem('1-6');else s1nav({page:'v47cat',v47Cat:9}); }
     else if(action.startsWith('untact:')){ startV47Untact(action.split(':').slice(1).join(':')); }
     else if(action==='voice'){ s1nav({page:'voice',title:'음성 ARS 연결',fromFav:false}); }
     else if(action==='consult'){ openConsult(v47SearchQuery,{exclude:['voice']}); }
@@ -7153,7 +7468,11 @@ document.addEventListener('click', (e)=>{
   if(t.closest('[data-v47u-agree]')){ s1state.v47UntactAgree=!s1state.v47UntactAgree; const agree=t.closest('[data-v47u-agree]'); agree.classList.toggle('on',s1state.v47UntactAgree); agree.setAttribute('aria-checked',String(s1state.v47UntactAgree)); syncV47PhoneAuthButtons(); return; }
   if(t.closest('[data-v47u-history]')){ applyV47UntactEvent({type:'OPEN_HISTORY'}); return; }
   if(t.closest('[data-v47u-history-back]')){ applyV47UntactEvent({type:'CLOSE_HISTORY'}); return; }
-  if(t.closest('[data-v47u-back]')){ applyV47UntactEvent({type:'BACK'}); return; }
+  if(t.closest('[data-v47u-back]')){
+    if(isV48()&&s1state.v47Untact?.v48DirectDocument&&s1state.v47Untact.step==='form')s1back();
+    else applyV47UntactEvent({type:'BACK'});
+    return;
+  }
   const v47uDoc=t.closest('[data-v47u-document]');
   if(v47uDoc){ s1state.acctPw=''; applyV47UntactEvent({type:'SELECT_DOCUMENT',value:v47uDoc.dataset.v47uDocument}); return; }
   const v47uHelp=t.closest('[data-v47u-help]');
@@ -7711,11 +8030,12 @@ function updateSceneLabel(){
 function selectRefFirm(firm){ refFirm = firm; switchScheme('ref'); }
 /* 시안 리스트: 시안 선택 → 해당 시안의 '메인(home) 화면'으로 띄움 (ver 지정 시 시안1 버전 전환) */
 function selectSian(v, ver){
+  v48CloseChoiceSheet(false);
   // 탭 전환 시 #screen에 떠 있던 오버레이(챗봇·매체시트·상담팝업·앱연결·안내팝업·계단주문·계좌시트 등) 모두 닫고 해당 탭 메인화면으로 진입
   closeAiChat(); closeMethodSheet(); closeConsult(); closeAppLink(); closeModal(); closeStkSheet(); closeAcctSheet(); closeCertSheet(); closeCalendar(); closeMenuDrawer();
   sianScheme = v;
   if(v==='s1'){
-    if(ver) s1Ver = ver;
+    if(ver){v48SwitchVersion(ver);s1Ver = ver;}
     // 깊은 페이지에 있었어도 항상 메인(home)으로 초기화 + 인라인 탭/트리 상태 리셋
     closeMenuDrawer();
     s1state.page='home'; s1state.fromFav=false; s1state.noHome=false; s1state.noBack=false; s1state.history=[];
@@ -7728,6 +8048,7 @@ function selectSian(v, ver){
   else if(v==='dform3'){ if(window.__dform3Home) window.__dform3Home(); }
   else if(v==='dform4'){ if(window.__dform4Home) window.__dform4Home(); }
   else if(v==='dars1v44'){ if(window.__darsHome1v44) window.__darsHome1v44(); }
+  v48UpdateDemoControls();
   switchScheme('sian');
 }
 (function(){

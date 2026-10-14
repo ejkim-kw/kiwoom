@@ -21,10 +21,10 @@
   };
 
   const CERTIFICATE_STATUS = [
-    { name:'잔고증명서', status:'발급완료', statusClass:'done', description:'2026.07.05 발급 · 이메일 발송 완료', reissue:true },
-    { name:'거래내역서', status:'처리중', statusClass:'wait', description:'2026.07.08 신청 · 발급 준비 중', reissue:false },
-    { name:'금융소득내역서', status:'발급완료', statusClass:'done', description:'2026.07.03 발급 · 이메일 발송 완료', reissue:true },
-    { name:'제신고신청', status:'처리중', statusClass:'wait', description:'2026.07.09 신청 · 담당 부서 확인 중', reissue:false },
+    { name:'잔고증명서', status:'발급완료', statusClass:'done', appliedAt:'2026.07.05', issuedAt:'2026.07.05', description:'2026.07.05 발급 · 이메일 발송 완료', reissue:true },
+    { name:'거래내역서', status:'처리중', statusClass:'wait', appliedAt:'2026.07.08', issuedAt:'', description:'2026.07.08 신청 · 발급 준비 중', reissue:false },
+    { name:'금융소득내역서', status:'발급완료', statusClass:'done', appliedAt:'2026.07.03', issuedAt:'2026.07.03', description:'2026.07.03 발급 · 이메일 발송 완료', reissue:true },
+    { name:'제신고신청', status:'처리중', statusClass:'wait', appliedAt:'2026.07.09', issuedAt:'', description:'2026.07.09 신청 · 담당 부서 확인 중', reissue:false },
   ];
 
   const UNTACT_STATUS = [

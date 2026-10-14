@@ -44,8 +44,9 @@
   function createState(title,options){
     const flow=MENU_KEYS[title]; if(!flow)return null;
     const skip=!!(options&&options.skipAuthentication);
-    return {flow,title,step:flow==='documents'?'document':(skip?'status':'phone'),skipAuthentication:skip,phoneVerified:skip,selectedDocument:'',account:'',completed:false};
+    return {flow,title,step:flow==='documents'?'document':(skip?'status':'phone'),skipAuthentication:skip,phoneVerified:skip,selectedDocument:'',account:'',completed:false,...(options?.documents?{documentOptions:options.documents.map(doc=>({...doc}))}:{})};
   }
+  function getDocuments(state){return state.documentOptions||DATA.documents;}
   function getHeaderModel(state){
     if(!state||state.step==='history')return null;
     let steps=FLOW_META[state.flow]||[];
@@ -62,7 +63,7 @@
     if(event.type==='OPEN_HISTORY'&&state.flow==='documents')return {state:{...next,step:'history'},error:''};
     if(event.type==='CLOSE_HISTORY'&&state.flow==='documents')return {state:{...next,step:'document'},error:''};
     if(event.type==='SELECT_DOCUMENT'){
-      if(!DATA.documents.some(x=>x.name===event.value))return {state,error:'신청할 서류를 선택해 주세요.',field:'document'};
+      if(!getDocuments(state).some(x=>x.name===event.value))return {state,error:'신청할 서류를 선택해 주세요.',field:'document'};
       return {state:{...next,selectedDocument:event.value,step:state.skipAuthentication?'form':'accountAuth'},error:''};
     }
     if(event.type==='ACCOUNT_AUTH'){
@@ -71,7 +72,7 @@
       return {state:{...next,account:event.account,step:'form'},error:''};
     }
     if(event.type==='SUBMIT_DOCUMENT'){
-      const doc=DATA.documents.find(x=>x.name===state.selectedDocument);
+      const doc=getDocuments(state).find(x=>x.name===state.selectedDocument);
       if(!doc)return {state,error:'신청할 서류를 선택해 주세요.',field:'document'};
       if(doc.mode==='date'&&!event.date)return {state,error:'기준일자를 선택해 주세요.',field:'date'};
       if(doc.mode==='period'&&(!event.startDate||!event.endDate))return {state,error:'조회기간을 모두 선택해 주세요.',field:'period'};
@@ -98,5 +99,5 @@
     return {state,error:''};
   }
   function establishesSessionAuthentication(event,result){return !result.error&&(event.type==='PHONE_VERIFY'||event.type==='ACCOUNT_AUTH');}
-  return {MENU_KEYS,DATA,FLOW_META,shouldHandle,createState,getHeaderModel,transition,establishesSessionAuthentication};
+  return {MENU_KEYS,DATA,FLOW_META,shouldHandle,createState,getDocuments,getHeaderModel,transition,establishesSessionAuthentication};
 });

@@ -1,0 +1,85 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+const {pathToFileURL}=require('node:url');
+const path=require('node:path');
+const os=require('node:os');
+(async()=>{
+  const browser=await chromium.launch({headless:true,executablePath:'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'});
+  const page=await browser.newPage({viewport:{width:390,height:520},isMobile:true,hasTouch:true});
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.setDefaultTimeout(5000);
+  const url=pathToFileURL(path.resolve('index.html')).href+'?v=v48';
+  const open=()=>page.getByRole('button',{name:'업무 검색 열기'}).click();
+  const input=()=>page.locator('.v48-search-page [data-v47search]');
+  const results=()=>page.locator('.v48-search-page [data-v47searchresults]');
+  try{
+    await page.goto(url);
+    assert.equal(await page.getByRole('button',{name:'업무 검색 열기'}).count(),1,'home must expose a search-screen launcher');
+    await page.locator('#s1view').evaluate(el=>{el.scrollTop=100;});await open();
+    assert.equal(await page.locator('#s1view').evaluate(el=>el.scrollTop),0);
+    assert.equal(await input().evaluate(el=>el===document.activeElement),true);
+    assert.equal(await page.locator('.v48-search-page .v48-search-top').innerText(),'검색');
+    assert.equal(await page.locator('.v48-bottom-nav').count(),0);
+    assert.equal(await page.locator('.v48-search-popular [data-v47searchgo]').count(),6);
+    assert.equal(await page.locator('[data-v48-keyword]').count(),0,'recent history must be real, not made-up examples');
+    await page.getByRole('button',{name:'검색 닫기'}).click();
+    assert.equal(await page.locator('#s1view').evaluate(el=>el.scrollTop),100);
+    assert.equal(await page.getByRole('button',{name:'업무 검색 열기'}).evaluate(el=>el===document.activeElement),true);
+    await open();await input().fill('비밀번호');await input().press('Enter');
+    assert.match(await results().innerText(),/추천 해결 방법/);
+    assert.match(await results().innerText(),/ID 비밀번호 재설정/);
+    assert.equal(await page.locator('[data-v48-search-suggestions]').isVisible(),false);
+    const fieldHeight=(await page.locator('.v48-search-field').boundingBox()).height;
+    await input().fill('공모주');await input().press('Enter');
+    await results().locator('[data-v47searchgo="v48:category:5"]').click();
+    assert.equal(await page.locator('[data-v48item="5-2"]').isVisible(),true);
+    assert.equal(await page.locator('.v48-bottom-nav').count(),0);
+    await page.locator('[data-s1back]').first().click();
+    assert.equal(await input().inputValue(),'공모주');
+    assert.match(await results().innerText(),/공모주·유상청약/);
+    await input().fill('없는업무xyz');await input().press('Enter');
+    assert.match(await results().innerText(),/검색 결과를 찾지 못했어요/);
+    await results().locator('[data-v47searchgo="menu"]').click();
+    const drawer=page.locator('#menuDrawer.on');
+    await drawer.locator('[data-v47search]').fill('서류');await drawer.locator('[data-v47searchbtn]').click();
+    assert.match(await drawer.locator('[data-v47searchresults]').innerText(),/서류 신청·발급/);
+    assert.equal(await input().inputValue(),'없는업무xyz');
+    await drawer.locator('[data-menuclose]').click();await drawer.waitFor({state:'detached'});
+    await input().fill('');
+    assert.equal(await results().isVisible(),false);
+    assert.equal(await page.locator('[data-v48-search-suggestions]').isVisible(),true);
+    assert.equal((await page.locator('.v48-search-field').boundingBox()).height,fieldHeight);
+    await page.locator('[data-v48-keyword="비밀번호"]').focus();await page.keyboard.press('Enter');
+    assert.match(await results().innerText(),/ID 비밀번호 재설정/);
+    assert.equal(await page.locator('[data-v48-keyword="비밀번호"]').count(),1);
+    assert.equal(await page.locator('[data-v48-keyword="비밀번호"]').evaluate(el=>el===document.activeElement),true);
+    await page.reload();await open();
+    assert.equal(await page.locator('[data-v48-keyword]').first().innerText(),'비밀번호');
+    await page.getByRole('button',{name:'최근 검색어 전체 삭제'}).click();
+    await page.reload();await open();assert.equal(await page.locator('[data-v48-keyword]').count(),0);
+    await page.locator('.v48-search-popular [data-v47searchgo="acctpw"]').click();
+    assert.match(await page.locator('#s1view').innerText(),/계좌\s*비밀번호/);
+    assert.equal(await page.locator('.v48-bottom-nav').count(),0);
+    await page.goto(url);await open();await page.locator('[data-v48-ai="work"]').click();
+    assert.equal(await page.locator('#aiChatOv').isVisible(),true);
+    await page.locator('[data-arsopen]').click();await open();
+    await page.locator('[data-v48-ai="invest"]').click();
+    assert.match(await page.locator('#appPop').innerText(),/AI투자/);
+    await page.locator('[data-appcancel]').click();
+    for(const term of ['하나','둘','셋','넷','다섯','여섯','<b>일곱</b>']){await input().fill(term);await input().press('Enter');}
+    assert.equal(await page.locator('[data-v48-keyword]').count(),6);
+    assert.equal(await page.locator('[data-v48-keyword]').first().innerText(),'<b>일곱</b>');
+    assert.equal(await page.locator('[data-v48-keyword] b').count(),0);
+    await page.getByRole('button',{name:'최근 검색어 전체 삭제'}).click();
+    for(const term of ['계좌비밀번호 재설정','연금저축','공동인증서']){await input().fill(term);await input().press('Enter');}
+    for(const width of [320,390,820,1006]){
+      await page.setViewportSize({width,height:892});await page.goto(url);await open();
+      assert.equal(await page.locator('.v48-search-page').evaluate(el=>el.scrollWidth<=el.clientWidth),true,'search overflow at '+width);
+      if(width===390||width===1006)await page.screenshot({path:path.join(os.tmpdir(),'v48-search-chips-'+width+'.png'),fullPage:true});
+    }
+    await page.setViewportSize({width:320,height:740});await page.goto(url);
+    await page.locator('[data-bigfont]').click();await open();
+    assert.equal(await page.locator('.v48-search-page').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
+    assert.deepEqual(errors,[]);
+    console.log('PASS dedicated search, history, solution routes, chatbot demos, no footer and responsive layout');
+  }finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exit(1);});

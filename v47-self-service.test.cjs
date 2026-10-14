@@ -255,7 +255,7 @@ test('VER4.7 ISA 신청현황 새로고침은 뒤로가기 라인의 투명 아�
   const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
   const css = fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8');
 
-  assert.match(app, /const isaRefresh = isV47\(\)\s*\? `<button type="button" class="v47-header-refresh" data-isacycle/);
+  assert.match(app, /const isaRefresh = isV47\(\)&&!isV48\(\)\s*\? `<button type="button" class="v47-header-refresh" data-isacycle/);
   assert.match(app, /\$\{v45AuthTop\(1, isaRefresh\)\}/);
   assert.match(css, /\.flow\.toss\.v47 \.v47-header-refresh\{[^}]*background:transparent/);
 });
