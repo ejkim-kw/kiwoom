@@ -28,13 +28,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install build dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build and verify presentation package
+        run: npm run test:demo
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact (저장소 루트 전체 = 정적 사이트)
+      - name: Upload presentation package only
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: './demo'
 
       # Deploy 스텝은 간헐적으로 실패할 수 있어 최대 3회 시도(원 1 + 재시도 2, 간격 대기).
       - name: Deploy to GitHub Pages

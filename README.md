@@ -1,5 +1,15 @@
 # kiwoom
 
+## 공유용 시연 페이지
+
+`npm ci` 후 `npm run build:demo`를 실행하면 `demo/index.html`이 생성됩니다. 기존 루트 `index.html`은 변경하지 않습니다. 생성된 `demo` 폴더는 다른 위치에 복사해도 실행할 수 있으며, `index.html`을 더블클릭해 열거나 정적 서버에서 제공합니다.
+
+공유용 페이지에는 Ver 4.8, Digital Form, 시연 기능만 있습니다. GitHub Pages는 `demo` 폴더만 게시하며 JavaScript/CSS는 압축하고 소스맵·테스트·개발 서버·원본 개별 소스 파일은 배포하지 않습니다. 배포 시 GitHub Actions가 매번 최신 소스로 다시 생성합니다.
+
+브라우저에서 실행되는 HTML/CSS/JavaScript를 개발자 도구나 소스 보기에서 완전히 숨길 수는 없습니다. 압축은 접근 제어가 아니며, 공개 GitHub 저장소의 소스와 커밋 이력도 계속 열람할 수 있습니다. 저장소의 원본 접근 제한은 비공개 저장소와 적절한 호스팅 접근 정책을 별도로 사용해야 합니다.
+
+`npm run test:demo`는 전용 페이지 생성, 원본 보존, 배포 파일 범위를 검사합니다.
+
 로컬 미리보기는 `start-preview.cmd`를 더블클릭하거나 `node preview-server.cjs`로 시작합니다.
 주소: http://127.0.0.1:4178/index.html?v=v48
 

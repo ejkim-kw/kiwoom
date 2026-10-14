@@ -1,0 +1,29 @@
+/* Presentation shell only; the original index.html never loads these rules. */
+body[data-demo-only] .stage{flex-wrap:nowrap}
+body[data-demo-only] .left-col{flex:none}
+body[data-demo-only] #sianList{width:100%}
+body[data-demo-only] .ref-item,
+body[data-demo-only] .func-item{width:100%;font-family:inherit;text-align:left;color:inherit}
+body[data-demo-only] .rf-nm,
+body[data-demo-only] .rf-tel{display:block}
+body[data-demo-only] .demo-tools{margin-top:22px}
+body[data-demo-only] .demo-tools summary{padding:6px 4px 12px;color:#b2a4da;font-size:13px;font-weight:700;cursor:pointer}
+body[data-demo-only] .demo-tools .func-item{margin-top:8px}
+body[data-demo-only] .ref-item:focus-visible,
+body[data-demo-only] .func-item:focus-visible,
+body[data-demo-only] summary:focus-visible{outline:2px solid #bba5ff;outline-offset:3px}
+@media(max-width:700px){
+  body[data-demo-only]{background:#1b1032}
+  body[data-demo-only] .stage{height:100dvh;display:flex;flex-direction:column;gap:0;overflow:hidden}
+  body[data-demo-only] .left-col{display:block!important;width:100%;margin:0;padding:8px 12px;background:#281442;max-height:50dvh;overflow:auto}
+  body[data-demo-only] #sianList{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
+  body[data-demo-only] #sianList>.ref-title{display:none}
+  body[data-demo-only] #sianList>.ref-item{margin:0;padding:10px 14px}
+  body[data-demo-only] .demo-tools{grid-column:1/-1;margin:0}
+  body[data-demo-only] .demo-tools summary{padding:4px;font-size:12px}
+  body[data-demo-only] .demo-tools .v48-demo-controls{margin-top:8px}
+  body[data-demo-only] #mainStage,
+  body[data-demo-only] .dars-deck.active{flex:1;min-height:0;width:100%}
+  body[data-demo-only] .dars-deck.active>.phone-wrap{height:100%}
+  body[data-demo-only] .phone{height:100%;width:100%;min-height:0}
+}

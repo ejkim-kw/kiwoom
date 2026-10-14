@@ -7857,7 +7857,7 @@ document.addEventListener('click', (e)=>{
 });
 
 /* 상단 시안 탭 */
-document.getElementById('schemeTabs').addEventListener('click',(e)=>{
+document.getElementById('schemeTabs')?.addEventListener('click',(e)=>{
   const b = e.target.closest('[data-scheme]');
   if(b) switchScheme(b.dataset.scheme);
 });
@@ -7891,7 +7891,8 @@ const SCHEME_META = {
 
 let refFirm = 'kiwoom';   // 참고 탭에서 현재 선택된 증권사 (기본: 키움증권 현행)
 let sianScheme = 's1';    // 시안 탭에서 현재 선택된 시안 (s1=시안1 / dars1=시안2 / dars2=시안3)
-let s1Ver = 'v47';        // 시안1 기본 버전 = Ver 4.7(v47). 맨 URL(파라미터 없음) 진입 시 메인을 Ver 4.7으로 표시. (타 버전은 QR ?v= 파라미터로 진입)
+function isDemoOnly(){ return document.body.dataset.demoOnly==='true'; }
+let s1Ver = isDemoOnly() ? 'v48' : 'v47'; // 전용 시연 페이지는 Ver 4.8, 기존 편집 페이지는 Ver 4.7로 시작.
 /* Ver 2.1 — 메인 3탭(셀프서비스/ARS메뉴/상담원연결)·드로어·favSrc 등 v21 전용 동작 게이트 */
 function isV21Ver(){ return s1Ver==='v21'; }
 /* Ver 4.0 계열 — 토스 스킨·9 카테고리(ARS_CAT6)·상담연결 팝업 등 공통 동작 게이트 (v40=리스트 메인 / v41=3×3 그리드 메인, 로직 동일) */
@@ -7904,6 +7905,7 @@ function isV471(){ return s1Ver==='v471'; }
 function isV47Restored(){ return s1Ver==='v47'; }
 function isV47(){ return isV47Restored() || isV471() || isV48(); }
 function switchScheme(s){
+  if(isDemoOnly() && s!=='sian') return;
   closeMenuDrawer();   // 탭/버전 전환 시 열려있던 전체메뉴 드로어 닫기
   scheme = s;
   const isRef  = (s==='ref');
@@ -8030,6 +8032,10 @@ function updateSceneLabel(){
 function selectRefFirm(firm){ refFirm = firm; switchScheme('ref'); }
 /* 시안 리스트: 시안 선택 → 해당 시안의 '메인(home) 화면'으로 띄움 (ver 지정 시 시안1 버전 전환) */
 function selectSian(v, ver){
+  if(isDemoOnly()){
+    if(v!=='s1' && v!=='dform') return;
+    if(v==='s1') ver='v48';
+  }
   v48CloseChoiceSheet(false);
   // 탭 전환 시 #screen에 떠 있던 오버레이(챗봇·매체시트·상담팝업·앱연결·안내팝업·계단주문·계좌시트 등) 모두 닫고 해당 탭 메인화면으로 진입
   closeAiChat(); closeMethodSheet(); closeConsult(); closeAppLink(); closeModal(); closeStkSheet(); closeAcctSheet(); closeCertSheet(); closeCalendar(); closeMenuDrawer();
@@ -8121,7 +8127,7 @@ function applyScenePanelEdit(){
 }
 /* 좌측 패널 탭 더블클릭 → 탭명/설명 인라인 편집(저장: localStorage) */
 function enableTabEdit(list, labelKey){
-  if(!list) return;
+  if(!list || isDemoOnly()) return;
   restoreTabLabels(list, labelKey);   // 저장된 탭명/설명 복원 (편집은 우측 패널에서)
 }
 function placeCaretEnd(el){

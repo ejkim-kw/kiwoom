@@ -1,0 +1,12 @@
+{
+  "name": "kiwoom-demo",
+  "private": true,
+  "scripts": {
+    "build:demo": "node scripts/build-demo.cjs",
+    "test:demo": "node --test tests/demo-build.test.cjs"
+  },
+  "devDependencies": {
+    "cheerio": "1.2.0",
+    "esbuild": "0.28.2"
+  }
+}
