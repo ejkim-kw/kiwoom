@@ -47,8 +47,20 @@ async function buildDemo(){
     el.tagName = 'button';
     $(el).attr('type', 'button');
   });
-  $('.left-col').attr('id', 'demoControlPanel').prepend('<div class="demo-panel-heading"><h2 id="demoControlTitle">시연 설정</h2><button type="button" data-demo-panel-close aria-label="시연 설정 닫기">×</button></div>').append('<div class="demo-panel-footer"><button type="button" data-demo-launcher-hide>+ 버튼 숨기기</button><p>새로고침하면 다시 표시돼요.</p></div>');
-  $('body').append('<button type="button" class="demo-panel-backdrop" data-demo-panel-close tabindex="-1" aria-label="시연 설정 닫기" hidden></button><button type="button" class="demo-launcher" aria-label="시연 설정 열기" aria-controls="demoControlPanel" aria-expanded="false" aria-haspopup="dialog"><span aria-hidden="true">+</span></button>');
+  $('.left-col').attr('id', 'demoControlPanel').append('<div class="demo-panel-footer"><button type="button" data-demo-launcher-hide title="새로고침하면 + 버튼이 다시 표시돼요.">숨기기</button></div>');
+  const actionIcons = [
+    ['[data-ver="v48"]','<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/>'],
+    ['[data-sian="dform"]','<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h6"/>'],
+    ['[data-v48-demo-reconnect]','<path d="M3 10a9 9 0 1 1 2.6 8.4M3 4v6h6"/>'],
+    ['[data-skipauth]','<path d="M12 3 3 7v6c0 5 9 9 9 9s9-4 9-9V7zM8 12l3 3 5-6"/>'],
+    ['[data-demo-autofill]','<path d="m13 2-9 12h7l-1 8 10-12h-7z"/>'],
+    ['[data-demo-attach-documents]','<path d="m21 11-9 9a6 6 0 0 1-8.5-8.5L13 2a4 4 0 0 1 5.7 5.7L9 17.4a2 2 0 0 1-2.8-2.8l9-9"/>'],
+    ['[data-demo-launcher-hide]','<path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A11 11 0 0 1 12 5c7 0 10 7 10 7a15 15 0 0 1-3 4M6.6 6.6A18 18 0 0 0 2 12s3 7 10 7a11 11 0 0 0 5.4-1.6"/>']
+  ];
+  for(const [selector,paths] of actionIcons){
+    $('#demoControlPanel').find(selector).prepend(`<svg class="demo-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths}</svg>`);
+  }
+  $('body').append('<button type="button" class="demo-panel-backdrop" data-demo-panel-close tabindex="-1" aria-label="시연 기능 닫기" hidden></button><button type="button" class="demo-launcher" aria-label="시연 기능 열기" aria-controls="demoControlPanel" aria-expanded="false" aria-haspopup="dialog"><span aria-hidden="true">+</span></button>');
   $('script').remove();
   $('link[rel="stylesheet"]').filter((_, el) => !/^https?:/.test($(el).attr('href'))).remove();
   function removeComments(node){

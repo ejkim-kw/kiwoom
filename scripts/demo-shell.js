@@ -12,17 +12,18 @@
     document.body.classList.toggle('demo-panel-open',floating);
     document.body.classList.toggle('demo-launcher-hidden',launcherHidden);
     launcher.setAttribute('aria-expanded',String(floating));
-    launcher.setAttribute('aria-label',floating?'시연 설정 닫기':'시연 설정 열기');
+    launcher.setAttribute('aria-label',floating?'시연 기능 닫기':'시연 기능 열기');
     backdrop.hidden=!floating;
     panel.inert=mobile.matches&&!floating;
     if(mobile.matches){
       panel.setAttribute('role','dialog');
       panel.setAttribute('aria-modal','true');
-      panel.setAttribute('aria-labelledby','demoControlTitle');
+      panel.setAttribute('aria-label','시연 기능');
+      panel.querySelector('.demo-tools').open=true;
     } else {
       panel.removeAttribute('role');
       panel.removeAttribute('aria-modal');
-      panel.removeAttribute('aria-labelledby');
+      panel.removeAttribute('aria-label');
     }
     customerScreens.forEach(screen=>{screen.inert=floating;});
   }
@@ -35,7 +36,7 @@
     if(opened){closePanel();return;}
     opened=true;
     render();
-    panel.querySelector('[data-demo-panel-close]').focus();
+    panel.querySelector('.ref-item').focus();
   });
   document.querySelectorAll('[data-demo-panel-close]').forEach(button=>button.addEventListener('click',()=>closePanel()));
   panel.querySelector('[data-demo-launcher-hide]').addEventListener('click',()=>{
@@ -57,10 +58,10 @@
     if(!mobile.matches||!opened)return;
     if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();closePanel();return;}
     if(event.key!=='Tab')return;
-    const focusable=[...panel.querySelectorAll('button,select,input,summary,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
+    const focusable=[...panel.querySelectorAll('button,select,input,summary,[tabindex="0"]'),launcher].filter(el=>!el.disabled&&el.getClientRects().length);
     const first=focusable[0],last=focusable[focusable.length-1];
-    if(event.shiftKey&&(document.activeElement===first||!panel.contains(document.activeElement))){event.preventDefault();last.focus();}
-    else if(!event.shiftKey&&(document.activeElement===last||!panel.contains(document.activeElement))){event.preventDefault();first.focus();}
+    if(event.shiftKey&&(document.activeElement===first||!focusable.includes(document.activeElement))){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&(document.activeElement===last||!focusable.includes(document.activeElement))){event.preventDefault();first.focus();}
   },true);
   mobile.addEventListener('change',()=>{
     const hadFocus=panel.contains(document.activeElement);
