@@ -24,7 +24,9 @@ test('presentation contains only Ver 4.8 and Digital Form, with no reference or 
   assert.deepEqual($('#sianList > [data-sian]').toArray().map(el => [$(el).attr('data-sian'), $(el).attr('data-ver')]), [['s1','v48'], ['dform',undefined]]);
   assert.equal($('#schemeTabs, #refList, .prev-title, .prev-item, #scenePanel, .stage-spacer').length, 0);
   assert.equal($('.flow, .dars-deck').length, 2);
-  assert.equal($('#v48DemoCustomer, [data-v48-demo-reconnect], [data-skipauth], [data-demo-fill-account], [data-demo-fill-phone], [data-demo-attach-documents]').length, 6);
+  assert.equal($('#v48DemoCustomer, [data-v48-demo-reconnect], [data-skipauth], [data-demo-autofill], [data-demo-attach-documents]').length, 5);
+  assert.equal($('[data-demo-fill-account], [data-demo-fill-phone], .demo-tools .rf-tel').length, 0);
+  assert.deepEqual($('.demo-tools > button .rf-nm').toArray().map(el=>$(el).text()), ['인증 초기화','본인인증 생략','자동입력','서류첨부']);
   assert.equal($('#dform-app').length, 1);
 });
 test('published package excludes development files and source maps', async () => {

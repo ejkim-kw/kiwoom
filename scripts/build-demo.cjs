@@ -34,7 +34,14 @@ async function buildDemo(){
   $('#sianList .ref-item').not('[data-ver="v48"], [data-sian="dform"]').remove();
   $('#sianList .func-title').remove();
   const tools = $('<details class="demo-tools" open><summary>시연 · 기능</summary></details>');
-  tools.append($('#v48DemoControls, #sianList .func-item'));
+  const autofill=$('#sianList [data-demo-fill-account]').removeAttr('data-demo-fill-account').attr('data-demo-autofill','');
+  autofill.find('.rf-nm').text('자동입력');
+  $('#sianList [data-demo-fill-phone]').remove();
+  const quick=$('#v48DemoControls').addClass('demo-quick-row');
+  quick.find('label').text('퀵넘버플러스');
+  const reset=quick.find('[data-v48-demo-reconnect]').addClass('func-item').html('<span class="rf-nm">인증 초기화</span>');
+  tools.append(reset,$('#sianList [data-skipauth]'),autofill,$('#sianList [data-demo-attach-documents]'),quick);
+  tools.find('.rf-tel').remove();
   $('#sianList').append(tools);
   $('#sianList .ref-item, #sianList .func-item').each((_, el) => {
     el.tagName = 'button';

@@ -44,6 +44,11 @@
     const screen=customerScreens.find(item=>item.getClientRects().length);
     if(screen){screen.setAttribute('tabindex','-1');screen.focus({preventScroll:true});}
   });
+  panel.querySelector('[data-demo-autofill]').addEventListener('click',()=>{
+    // Fill only the current ARS authentication screen, without advancing it.
+    if(sianScheme==='s1'&&(v48DemoFill()||fillDemoAccountAuthentication()||fillDemoPhoneAuthentication()))return;
+    flash('인증정보 입력 화면에서 사용해 주세요.');
+  });
   // Let existing delegated version and demo actions finish before closing the panel.
   panel.addEventListener('click',event=>{
     if(mobile.matches&&event.target.closest('.ref-item,.func-item,[data-v48-demo-reconnect]'))setTimeout(()=>closePanel(),0);
