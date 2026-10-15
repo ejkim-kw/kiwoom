@@ -2558,7 +2558,16 @@ function renderV47HelpAccountList(state){
 function renderV47AccountProfile(state){
   const p=V47MyInfo.DATA.accountProfile;
   const rows=[['주소',p.address],['연락처',p.phone],['마케팅 수신매체',p.marketing],['직업',p.occupation],['거주국가',p.residence]];
-  if(isV48())rows.splice(1,0,['이메일주소',p.email]);
+  if(isV48()){
+    rows.splice(1,0,['이메일주소',p.email]);
+    return `<div class="v45-authpage v48-account-profile">${v47MyInfoTop(state)}<div class="iod-v45-body">
+      <section class="iod-v45-card v48-result-card" aria-labelledby="v48ProfileTitle">
+        <div class="toss-dhead"><h2 class="td-title" id="v48ProfileTitle">계좌정보를 확인해 주세요</h2><p class="td-desc">등록된 정보는 영웅문S# 또는 상담원을 통해 변경할 수 있어요.</p></div>
+        <dl class="v48-result-details">${rows.map(([k,v])=>`<div class="v45-kv-row"><dt class="v45-kv-k">${v47Esc(k)}</dt><dd class="v45-kv-v">${v47Esc(v)}</dd></div>`).join('')}</dl>
+      </section>
+      <div class="v48-auth-actions v48-result-actions"><button type="button" class="v48-auth-button v48-lookup-action" data-v47mi-hero-profile>영웅문S# 연결</button><button type="button" class="v48-auth-button secondary" data-v47mi-agent>상담원 연결</button></div>
+    </div></div>`;
+  }
   return `<div class="v45-authpage">${v47MyInfoTop(state)}<div class="iod-v45-body"><div class="toss-dhead"><div class="td-title">계좌정보를 확인해 주세요</div><div class="td-desc">등록된 정보는 영웅문S# 또는 상담원을 통해 변경할 수 있어요.</div></div><div class="iod-v45-card v47mi-profile">${rows.map(([k,v])=>`<div class="v45-ir"><span class="v45-ik">${k}</span><span class="v45-iv">${v}</span></div>`).join('')}</div><div class="v47mi-dual"><button type="button" class="v47mi-dual-btn secondary" data-v47mi-agent>상담원 연결</button><button type="button" class="v47mi-dual-btn primary" data-v47mi-hero-profile>영웅문S#에서 변경</button></div></div></div>`;
 }
 function renderV47AccountNumbers(state){
@@ -4509,7 +4518,7 @@ function renderIsaResult(){
   if(isV45()){
     const st = ISA_RESULT_STATES.indexOf(s1state.isaTab) >= 0 ? s1state.isaTab : 'new';
     const rfs = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>';
-    const kv45 = rows => `<div class="${isV48()?'v48-isa-details':'iod-v45-card'}">` + rows.map(r=>`<div class="v45-kv-row"><span class="v45-kv-k">${r[0]}</span><span class="v45-kv-v${r[2]?' '+r[2]:''}">${r[1]}</span></div>`).join('') + `</div>`;
+    const kv45 = rows => `<div class="${isV48()?'v48-result-details v48-isa-details':'iod-v45-card'}">` + rows.map(r=>`<div class="v45-kv-row"><span class="v45-kv-k">${r[0]}</span><span class="v45-kv-v${r[2]?' '+r[2]:''}">${r[1]}</span></div>`).join('') + `</div>`;
     const newCard = kv45([
       ['상품명','중개형ISA'],['신청일자','2026.07.03'],['귀속년도','2026'],['가입유형','서민형'],
       ['신청방법','온라인'],['소득증빙서류','발급번호 확인 필요'],['접수상태','적격','up'],
@@ -4531,7 +4540,7 @@ function renderIsaResult(){
     if(isV48())return `<div class="iodresult-screen v45-authpage v48-isa-result">
       ${v45AuthTop(1)}
       <div class="iod-v45-body">
-        <section class="iod-v45-card v48-lookup-summary" aria-labelledby="v48IsaResultTitle">
+        <section class="iod-v45-card v48-result-card v48-lookup-summary" aria-labelledby="v48IsaResultTitle">
           <button type="button" class="v48-lookup-cycle" data-isacycle aria-label="다른 결과안내 보기" aria-describedby="v48IsaResultTitle"></button>
           <div class="toss-dhead"><h2 class="td-title" id="v48IsaResultTitle">${s.title}</h2><p class="td-desc">${s.desc}</p></div>
           ${s.body}

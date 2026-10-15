@@ -22,7 +22,7 @@ async function buildDemo(){
     scriptParts.push(await fs.readFile(path.join(root, name), 'utf8'));
     if(name === 'digital-form.js') scriptParts.push(formScripts[0]);
   }
-  scriptParts.push("if(window.matchMedia('(max-width:700px)').matches)document.querySelector('.demo-tools').open=false;");
+  scriptParts.push(await fs.readFile(path.join(__dirname, 'demo-shell.js'), 'utf8'));
 
   $('body').attr('data-demo-only', 'true');
   $('title').text('키움증권 디지털 ARS · Ver 4.8 / Digital Form');
@@ -40,6 +40,8 @@ async function buildDemo(){
     el.tagName = 'button';
     $(el).attr('type', 'button');
   });
+  $('.left-col').attr('id', 'demoControlPanel').prepend('<div class="demo-panel-heading"><h2 id="demoControlTitle">시연 설정</h2><button type="button" data-demo-panel-close aria-label="시연 설정 닫기">×</button></div>').append('<div class="demo-panel-footer"><button type="button" data-demo-launcher-hide>+ 버튼 숨기기</button><p>새로고침하면 다시 표시돼요.</p></div>');
+  $('body').append('<button type="button" class="demo-panel-backdrop" data-demo-panel-close tabindex="-1" aria-label="시연 설정 닫기" hidden></button><button type="button" class="demo-launcher" aria-label="시연 설정 열기" aria-controls="demoControlPanel" aria-expanded="false" aria-haspopup="dialog"><span aria-hidden="true">+</span></button>');
   $('script').remove();
   $('link[rel="stylesheet"]').filter((_, el) => !/^https?:/.test($(el).attr('href'))).remove();
   function removeComments(node){

@@ -469,6 +469,7 @@ function v48UpdatePhoneStage(form){
   form.querySelector('[data-v48-consent-open]').setAttribute('aria-checked',String(v48Flow.phoneDetails.agreed));
   form.toggleAttribute('data-v48-otp-form',requested);
   form.querySelector('.v48-phone-otp').hidden=!requested;
+  form.querySelector('.v48-otp-notice').hidden=!requested;
   otp.disabled=!requested;
   const code=requested?(v48Flow.phoneOtp||''):'';
   if(otp.value!==code)otp.value=code;
@@ -536,8 +537,9 @@ function renderV48PhoneForm(f){
       </div>
       <input type="checkbox" id="v48PhoneConsent" hidden ${details.agreed?'checked':''}>
       <button type="button" class="v48-phone-consent-row" data-v48-consent-open role="checkbox" aria-checked="${details.agreed}" aria-label="휴대폰 인증 약관 전체동의 (필수)" aria-haspopup="dialog" aria-expanded="false" aria-controls="v48PhoneSheet"><span class="v48-phone-check" aria-hidden="true">✓</span><span class="v48-phone-consent-label">휴대폰 인증 약관 전체동의 <b>(필수)</b></span><span class="v48-phone-consent-detail" aria-hidden="true">${I.chev}</span></button>
-      <div class="v48-phone-otp" ${requested?'':'hidden'}><div class="v48-phone-pill v48-otp-input"><label for="v48Otp">인증번호</label><input id="v48Otp" aria-label="인증번호" aria-describedby="v48OtpHelp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="숫자 6자리" value="${v47Esc(f.phoneOtp||'')}" ${requested?'':'disabled'}><span role="timer" data-v48-otp-time>3:00</span><button type="button" data-v48-otp-resend>재요청</button></div><p id="v48OtpHelp" class="v48-otp-help">인증문자가 수신되지 않을 경우 키움금융센터 대표번호<span class="v48-otp-help-number">(1544-9000)</span>가 차단 되었는지 확인해주세요.</p><p role="status" data-v48-otp-status hidden></p></div>
+      <div class="v48-phone-otp" ${requested?'':'hidden'}><div class="v48-phone-pill v48-otp-input"><label for="v48Otp">인증번호</label><input id="v48Otp" aria-label="인증번호" aria-describedby="v48OtpHelp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="숫자 6자리" value="${v47Esc(f.phoneOtp||'')}" ${requested?'':'disabled'}><span role="timer" data-v48-otp-time>3:00</span><button type="button" data-v48-otp-resend>재요청</button></div><p role="status" data-v48-otp-status hidden></p></div>
       <button class="v48-auth-button" type="submit" ${V48Auth.phoneRequestError(details)||(requested&&V48Auth.phoneVerifyError(f.phoneOtp,f.otpExpiresAt))?'disabled':''}>${requested?'인증 완료':'인증번호 요청'}</button>
+      <section class="v48-otp-notice" aria-labelledby="v48OtpNoticeTitle" ${requested?'':'hidden'}><h3 id="v48OtpNoticeTitle">안내사항</h3><p id="v48OtpHelp" class="v48-otp-help">인증문자가 수신되지 않을 경우 키움금융센터 대표번호<span class="v48-otp-help-number">(1544-9000)</span>가 차단 되었는지 확인해주세요.</p></section>
     </form>`;
 }
 function renderV48AccountAuth(f){

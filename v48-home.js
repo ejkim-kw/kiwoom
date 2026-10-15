@@ -105,9 +105,10 @@ function v48SelfServiceItems(){
 }
 function renderV48Header(){
   const warning='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.8a2 2 0 0 1 3.4 0l9 15.1A2 2 0 0 1 21 22H3a2 2 0 0 1-1.7-3.1Z" fill="#ff3e48"/><path d="M12 8v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18" r="1.2" fill="#fff"/></svg>';
-  return `<div class="v48-brand"><button type="button" class="toss-logo v48-home-logo" data-v48-home aria-label="키움증권 홈으로 이동"><img src="assets/kiwoom-symbol-v48.svg" alt=""></button><button type="button" class="v48-center-status v48-header-pill" data-v48-congestion aria-label="고객센터 혼잡도: 보통, 스킬별 상세 보기"><span class="v48-center-icon" aria-hidden="true">${I.headset}</span><b>보통</b></button></div>
+  return `<div class="v48-brand"><button type="button" class="toss-logo v48-home-logo" data-v48-home aria-label="키움증권 홈으로 이동"><img src="assets/kiwoom-symbol-v48.svg" alt=""></button></div>
     <div class="th-right">
       <button type="button" class="acc-report v48-header-pill" data-mediasheet="accident">${warning}<span>금융사기</span></button>
+      <button type="button" class="v48-center-status v48-header-pill" data-v48-congestion aria-label="고객센터 혼잡도: 보통, 스킬별 상세 보기"><span class="v48-center-icon" aria-hidden="true">${I.headset}</span><b>보통</b></button>
       <button type="button" class="bigfont-switch v48-header-pill ${bigFont?'on':''}" data-bigfont aria-pressed="${bigFont?'true':'false'}" aria-label="큰글씨"><span class="bfs-label">큰글씨</span></button>
       <button type="button" class="v48-header-menu" data-menu aria-label="전체메뉴 열기">${I.menu}</button>
     </div>`;
@@ -253,7 +254,7 @@ function renderV48AllMenu(){
   return `<div class="v48-menu-catalog"><section class="v48-menu-popular" aria-labelledby="v48PopularTitle"><h2 id="v48PopularTitle">${flame}인기메뉴</h2><div class="v48-menu-chips" tabindex="0" role="group" aria-label="인기메뉴 목록, 좌우로 이동">${popular}</div></section><div class="v48-menu-groups">${sections}</div></div>`;
 }
 function v48Page(title, description, body){
-  return `<div class="home-wrap toss-home v48-catalog-page"><div class="toss-stick"><div class="toss-top"><button type="button" class="toss-back" data-s1back aria-label="이전 화면">${I.chev}</button><div class="head-spacer"></div></div><div class="toss-dhead"><h1 class="td-title">${v47Esc(title)}</h1><p class="td-desc">${v47Esc(description)}</p></div></div>${body}</div>`;
+  return `<div class="home-wrap toss-home v48-catalog-page"><div class="toss-stick"><div class="toss-top"><button type="button" class="toss-back" data-s1back aria-label="이전 화면">${I.chev}</button><div class="head-spacer"></div></div><div class="toss-dhead"><h1 class="td-title">${v47Esc(title)}</h1><p class="td-desc">${v47Esc(description).replace(/\n/g,'<br>')}</p></div></div>${body}</div>`;
 }
 function renderV48Notice(){
   return `<div class="home-wrap toss-home v48-notice-page">
@@ -276,7 +277,7 @@ function renderV48Congestion(){
   const labels={free:'여유',normal:'보통',busy:'혼잡'};
   const badge=status=>`<span class="v48-skill-status v48-skill-${status}"><i aria-hidden="true"></i>${labels[status]}</span>`;
   const rows=FAV_MENU.map((skill,index)=>`<li class="v48-skill-row"><div><h3>${v47Esc(stripNum(skill.t))}</h3><p>${v47Esc(skill.subs.map(item=>item.t).join(' · '))}</p></div>${badge(statuses[index]||'normal')}</li>`).join('');
-  return v48Page('고객센터 혼잡도','상담 분야별 혼잡도를 확인해보세요.',`<section class="v48-congestion-detail" aria-labelledby="v48SkillTitle"><div class="v48-skill-heading"><h2 id="v48SkillTitle">스킬별 혼잡도</h2><span class="v48-skill-demo">시연용 현황</span></div><div class="v48-skill-legend" aria-label="혼잡도 구분">${['free','normal','busy'].map(badge).join('')}</div><ul class="v48-skill-list">${rows}</ul><p class="v48-skill-note">상담 대기 상황에 따라 혼잡도가 달라질 수 있어요.</p></section>`);
+  return v48Page('고객센터 혼잡도','상담 분야별 혼잡도를 확인해보세요.\n상담 대기 상황에 따라 혼잡도가 달라질 수 있어요.',`<section class="v48-congestion-detail" aria-label="상담 분야별 혼잡도"><ul class="v48-skill-list">${rows}</ul></section>`);
 }
 function renderV48Category(){
   const category=V48Menu.categories.find(item=>item.id===s1state.v48Category);

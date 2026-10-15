@@ -12,16 +12,31 @@ body[data-demo-only] .demo-tools .func-item{margin-top:8px}
 body[data-demo-only] .ref-item:focus-visible,
 body[data-demo-only] .func-item:focus-visible,
 body[data-demo-only] summary:focus-visible{outline:2px solid #bba5ff;outline-offset:3px}
+body[data-demo-only] :is(.demo-launcher,.demo-panel-backdrop,.demo-panel-heading,.demo-panel-footer){display:none}
 @media(max-width:700px){
   body[data-demo-only]{background:#1b1032}
   body[data-demo-only] .stage{height:100dvh;display:flex;flex-direction:column;gap:0;overflow:hidden}
-  body[data-demo-only] .left-col{display:block!important;width:100%;margin:0;padding:8px 12px;background:#281442;max-height:50dvh;overflow:auto}
+  body[data-demo-only]{--demo-overlay-layer:900;--demo-edge:16px}
+  body[data-demo-only] .left-col{display:none!important;position:fixed;z-index:calc(var(--demo-overlay-layer) + 1);right:calc(var(--demo-edge) + env(safe-area-inset-right));bottom:calc(80px + env(safe-area-inset-bottom));width:min(360px,calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));max-height:calc(100dvh - 96px - env(safe-area-inset-top) - env(safe-area-inset-bottom));box-sizing:border-box;margin:0;padding:16px;background:#281442;border:1px solid #59416f;border-radius:20px;box-shadow:0 12px 32px #140b2a40;overflow:auto;overscroll-behavior:contain}
+  body[data-demo-only].demo-panel-open .left-col{display:block!important}
+  body[data-demo-only] .demo-launcher{display:grid;place-items:center;position:fixed;z-index:calc(var(--demo-overlay-layer) + 1);right:calc(var(--demo-edge) + env(safe-area-inset-right));bottom:calc(var(--demo-edge) + env(safe-area-inset-bottom));width:48px;height:48px;padding:0;border:1px solid #ffffff60;border-radius:50%;background:#7428d5;color:#fff;font:400 32px/1 sans-serif;box-shadow:0 4px 16px #140b2a40;cursor:pointer;touch-action:manipulation}
+  body[data-demo-only].demo-launcher-hidden .demo-launcher{display:none}
+  body[data-demo-only] .demo-launcher[aria-expanded="true"] span{transform:rotate(45deg)}
+  body[data-demo-only] .demo-panel-backdrop:not([hidden]){display:block;position:fixed;inset:0;z-index:var(--demo-overlay-layer);width:100%;height:100%;padding:0;border:0;background:#140b2a66;cursor:default}
+  body[data-demo-only] .demo-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+  body[data-demo-only] .demo-panel-heading h2{margin:0;color:#fff;font-size:18px;line-height:1.5}
+  body[data-demo-only] [data-demo-panel-close]:not(.demo-panel-backdrop){width:44px;height:44px;padding:0;border:1px solid #756387;border-radius:50%;background:transparent;color:#fff;font:400 28px/1 sans-serif;cursor:pointer}
+  body[data-demo-only] .demo-panel-footer{display:block;margin-top:16px;padding-top:16px;border-top:1px solid #59416f}
+  body[data-demo-only] [data-demo-launcher-hide]{width:100%;min-height:44px;padding:10px 16px;border:1px solid #aa91cf;border-radius:999px;background:transparent;color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  body[data-demo-only] .demo-panel-footer p{margin:8px 0 0;color:#c9bbdf;text-align:center;font-size:12px;line-height:1.5}
+  body[data-demo-only] :is(.demo-launcher,[data-demo-panel-close],[data-demo-launcher-hide]):focus-visible{outline:2px solid #bba5ff;outline-offset:3px}
   body[data-demo-only] #sianList{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
   body[data-demo-only] #sianList>.ref-title{display:none}
-  body[data-demo-only] #sianList>.ref-item{margin:0;padding:10px 14px}
+  body[data-demo-only] #sianList>.ref-item{min-height:44px;margin:0;padding:12px 16px}
   body[data-demo-only] .demo-tools{grid-column:1/-1;margin:0}
-  body[data-demo-only] .demo-tools summary{padding:4px;font-size:12px}
+  body[data-demo-only] .demo-tools summary{box-sizing:border-box;min-height:44px;padding:12px 4px;font-size:13px}
   body[data-demo-only] .demo-tools .v48-demo-controls{margin-top:8px}
+  body[data-demo-only] .v48-demo-controls :is(select,button){min-height:44px}
   body[data-demo-only] #mainStage,
   body[data-demo-only] .dars-deck.active{flex:1;min-height:0;width:100%}
   body[data-demo-only] .dars-deck.active>.phone-wrap{height:100%}
