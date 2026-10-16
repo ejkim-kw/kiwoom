@@ -48,3 +48,15 @@ test('all local resources referenced by the entry exist inside the demo package'
     assert.ok((await fs.stat(path.join(output, value))).isFile(), value);
   }
 });
+
+test('public build includes approved presentation data but excludes local authoring code and styles', async () => {
+  const source=await fs.readFile(path.join(output,$('script').attr('src')),'utf8');
+  const css=await fs.readFile(path.join(output,$('link[href$=".css"]').last().attr('href')),'utf8');
+  assert.equal($('[data-local-editor],#localEditor,.local-copy-dialog').length,0);
+  assert.ok(source.includes('KiwoomContentData'));
+  assert.ok(!source.includes('kiwoom.local-content-draft'));
+  assert.ok(!source.includes('showSaveFilePicker'));
+  assert.ok(!source.includes('data-editor-export'));
+  assert.ok(!css.includes('local-copy-dialog'));
+  assert.ok(!css.includes('#localEditor'));
+});

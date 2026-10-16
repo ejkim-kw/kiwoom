@@ -1,0 +1,48 @@
+/* Local authoring controls. Never included in the presentation bundle. */
+.local-admin .stage-spacer{width:260px;z-index:100}
+.local-admin #scenePanel{display:none!important}
+#localEditor{position:sticky;top:20px;margin-top:54px;padding:20px;background:#fbfbff;border:1px solid #dedfeb;border-radius:20px;color:#212266;font-size:13px;line-height:1.6;box-shadow:0 12px 36px #09092326}
+#localEditor [hidden],.local-copy-dialog [hidden]{display:none!important}
+#localEditor h2{margin:7px 0 4px;font-size:21px;line-height:1.4;letter-spacing:-.6px}
+#localEditor p{margin:0;color:#626780}
+.local-editor-tag{font-size:10px;font-weight:750;letter-spacing:1.5px;color:#747996}
+#localEditor button,.local-copy-dialog button{font:inherit;line-height:1.4;cursor:pointer;border:1px solid #d4d6e7;background:white;color:#212266;border-radius:10px;padding:10px 11px;min-height:40px}
+#localEditor button:hover:not(:disabled),.local-copy-dialog button:hover{background:#eeeeF7}
+#localEditor button:disabled{opacity:.4;cursor:default}
+#localEditor :focus-visible,.local-copy-dialog :focus-visible{outline:3px solid #578ff0;outline-offset:3px}
+.local-editor-modes{display:flex;gap:4px;margin-top:18px;padding:4px;background:#ececf5;border-radius:12px}
+#localEditor .local-editor-modes button{flex:1;padding:8px 3px;border:0;border-radius:8px;background:transparent;font-size:12px;font-weight:700;white-space:nowrap}
+#localEditor .local-editor-modes button[aria-pressed="true"]{background:#212266;color:white;box-shadow:0 2px 6px #21226624}
+.local-editor-guide{margin:16px 0;padding:13px;background:#f0f1f9;border-radius:12px}
+#localEditor [data-editor-selection]{display:block;margin:12px 0 8px;color:#212266;font-size:13px}
+.local-editor-pair{display:flex;gap:6px}
+.local-editor-pair>button{flex:1;min-width:0}
+#localEditor small,.local-copy-dialog small{display:block;font-size:11px;color:#747996;line-height:1.7;margin-top:10px}
+.local-editor-save{margin-top:18px;border-top:1px solid #e1e2ec;padding-top:17px}
+#localEditor [data-editor-count]{display:block;font-size:13px}
+#localEditor [data-editor-status]{font-size:12px;margin:6px 0 13px;overflow-wrap:anywhere}
+#localEditor .local-editor-save>button{display:block;width:100%;margin-top:8px}
+#localEditor .local-editor-primary,.local-copy-dialog .local-editor-primary{background:#212266;border-color:#212266;color:white;font-weight:700}
+#localEditor .local-editor-primary:hover,.local-copy-dialog .local-editor-primary:hover{background:#333580}
+#localEditor details{border-top:1px solid #e1e2ec;margin-top:17px;padding-top:12px}
+#localEditor summary{cursor:pointer;font-size:12px;color:#626780}
+#localEditor ul{padding-left:18px;max-height:180px;overflow:auto;font-size:12px;color:#626780;overflow-wrap:anywhere}
+#localEditor [data-editor-reset]{width:100%;font-size:11px}
+#localEditor [data-editor-stale]{margin-top:12px;width:100%}
+[data-local-movable]{cursor:grab!important;outline:1px dashed #6e78b6!important;outline-offset:-3px;touch-action:none;user-select:none}
+[data-local-movable]:active{cursor:grabbing!important}
+[data-local-selected]{outline:2px solid #212266!important;background:#ededfa!important}
+[data-local-drop]{outline:3px solid #438bf0!important;background:#e5efff!important}
+[data-local-edit-mode="text"] .phone-wrap :is(h1,h2,h3,p,label,dt,dd,span,b,strong,button,a):not(:has(input,textarea,select)):hover{cursor:text;outline:1px dashed #5978d0;outline-offset:2px}
+.local-copy-dialog{width:min(480px,calc(100vw - 40px));box-sizing:border-box;padding:26px;border:1px solid #dedfeb;border-radius:20px;background:#fff;color:#212266;box-shadow:0 20px 80px #10133f40;font-family:inherit;font-size:14px;line-height:1.6}
+.local-copy-dialog::backdrop{background:#12163488;backdrop-filter:blur(3px)}
+.local-copy-dialog h2{font-size:21px;margin:0 0 8px}
+.local-copy-dialog p{font-size:13px;margin:8px 0 15px;color:#626780}
+.local-copy-dialog details{margin:12px 0 16px;color:#747996;font-size:12px}
+.local-copy-dialog details p{white-space:pre-line;padding:10px;background:#f6f6fa;border-radius:8px;max-height:140px;overflow:auto;overflow-wrap:anywhere}
+.local-copy-dialog label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+.local-copy-dialog textarea{width:100%;box-sizing:border-box;resize:vertical;border:1px solid #cfd2e5;border-radius:12px;padding:13px;font-family:inherit;font-size:16px;line-height:1.6;color:#212266;background:white;min-height:130px}
+.local-copy-dialog [data-copy-error]{color:#b42336;min-height:0;margin:8px 0}
+.local-copy-dialog [data-copy-error]:empty{display:none}
+.local-copy-dialog .local-editor-pair{margin-top:18px}
+@media(max-width:700px){.local-admin .stage-spacer{display:block!important;width:auto;margin:16px}.local-admin #localEditor{position:static;margin-top:0}.local-admin .deck-head{display:none}}

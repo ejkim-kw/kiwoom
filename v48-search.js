@@ -18,7 +18,7 @@ function v48RecentSearches(){
     ${v48SearchHistory.length?`<div class="v48-search-chips" role="group" aria-label="최근 검색어 목록">${v48SearchHistory.slice(0,V48_SEARCH_BADGE_LIMIT).map(keyword=>`<span class="v48-search-keyword"><button type="button" data-v48-keyword="${v47Esc(keyword)}">${v47Esc(keyword)}</button><button type="button" data-v48-delete-keyword="${v47Esc(keyword)}" aria-label="${v47Esc(keyword)} 검색어 삭제"><span aria-hidden="true">${I.x}</span></button></span>`).join('')}</div>`:'<p class="v48-search-empty-history">검색한 단어가 여기에 표시돼요.</p>'}`;
 }
 function v48SearchRecentMenus(){
-  return `<section class="v48-search-recent" aria-labelledby="v48SearchRecentTitle"><h2 id="v48SearchRecentTitle">${V48_RECENT_STAR}최근 본 메뉴</h2><div class="v48-menu-chips" role="group" aria-label="최근 본 메뉴 목록">${v48RecentMenus.slice(0,V48_SEARCH_BADGE_LIMIT).map(item=>`<button type="button" data-v47recent data-v47searchgo="${v47Esc(item.action)}" data-v47title="${v47Esc(item.title)}">${v47Esc(item.title)}</button>`).join('')}</div></section>`;
+  return `<section class="v48-search-recent" aria-labelledby="v48SearchRecentTitle"><h2 id="v48SearchRecentTitle">${V48_RECENT_STAR}최근 본 메뉴</h2><div class="v48-menu-chips" role="group" aria-label="최근 본 메뉴 목록">${v48RecentMenus.slice(0,V48_SEARCH_BADGE_LIMIT).map(item=>`<button type="button" data-v47recent data-v47searchgo="${v47Esc(item.action)}" data-v47title="${v47Esc(v48ActionTitle(item.action,item.title))}">${v47Esc(v48ActionTitle(item.action,item.title))}</button>`).join('')}</div></section>`;
 }
 function renderV48Search(){
   const popular=[
@@ -45,7 +45,7 @@ function renderV48Search(){
       <div data-v48-search-suggestions>
         <section class="v48-search-popular v48-menu-popular" aria-labelledby="v48PopularTitle">
           <h2 id="v48PopularTitle">${flame}인기메뉴</h2>
-          <div class="v48-menu-chips" role="group" aria-label="인기메뉴 목록">${popular.slice(0,V48_SEARCH_BADGE_LIMIT).map(item=>`<button type="button" data-v47searchgo="${item.action}" data-v47title="${v47Esc(item.title)}">${v47Esc(item.title)}</button>`).join('')}</div>
+          <div class="v48-menu-chips" role="group" aria-label="인기메뉴 목록">${popular.slice(0,V48_SEARCH_BADGE_LIMIT).map(item=>`<button type="button" data-v47searchgo="${item.action}" data-v47title="${v47Esc(v48ActionTitle(item.action,item.title))}">${v47Esc(v48ActionTitle(item.action,item.title))}</button>`).join('')}</div>
         </section>
         <section class="v48-search-chat" aria-labelledby="v48ChatTitle">
           <h2 id="v48ChatTitle"><span class="v48-chat-icon" aria-hidden="true">${I.chat}</span>챗봇 추천</h2>

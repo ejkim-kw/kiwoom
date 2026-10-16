@@ -12,6 +12,9 @@ const mediaExtensions = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.ico
 async function buildDemo(){
   const original = await fs.readFile(path.join(root, 'index.html'), 'utf8');
   const $ = cheerio.load(original.replace(/^\uFEFF/, ''));
+  // Authoring UI and draft storage belong only to the local root entry.
+  $('[data-local-editor]').remove();
+  require('../content-model.js').validate(require('../content-data.js'), require('../v48-menu-data.js'));
   const formScripts = $('script:not([src])').toArray().map(el => $(el).html()).filter(text => text.includes('window.__dformHome='));
   if(formScripts.length !== 1) throw new Error('Expected one current Digital Form controller.');
   const sources = $('script[src]').toArray().map(el => $(el).attr('src').split('?')[0]);
@@ -22,6 +25,7 @@ async function buildDemo(){
     scriptParts.push(await fs.readFile(path.join(root, name), 'utf8'));
     if(name === 'digital-form.js') scriptParts.push(formScripts[0]);
   }
+  scriptParts.push(await fs.readFile(path.join(__dirname, 'demo-mobile-inputs.js'), 'utf8'));
   scriptParts.push(await fs.readFile(path.join(__dirname, 'demo-shell.js'), 'utf8'));
 
   $('body').attr('data-demo-only', 'true');

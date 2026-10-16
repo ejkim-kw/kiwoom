@@ -10,6 +10,7 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=20261013-result-cards">
 <link rel="stylesheet" href="v48-home.css?v=20261014-linked-bank-card">
+<link rel="stylesheet" href="local-editor.css" data-local-editor>
 </head>
 <body>
 
@@ -1487,10 +1488,12 @@
       stepper.innerHTML=labels.map(function(label,i){return '<span class="df-step '+(i<step?'done ':i===step?'current ':'')+'"'+(i===step?' aria-current="step"':'')+'><i>'+(i<step?'✓':i+1)+'</i><b>'+label+'</b></span>';}).join('');
     }
     function listView(){
+      phone.dataset.contentScreen='list';
       setStepper(0);
       app.innerHTML='<div class="dform-view df-customer-list"><div class="df-list">'+Object.keys(tasks).map(function(id){return '<button type="button" class="df-row" data-dfgo="'+id+'"><span class="df-row-copy"><span class="df-category '+DigitalForm.categoryClass(tasks[id].category)+'">'+tasks[id].category+'</span><span class="df-nm">'+tasks[id].title+'</span></span>'+arrow+'</button>';}).join('')+'</div></div>';
     }
     function detailView(){
+      phone.dataset.contentScreen='detail:'+state.taskId;
       setStepper(0);
       var task=tasks[state.taskId],ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean),visibleCount=task.maxAttachments?DigitalForm.visibleAttachmentCount(state.session,task.maxAttachments):task.docs.length;
       var requirement=DigitalForm.requirementLabel(task);
@@ -1511,6 +1514,7 @@
       detailView();app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov df-guide-ov" data-dfguideclose><div class="df-sheet df-guide-sheet" role="dialog" aria-modal="true" aria-label="'+guide.title+'"><div class="df-sheet-handle"></div><div class="df-guide-head"><div class="df-sheet-title">'+guide.title+'</div><button type="button" data-dfguideclose aria-label="서류안내 닫기">×</button></div><div class="df-guide-doc">'+doc.name+'</div><p class="df-guide-desc">'+guide.description+'</p><ul>'+guide.notes.map(function(note){return '<li>'+note+'</li>';}).join('')+'</ul><div class="df-guide-checks">'+guide.checks.map(function(check){return '<span>✓ '+check+'</span>';}).join('')+'</div><div class="df-guide-sample-title">샘플 이미지 <b>예시</b></div><img class="df-guide-sample" src="'+guide.sample+'" alt="'+doc.name+' 예시 이미지"></div></div>');
     }
     function demoView(method){
+      phone.dataset.contentScreen='demo:'+state.taskId+':'+method+':'+state.target;
       state.view='demo';state.method=method;setStepper(1);
       var task=tasks[state.taskId],doc=(task.docs[Math.min(state.target,task.docs.length-1)]||{}).name,body='';
       if(method==='camera')body='<div class="df-camera"><div class="df-camera-guide"><span></span><b>'+doc+'</b><small>가이드 안에 서류 전체가 보이게 해주세요</small></div></div><button type="button" class="df-demo-submit" data-dfcomplete>촬영하고 사용하기</button>';
@@ -1519,6 +1523,7 @@
       app.innerHTML='<div class="dform-view df-demo"><div class="df-demo-head"><button type="button" data-dfdemoback aria-label="첨부 방법으로 돌아가기">‹</button><div><b>'+methodLabel(method)+'</b><small>'+doc+'</small></div></div>'+body+'</div>';
     }
     function doneView(){
+      phone.dataset.contentScreen='done:'+state.taskId;
       var task=tasks[state.taskId],current=state.session.status;setStepper(2);
       app.innerHTML='<div class="dform-view df-receipt"><div class="df-done"><div class="df-done-ic">✓</div><div class="df-done-t">접수가 완료됐어요</div><div class="df-done-d">서류를 확인한 뒤 알림톡으로 진행 상황을 안내해 드릴게요.</div></div><div class="df-receipt-card"><dl><div><dt>업무명</dt><dd>'+task.title+'</dd></div><div><dt>접수번호</dt><dd>'+state.session.receiptNo+'</dd></div><div><dt>접수일시</dt><dd>'+state.session.submittedAt+'</dd></div></dl><div class="df-status-title">접수 상태</div><div class="df-status-flow">'+DigitalForm.STATUSES.map(function(s,i){var active=s.id===current;return '<div class="'+(active?'current':'')+'"><i>'+(active?'●':'○')+'</i><span><b>'+s.label+'</b><small>'+(['서류가 정상적으로 접수됐어요','담당자가 제출 서류를 확인하고 있어요','추가 또는 수정 서류가 필요해요','요청된 서류를 보완하고 있어요','업무 처리가 모두 완료됐어요'][i])+'</small></span></div>';}).join('')+'</div></div><div class="df-foot"><button type="button" class="df-submit" data-dfhome>확인</button></div></div>';
     }
@@ -1702,10 +1707,14 @@
 <script src="v48-auth.js?v=20261014-account-reuse"></script>
 <script src="v48-auth-ui.js?v=20261014-account-reuse"></script>
 <script src="v48-menu-data.js?v=20261013-menu-refinement"></script>
+<script src="content-data.js"></script>
+<script src="content-model.js"></script>
+<script src="content-runtime.js"></script>
 <script src="v48-home.js?v=20261014-linked-bank-direct"></script>
 <script src="v48-search.js?v=20261013-search-badges"></script>
   <script src="v48-navigation.js?v=20261014-menu-spacing"></script>
 <script src="app.js?v=20261014-linked-bank-card"></script>
+<script src="local-editor.js" data-local-editor></script>
 <script>
 /* 디지털ARS 시안 탭 · 인터랙션 (app.js와 독립) */
 (function(){

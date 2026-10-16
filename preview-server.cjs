@@ -11,6 +11,7 @@ const marker = 'kiwoom-local-preview';
 const root = fs.realpathSync(__dirname);
 const logPath = path.join(os.tmpdir(), 'kiwoom-preview-server.log');
 const publicFiles = new Set(['index.html','style.css','v48-home.css','app.js','digital-form.js','v47-self-service.js','v47-myinfo.js','v47-untact.js','v48-documents.js','v48-documents-ui.js','v48-auth.js','v48-auth-ui.js','v48-menu-data.js','v48-home.js','v48-search.js','v48-navigation.js']);
+['content-data.js','content-model.js','content-runtime.js','local-editor.js','local-editor.css'].forEach(name=>publicFiles.add(name));
 const types = {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.ico':'image/x-icon','.woff2':'font/woff2'};
 
 function serve(){

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build:demo": "node scripts/build-demo.cjs",
-    "test:demo": "node --test tests/demo-build.test.cjs"
+    "apply:content": "node scripts/apply-content.cjs",
+    "test:demo": "node --test tests/demo-build.test.cjs tests/content-editor.test.cjs tests/demo-mobile-inputs.test.cjs tests/v48-phone-input.test.cjs tests/v48-menu-data.test.cjs tests/v48-quick-enrollment.test.cjs v48-auth.test.cjs tests/v48-account-session.test.cjs"
   },
   "devDependencies": {
     "cheerio": "1.2.0",

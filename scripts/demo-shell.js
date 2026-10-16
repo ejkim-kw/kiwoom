@@ -52,7 +52,14 @@
   });
   // Let existing delegated version and demo actions finish before closing the panel.
   panel.addEventListener('click',event=>{
-    if(mobile.matches&&event.target.closest('.ref-item,.func-item,[data-v48-demo-reconnect]'))setTimeout(()=>closePanel(),0);
+    if(mobile.matches&&event.target.closest('.ref-item,.func-item,[data-v48-demo-reconnect]')){
+      const autofill=!!event.target.closest('[data-demo-autofill]');
+      setTimeout(()=>{
+        const field=autofill?document.querySelector('#v48Otp:not(:disabled),#v48Password,[data-v48-phone-form] [type="submit"]:not(:disabled)'):null;
+        closePanel(!field);
+        if(field)window.DemoMobileInputs.focus(field);
+      },0);
+    }
   });
   document.addEventListener('keydown',event=>{
     if(!mobile.matches||!opened)return;

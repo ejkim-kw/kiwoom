@@ -41,6 +41,35 @@ function v48ClosePhoneSheet(restoreFocus=true){
 function v48CloseChoiceSheet(restoreFocus=true){
   if(v48ChoiceSheetCleanup)v48ChoiceSheetCleanup(restoreFocus);
 }
+function v48FocusField(field){
+  if(!field||field.disabled)return;
+  if(typeof window!=='undefined'&&window.DemoMobileInputs)window.DemoMobileInputs.focus(field);
+  else field.focus({preventScroll:true});
+}
+function v48NextPhoneField(form){
+  const details=v48Flow.phoneDetails;
+  const target=!details.name.trim()?'#v48Name':!/^\d{6}$/.test(details.dob)?'#v48Dob':
+    !/^[1-8]$/.test(details.gender)?'#v48Gender':!details.carrier?'[data-v48-carrier-open]':
+    !/^01\d{8,9}$/.test(details.phone.replace(/[\s-]/g,''))?'#v48Phone':
+    !details.agreed?'[data-v48-consent-open]':'[type="submit"]';
+  v48FocusField(form.querySelector(target));
+}
+function v48AdvancePhoneInput(event,form){
+  if(event.isComposing||event.inputType?.startsWith('delete'))return;
+  const input=event.target,details=v48Flow.phoneDetails;
+  if(input.id==='v48Dob'&&/^\d{6}$/.test(input.value)){
+    const next=form.querySelector('#v48Gender');
+    v48FocusField(next);next?.select();
+  }
+  else if(input.id==='v48Gender'&&/^[1-8]$/.test(input.value)){
+    if(!details.carrier)v48OpenPhoneSheet('carrier');
+    else if(!details.agreed)v48OpenPhoneSheet('terms');
+    else v48NextPhoneField(form);
+  } else if(input.id==='v48Phone'&&/^01\d{9}$/.test(input.value.replace(/[\s-]/g,''))){
+    if(details.carrier&&!details.agreed)v48OpenPhoneSheet('terms');
+    else v48NextPhoneField(form);
+  }
+}
 // Shared list picker: use the phone carrier sheet's layout and selection treatment.
 function v48OpenChoiceSheet({title,options,value,trigger,onSelect,restoreTrigger}){
   if(!isV48()||trigger?.disabled)return;
@@ -161,11 +190,15 @@ function v48OpenPhoneSheet(kind){
     const option=event.target.closest('[data-v48-carrier-option]');
     if(option){
       form.querySelector('#v48Carrier').value=option.dataset.v48CarrierOption;
-      v48ClosePhoneSheet();v48SyncPhoneForm(form);return;
+      v48ClosePhoneSheet(false);v48SyncPhoneForm(form);
+      if(!v48Flow.phoneDetails.agreed)v48OpenPhoneSheet('terms');
+      else v48NextPhoneField(form);
+      return;
     }
     if(event.target.closest('[data-v48-consent-confirm]')){
       form.querySelector('#v48PhoneConsent').checked=true;
-      v48ClosePhoneSheet();v48SyncPhoneForm(form);
+      v48ClosePhoneSheet(false);v48SyncPhoneForm(form);
+      v48NextPhoneField(form);
     }
   });
   overlay.addEventListener('keydown',event=>{
@@ -180,35 +213,31 @@ function v48OpenPhoneSheet(kind){
   // The sheet starts below the screen while animating; focusing it must not scroll the page or mockup.
   initialFocus.focus({preventScroll:true});
 }
-function v48OpenQuickHelp(){
-  v48OpenPasswordSheet('quick');
-}
 function v48SyncPasswordForm(){
   const form=document.querySelector('[data-v48-password-form]');
   if(!form)return;
   form.querySelector('[type="submit"]').disabled=v48Flow?.step!=='password'||!/^\d{4,8}$/.test(form.querySelector('#v48Password').value);
 }
 function v48OpenPasswordSheet(kind){
-  const validStep=kind==='quick'?['accounts','password'].includes(v48Flow?.step):v48Flow?.step==='password';
+  const validStep=v48Flow?.step==='password';
   if(!isV48()||!validStep||v48ExpireSession())return;
-  if(kind==='quick'&&!v48Flow.offerEnrollment)return;
   v48CloseQuickHelp(false);
   const screen=document.getElementById('screen');
-  const keypad=kind==='keypad',quick=kind==='quick';
-  const trigger=document.querySelector(keypad?'#v48Password':quick?'[data-v48-quick-help]':'[data-v48-password-help]');
+  const keypad=kind==='keypad';
+  const trigger=document.querySelector(keypad?'#v48Password':'[data-v48-password-help]');
   if(!screen||!trigger)return;
   const input=document.getElementById('v48Password');
   let draft=keypad?input.value:'';
-  const title=keypad?'계좌 비밀번호 입력':quick?'퀵넘버플러스 등록 안내':'증권계좌 비밀번호 재설정';
+  const title=keypad?'계좌 비밀번호 입력':'증권계좌 비밀번호 재설정';
   const overlay=document.createElement('div');
-  overlay.id=keypad?'v48PasswordKeypad':quick?'v48QuickHelp':'v48PasswordHelp';
+  overlay.id=keypad?'v48PasswordKeypad':'v48PasswordHelp';
   overlay.className='v48-phone-sheet-overlay v48-password-sheet-overlay v48';
   // Numeric keypad presentation for this prototype; no credentials leave the page.
   const digits=Array.from({length:10},(_,index)=>String(index));
   if(keypad)for(let i=digits.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[digits[i],digits[j]]=[digits[j],digits[i]];}
   const key=value=>`<button type="button" data-v48-password-key="${value}">${value}</button>`;
-  const content=keypad?`<div class="v48-keypad-value" data-v48-keypad-value role="status" aria-live="polite"></div><div class="v48-password-keys">${digits.map(key).join('')}<button type="button" data-v48-password-key="clear">전체삭제</button><button type="button" data-v48-password-key="back" aria-label="한 자리 삭제">⌫</button></div>`:quick?'<p>퀵넘버플러스는 고객님의 전화번호와 선택한 계좌를 연결해 디지털 ARS 이용을 돕는 서비스예요.</p><p>등록은 선택사항이며, 동의하지 않아도 지금 업무를 처리할 수 있어요.</p>':'<p>증권계좌 비밀번호는 <b>숫자 4~8자리</b>예요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서 다시 설정할 수 있어요.</p>';
-  const action=keypad?'입력완료':quick?'동의하기':'<img src="assets/ys-icon.png" alt="" class="pw-help-ic">영웅문S# 바로가기';
+  const content=keypad?`<div class="v48-keypad-value" data-v48-keypad-value role="status" aria-live="polite"></div><div class="v48-password-keys">${digits.map(key).join('')}<button type="button" data-v48-password-key="clear">전체삭제</button><button type="button" data-v48-password-key="back" aria-label="한 자리 삭제">⌫</button></div>`:'<p>증권계좌 비밀번호는 <b>숫자 4~8자리</b>예요.<br>비밀번호가 기억나지 않으면 <b>영웅문S#</b> 앱에서 다시 설정할 수 있어요.</p>';
+  const action=keypad?'입력완료':'<img src="assets/ys-icon.png" alt="" class="pw-help-ic">영웅문S# 바로가기';
   overlay.innerHTML=`<section class="v48-phone-sheet" role="dialog" aria-modal="true" aria-labelledby="${overlay.id}Title"><div class="v48-password-sheet-grip" aria-hidden="true"></div><div class="v48-phone-sheet-head"><h2 id="${overlay.id}Title">${title}</h2><button type="button" data-v48-password-sheet-close aria-label="${title} 닫기">${I.x}</button></div><div class="v48-phone-sheet-body">${content}</div><div class="v48-phone-sheet-footer"><button type="button" data-v48-password-sheet-confirm>${action}</button></div></section>`;
   const background=Array.from(screen.children).map(element=>({element,inert:element.inert}));
   screen.appendChild(overlay);
@@ -243,8 +272,6 @@ function v48OpenPasswordSheet(kind){
       if(keypad){
         if(!/^\d{4,8}$/.test(draft))return;
         input.value=draft;v48SyncPasswordForm();v48CloseQuickHelp();
-      }else if(quick){
-        document.getElementById('v48QuickConsent').checked=true;v48Flow.consent=true;v48CloseQuickHelp();
       }else {v48CloseQuickHelp(false);openAppLink('pwresetacct');}
     }
   });
@@ -348,6 +375,7 @@ function v48StartAuth(pending,change=false){
   v48Flow.phoneDetails={name:'',dob:'',gender:'',carrier:'',phone:V48_DEMO_INBOUND_PHONE,agreed:false};
   s1state.acctPw='';s1state.page='v48auth';s1state.title=v48Flow.taskTitle;
   renderS1();
+  v48PresentEnrollment();
   if(v48Flow.step==='identity')v48SpeakName();
   return true;
 }
@@ -405,6 +433,14 @@ function v48Apply(event){
   v48CloseQuickHelp(false);
   const result=V48Auth.transition(v48Flow,v48Session,v48Registration,event);
   if(result.error){
+    const phoneForm=document.querySelector('[data-v48-phone-form]');
+    if(phoneForm&&event.type==='PHONE_VERIFY'){
+      v48Flow.phoneOtpError=result.error;v48UpdatePhoneStage(phoneForm);
+      const expired=Date.now()>=v48Flow.otpExpiresAt;
+      const target=phoneForm.querySelector(expired?'[data-v48-otp-resend]':'#v48Otp');
+      v48FocusField(target);if(!expired)target.select();
+      return;
+    }
     const error=document.getElementById('v48AuthError');
     if(error){error.textContent=result.error;error.focus();}
     return;
@@ -413,7 +449,10 @@ function v48Apply(event){
   v48ScheduleSessionExpiry();
   if(v48Flow.step!=='otp')v48StopPhoneTimers();
   if(v48Flow.step==='complete'){
-    v48SaveRegistration();v48Resume();return;
+    const enrolled=v48Flow.enrollmentCompleted;
+    v48SaveRegistration();v48Resume();
+    if(enrolled)flash('퀵넘버플러스 등록이 완료됐어요.');
+    return;
   }
   if(v48Flow.step==='cancelled'){
     if(v48MenuContext&&v48SameLocation(v48Origin,v48MenuContext.origin.state)){v48CloseMenu();return;}
@@ -426,12 +465,21 @@ function v48Apply(event){
   if(phoneForm&&['PHONE_REQUEST','PHONE_EDIT'].includes(event.type)){
     document.getElementById('v48AuthError').textContent='';
     v48MountPhoneAuth();
-    if(event.type==='PHONE_REQUEST')phoneForm.querySelector('#v48Otp').focus({preventScroll:true});
+    if(event.type==='PHONE_REQUEST')v48FocusField(phoneForm.querySelector('#v48Otp'));
     return;
   }
   // Collapse the account list and reveal credentials in place, without rebuilding the page.
   if(['SELECT_ACCOUNT','BACK'].includes(event.type)&&['accounts','password'].includes(v48Flow.step)&&v48MountAccountAuth())return;
   renderS1();
+  if(event.type==='ENROLLMENT_DECISION'){
+    const view=document.getElementById('s1view');if(view)view.scrollTop=0;
+  }
+  v48PresentEnrollment();
+}
+function v48PresentEnrollment(){
+  if(v48Flow?.step!=='enrollment')return;
+  const view=document.getElementById('s1view');if(view)view.scrollTop=0;
+  document.querySelector('[data-v48-enrollment-title]')?.focus({preventScroll:true});
 }
 function v48SpeakName(){
   if(!isV48()||!v48Registration||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
@@ -469,7 +517,6 @@ function v48UpdatePhoneStage(form){
   form.querySelector('[data-v48-consent-open]').setAttribute('aria-checked',String(v48Flow.phoneDetails.agreed));
   form.toggleAttribute('data-v48-otp-form',requested);
   form.querySelector('.v48-phone-otp').hidden=!requested;
-  form.querySelector('.v48-otp-notice').hidden=!requested;
   otp.disabled=!requested;
   const code=requested?(v48Flow.phoneOtp||''):'';
   if(otp.value!==code)otp.value=code;
@@ -479,9 +526,12 @@ function v48UpdatePhoneStage(form){
   timer.setAttribute('aria-label',`인증번호 유효시간 ${Math.floor(seconds/60)}분 ${seconds%60}초`);
   timer.classList.toggle('expired',requested&&seconds===0);
   const status=form.querySelector('[data-v48-otp-status]');
-  const message=requested&&seconds===0?'유효시간이 지났어요. 인증번호를 다시 요청해 주세요.':'';
+  const message=requested?(seconds===0?'유효시간이 지났어요. 인증번호를 다시 요청해 주세요.':v48Flow.phoneOtpError||''):'';
   if(status.textContent!==message)status.textContent=message;
   status.hidden=!message;
+  form.querySelector('#v48OtpHelp').hidden=!requested||!!message;
+  otp.setAttribute('aria-invalid',String(!!message));
+  otp.setAttribute('aria-describedby',message?'v48OtpStatus':'v48OtpHelp');
   submit.textContent=requested?'인증 완료':'인증번호 요청';
   submit.disabled=!!V48Auth.phoneRequestError(v48Flow.phoneDetails)||(requested&&!!V48Auth.phoneVerifyError(otp.value,v48Flow.otpExpiresAt));
 }
@@ -506,8 +556,10 @@ function v48MountPhoneAuth(){
     v48PhoneSmsDemo=setTimeout(()=>{
       if(!active()||Date.now()>=expiresAt)return;
       if(!form.querySelector('#v48Otp').value){
-        v48Flow.phoneOtp='123456';v48Flow.otpAutoFilled=true;
+        v48Flow.phoneOtp=V48Auth.DEMO_OTP;v48Flow.otpAutoFilled=true;
         v48UpdatePhoneStage(form);
+        const otp=form.querySelector('#v48Otp');
+        if(document.activeElement===otp&&typeof window!=='undefined')window.DemoMobileInputs?.reveal(otp);
       } else v48Flow.otpAutoFillAt=0;
     },Math.max(0,v48Flow.otpAutoFillAt-Date.now()));
   }
@@ -518,28 +570,29 @@ function v48SyncPhoneForm(form=document.querySelector('[data-v48-phone-form]')){
   const changed=Object.keys(details).some(key=>details[key]!==v48Flow.phoneDetails?.[key]);
   v48Flow.phoneDetails=details;
   if(v48Flow.step==='otp'&&changed){v48Apply({type:'PHONE_EDIT'});return;}
-  v48Flow.phoneOtp=v48Flow.step==='otp'?form.querySelector('#v48Otp').value:'';
+  const otp=v48Flow.step==='otp'?form.querySelector('#v48Otp').value:'';
+  if(v48Flow.phoneOtp!==otp)v48Flow.phoneOtpError='';
+  v48Flow.phoneOtp=otp;
   v48UpdatePhoneStage(form);
 }
 function renderV48PhoneForm(f){
   const details=f.phoneDetails||{name:'',dob:'',gender:'',carrier:'',phone:V48_DEMO_INBOUND_PHONE,agreed:false};
   const requested=f.step==='otp';
   const carrier=V48Auth.carriers.find(item=>item.id===details.carrier);
-  return `<h2>본인명의 휴대폰으로 인증해주세요</h2><p>안전한 업무 처리를 위해 본인확인이 필요해요.</p>
+  return `<h2>안전한 업무 처리를 위해<br>본인확인이 필요해요</h2><p>본인명의 휴대폰으로 인증해주세요.</p>
     <form data-v48-phone-form ${requested?'data-v48-otp-form':''}>
       <div class="v48-phone-fields">
-        <div class="v48-phone-pill v48-phone-name"><label for="v48Name">이름</label><input id="v48Name" autocomplete="name" maxlength="40" placeholder="이름 입력" value="${v47Esc(details.name)}" required></div>
+        <div class="v48-phone-pill v48-phone-name"><label for="v48Name">이름</label><input id="v48Name" autocomplete="name" enterkeyhint="next" maxlength="40" placeholder="이름 입력" value="${v47Esc(details.name)}" required></div>
         <div class="v48-phone-pill v48-birth-input">
-          <label for="v48Dob">주민번호</label><input id="v48Dob" inputmode="numeric" maxlength="6" placeholder="앞 6자리" aria-label="생년월일 6자리" value="${v47Esc(details.dob)}" required>
-          <span class="v48-birth-divider" aria-hidden="true">–</span><div class="v48-birth-tail"><input id="v48Gender" inputmode="numeric" maxlength="1" placeholder="●" aria-label="주민등록번호 뒷자리 첫 숫자" value="${v47Esc(details.gender)}" required><span class="v48-birth-mask" aria-label="나머지 6자리는 입력하지 않습니다">●●●●●●</span></div>
+          <label for="v48Dob">주민번호</label><input id="v48Dob" inputmode="numeric" enterkeyhint="next" maxlength="6" placeholder="앞 6자리" aria-label="생년월일 6자리" value="${v47Esc(details.dob)}" required>
+          <span class="v48-birth-divider" aria-hidden="true">–</span><div class="v48-birth-tail"><input id="v48Gender" inputmode="numeric" enterkeyhint="next" maxlength="1" placeholder="●" aria-label="주민등록번호 뒷자리 첫 숫자" value="${v47Esc(details.gender)}" required><span class="v48-birth-mask" aria-label="나머지 6자리는 입력하지 않습니다">●●●●●●</span></div>
         </div>
         <div class="v48-phone-pill v48-mobile-input"><input type="hidden" id="v48Carrier" value="${v47Esc(details.carrier)}"><button type="button" class="v48-carrier-trigger${carrier?'':' is-empty'}" data-v48-carrier-open aria-label="통신사 선택${carrier?': '+carrier.label:''}" aria-haspopup="dialog" aria-expanded="false" aria-controls="v48PhoneSheet"><span data-v48-carrier-label>${carrier?.label||'통신사'}</span>${I.chev}</button><span class="v48-mobile-divider" aria-hidden="true"></span><input id="v48Phone" aria-label="휴대폰번호" type="tel" inputmode="tel" maxlength="13" autocomplete="tel" placeholder="휴대폰번호" value="${v47Esc(details.phone)}" required></div>
+        <div class="v48-phone-otp" ${requested?'':'hidden'}><div class="v48-phone-pill v48-otp-input"><label for="v48Otp">인증번호</label><input id="v48Otp" aria-label="인증번호" aria-describedby="v48OtpHelp" inputmode="numeric" enterkeyhint="done" maxlength="6" autocomplete="one-time-code" placeholder="숫자 6자리" value="${v47Esc(f.phoneOtp||'')}" ${requested?'':'disabled'}><span role="timer" data-v48-otp-time>3:00</span><button type="button" data-v48-otp-resend>재요청</button></div><div class="v48-otp-feedback"><p id="v48OtpHelp" class="v48-otp-help">인증문자가 오지 않으면 <span class="v48-otp-help-number">1544-9000</span> 차단 여부를 확인해 주세요.</p><p id="v48OtpStatus" role="alert" data-v48-otp-status hidden></p></div></div>
       </div>
       <input type="checkbox" id="v48PhoneConsent" hidden ${details.agreed?'checked':''}>
       <button type="button" class="v48-phone-consent-row" data-v48-consent-open role="checkbox" aria-checked="${details.agreed}" aria-label="휴대폰 인증 약관 전체동의 (필수)" aria-haspopup="dialog" aria-expanded="false" aria-controls="v48PhoneSheet"><span class="v48-phone-check" aria-hidden="true">✓</span><span class="v48-phone-consent-label">휴대폰 인증 약관 전체동의 <b>(필수)</b></span><span class="v48-phone-consent-detail" aria-hidden="true">${I.chev}</span></button>
-      <div class="v48-phone-otp" ${requested?'':'hidden'}><div class="v48-phone-pill v48-otp-input"><label for="v48Otp">인증번호</label><input id="v48Otp" aria-label="인증번호" aria-describedby="v48OtpHelp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="숫자 6자리" value="${v47Esc(f.phoneOtp||'')}" ${requested?'':'disabled'}><span role="timer" data-v48-otp-time>3:00</span><button type="button" data-v48-otp-resend>재요청</button></div><p role="status" data-v48-otp-status hidden></p></div>
       <button class="v48-auth-button" type="submit" ${V48Auth.phoneRequestError(details)||(requested&&V48Auth.phoneVerifyError(f.phoneOtp,f.otpExpiresAt))?'disabled':''}>${requested?'인증 완료':'인증번호 요청'}</button>
-      <section class="v48-otp-notice" aria-labelledby="v48OtpNoticeTitle" ${requested?'':'hidden'}><h3 id="v48OtpNoticeTitle">안내사항</h3><p id="v48OtpHelp" class="v48-otp-help">인증문자가 수신되지 않을 경우 키움금융센터 대표번호<span class="v48-otp-help-number">(1544-9000)</span>가 차단 되었는지 확인해주세요.</p></section>
     </form>`;
 }
 function renderV48AccountAuth(f){
@@ -551,11 +604,9 @@ function renderV48AccountAuth(f){
     return `<div class="v48-account-row${selected?' is-selected':''}${collapsed?' is-collapsed':''}" ${collapsed?'inert aria-hidden="true"':''}><div class="v48-account-row-inner"><button type="button" data-v48-account="${x.id}" ${current?'disabled aria-label="현재 계좌 '+number+' '+x.type+(verified?' 인증완료':'')+'"':''} ${selected?'aria-expanded="false" aria-controls="v48AccountChoices" aria-label="'+number+' '+x.type+' · 계좌 다시 선택"':''}><strong class="v48-account-label">${number} [${x.type}]</strong>${verified?'<span class="v48-account-verified">인증완료</span>':`<span class="v48-account-select" aria-hidden="true">${current?'현재 계좌':I.chev}</span>`}</button></div></div>`;
   }).join('');
   const registeredAccount=V48Auth.account(f.selectedAccount);
-  const heading=f.quick?'<h2>계좌비밀번호를 입력해 주세요</h2><p>퀵넘버플러스에 등록된 계좌로 본인확인을 진행해요.</p>':'<h2>업무를 처리할 계좌를 선택해주세요</h2><p>계좌선택 후 계좌비밀번호를 입력해주세요.</p>';
+  const heading=f.quick?'<h2>계좌비밀번호를 입력해 주세요</h2><p>퀵넘버플러스에 등록된 계좌로 본인확인을 진행해요.</p>':f.offerEnrollment&&f.consent?'<h2>간편하게 이용할 계좌를 선택해 주세요</h2><p>선택한 계좌의 비밀번호를 확인하면<br>퀵넘버플러스 등록과 본인인증이 완료돼요.</p>':'<h2>업무를 처리할 계좌를 선택해주세요</h2><p>계좌선택 후 계좌비밀번호를 입력해주세요.</p>';
   const accountList=f.quick?`<div class="v48-selected-account"><strong class="v48-account-label">${v48AccountText(V48Auth.formatAccount(registeredAccount.id))} [${registeredAccount.type}]</strong></div>`:`<div class="v48-account-list" id="v48AccountChoices" role="group" aria-label="계좌 선택">${rows}</div>`;
-  const consent=f.offerEnrollment?`<div class="v48-quick-consent-row"><label class="v48-quick-consent-label"><input id="v48QuickConsent" type="checkbox" ${f.consent?'checked':''}><span class="v48-phone-check" aria-hidden="true">✓</span><span class="v48-phone-consent-label">퀵넘버플러스 등록에 동의해요 <b>(선택)</b></span></label><button type="button" class="v48-phone-consent-detail" data-v48-quick-help aria-label="퀵넘버플러스 등록 안내" aria-haspopup="dialog" aria-expanded="false" aria-controls="v48QuickHelp">${I.chev}</button></div>`:'';
   return `${heading}
-    ${consent}
     <div class="v48-account-step${password?' is-password':''}"${f.quick?'':' data-v48-account-auth'}>
       ${accountList}
       <div class="v48-password-panel" ${password?'':'inert aria-hidden="true"'}><div class="v48-password-panel-inner">
@@ -595,6 +646,21 @@ function v48MountAccountAuth(){
   focus?.focus({preventScroll:true});
   return true;
 }
+function renderV48Enrollment(){
+  return `<div class="v48-enrollment-card">
+    <p class="v48-enrollment-service">퀵넘버플러스 <span>선택</span></p>
+    <h2 tabindex="-1" data-v48-enrollment-title>한 번 등록하면,<br>다음부터 계좌비밀번호만</h2>
+    <p class="v48-enrollment-intro">이 번호로 디지털ARS에 다시 접속하면<br>본인명의 휴대폰 인증 없이<br>등록한 계좌를 이용할 수 있어요.</p>
+    <dl class="v48-enrollment-link"><div><dt>현재 전화번호</dt><dd>${v47Esc(V48_DEMO_INBOUND_PHONE)}</dd></div><div><dt>연결할 계좌</dt><dd>다음 화면에서 1개 선택</dd></div></dl>
+    <p class="v48-enrollment-once">등록을 완료하면<br>이 안내를 다시 보여드리지 않아요.</p>
+  </div>
+  <p class="v48-enrollment-other">다른 계좌를 이용할 때는 본인명의 휴대폰 인증 후, 다른 계좌를 선택해 주세요.</p>
+  <div class="v48-auth-actions v48-enrollment-actions">
+    <button type="button" class="v48-auth-button" data-v48-enrollment="yes">동의하고 등록하기</button>
+    <button type="button" class="v48-auth-button secondary" data-v48-enrollment="no">지금은 건너뛰기</button>
+  </div>
+  <p class="v48-enrollment-optional">등록하지 않아도 지금 업무를 처리할 수 있어요.</p>`;
+}
 function renderV48Auth(){
   if(!v48Flow)return '';
   const f=v48Flow, a=V48Auth.account(f.selectedAccount);
@@ -602,9 +668,10 @@ function renderV48Auth(){
   let content='';
   if(f.step==='identity')content=`<h2>${v47Esc(v48MaskedName(v48Registration.name))} 고객님이 맞으십니까?</h2><p>안내된 고객명이 본인과 일치하는지 확인해 주세요.</p><div class="v48-auth-actions v48-identity-actions">${button('예','data-v48-identity="yes"')}${button('아니오','data-v48-identity="no"',true)}</div>`;
   else if(f.step==='phone'||f.step==='otp')content=renderV48PhoneForm(f);
+  else if(f.step==='enrollment')content=renderV48Enrollment();
   else if(['accounts','password'].includes(f.step))content=renderV48AccountAuth(f);
   else if(f.step==='changeOffer'||f.step==='changeChannels')content=`<h2>퀵넘버플러스 계좌를 변경할까요?</h2><p>선택한 ${a.type} ${V48Auth.mask(a.id)} 계좌로 퀵넘버플러스 등록 계좌를 변경할 수 있어요.</p>${f.step==='changeOffer'?`<div class="v48-auth-actions">${button('변경할게요','data-v48-change-decision="yes"')}${button('변경 없이 이번만 이용','data-v48-change-decision="no"',true)}</div>`:`<p>등록 계좌 변경은 영웅문S# 또는 상담원을 통해 진행해 주세요.</p><div class="v48-auth-actions">${button('영웅문S#에서 변경','data-v48-change-channel="app"')}${button('상담원 연결','data-v48-change-channel="agent"',true)}${button('변경 없이 업무 계속하기','data-v48-change-continue',true)}</div>`}`;
-  return `<section class="v48-auth${['phone','otp'].includes(f.step)?' v48-auth-phone':['accounts','password'].includes(f.step)?' v48-auth-password':''}" aria-labelledby="v48AuthTaskTitle"><header><button type="button" data-v48-back aria-label="이전 화면">${I.back}</button><h1 id="v48AuthTaskTitle">${v47Esc(f.taskTitle||v48AuthTaskTitle(v48Pending,v48Origin||{}))}</h1></header><div class="v48-auth-body">${content}<p id="v48AuthError" class="v48-auth-error" role="alert" tabindex="-1"></p></div></section>`;
+  return `<section class="v48-auth${['phone','otp'].includes(f.step)?' v48-auth-phone':['accounts','password'].includes(f.step)?' v48-auth-password':f.step==='enrollment'?' v48-auth-enrollment':''}" aria-labelledby="v48AuthTaskTitle"><header><button type="button" data-v48-back aria-label="이전 화면">${I.back}</button><h1 id="v48AuthTaskTitle">${v47Esc(f.taskTitle||v48AuthTaskTitle(v48Pending,v48Origin||{}))}</h1></header><div class="v48-auth-body">${content}<p id="v48AuthError" class="v48-auth-error" role="alert" tabindex="-1"></p></div></section>`;
 }
 function v48UpdateDemoControls(){
   const controls=document.getElementById('v48DemoControls');
@@ -636,7 +703,7 @@ function handleV48Click(t){
   if(t.closest('[data-v48-demo-reconnect]')){v48ResetSession();selectSian('s1','v48');return true;}
   if(t.closest('[data-demo-fill-phone], [data-demo-fill-account]')&&v48DemoFill())return true;
   if(t.closest('[data-v48-change-account], [data-acctchange], [data-ordacct], [data-acctsel]')){v48AccountChange();return true;}
-  if(t.closest('[data-v48-quick-help]')){v48OpenQuickHelp();return true;}
+  const enrollment=t.closest('[data-v48-enrollment]');if(enrollment){v48Apply({type:'ENROLLMENT_DECISION',register:enrollment.dataset.v48Enrollment==='yes'});return true;}
   if(t.closest('[data-v48-password-open]')){v48OpenPasswordSheet('keypad');return true;}
   if(t.closest('[data-v48-carrier-open]')){v48OpenPhoneSheet('carrier');return true;}
   if(t.closest('[data-v48-consent-open]')){v48OpenPhoneSheet('terms');return true;}
@@ -665,11 +732,27 @@ function handleV48Click(t){
 document.addEventListener('input',event=>{
   if(!isV48())return;
   const form=event.target.closest('[data-v48-phone-form]');
-  if(form)v48SyncPhoneForm(form);
+  if(form){
+    if(['v48Dob','v48Gender','v48Otp'].includes(event.target.id)&&!event.isComposing)event.target.value=event.target.value.replace(/\D/g,'').slice(0,event.target.maxLength);
+    if(event.target.id==='v48Otp'){
+      clearTimeout(v48PhoneSmsDemo);v48PhoneSmsDemo=null;
+      v48Flow.otpAutoFillAt=0;
+    }
+    v48SyncPhoneForm(form);v48AdvancePhoneInput(event,form);
+  }
   if(event.target.id==='v48Password')v48SyncPasswordForm();
 });
 
 document.addEventListener('keydown',event=>{
+  const form=event.target.closest('[data-v48-phone-form]');
+  if(isV48()&&form&&event.key==='Enter'&&!event.isComposing&&event.keyCode!==229&&event.target.tagName==='INPUT'&&event.target.id!=='v48Otp'){
+    event.preventDefault();v48SyncPhoneForm(form);
+    if(event.target.id==='v48Name')v48FocusField(form.querySelector('#v48Dob'));
+    else if(event.target.id==='v48Gender'&&/^[1-8]$/.test(event.target.value)&&!v48Flow.phoneDetails.carrier)v48OpenPhoneSheet('carrier');
+    else if(event.target.id==='v48Phone'&&v48Flow.phoneDetails.carrier&&!v48Flow.phoneDetails.agreed)v48OpenPhoneSheet('terms');
+    else v48NextPhoneField(form);
+    return;
+  }
   if(isV48()&&event.target.matches('[data-v48-password-open]')&&['Enter',' '].includes(event.key)){
     event.preventDefault();v48OpenPasswordSheet('keypad');
   }
@@ -688,16 +771,15 @@ document.addEventListener('submit',event=>{
     else v48Apply({type:'PHONE_REQUEST',...v48Flow.phoneDetails});
   }
   else {
-    const password=value('v48Password'),consent=document.getElementById('v48QuickConsent')?.checked===true;
+    const password=value('v48Password');
     document.getElementById('v48Password').value='';
-    v48Apply({type:'PASSWORD',password,consent});
+    v48Apply({type:'PASSWORD',password});
   }
 });
 document.addEventListener('change',event=>{
   if(!isV48())return;
   const phoneForm=event.target.closest('[data-v48-phone-form]');
   if(phoneForm)v48SyncPhoneForm(phoneForm);
-  if(event.target.id==='v48QuickConsent'&&v48Flow)v48Flow.consent=event.target.checked;
   if(event.target.matches('[data-v48-demo-customer]')){
     v48Registration=event.target.value==='registered'?{accountId:V48Auth.accounts[0].id,name:'홍길동'}:null;
     v48SaveRegistration();v48ResetSession();selectSian('s1','v48');

@@ -1599,10 +1599,14 @@ function openMenuDrawer(){
        <div class="menu-pills">${amPills()}</div>`;
   el.innerHTML = `<div class="menu-panel"${isV48()?' data-v47searchscope':''}>
     ${head}
+    ${isV48()?renderV48AllMenuSearch():''}
     <div class="menu-scroll">${renderAllMenu()}</div>
   </div>`;
   screen.appendChild(el);
-  if(isV48())el.querySelectorAll('.v48-menu-chips').forEach(v48BindChipScroll);
+  if(isV48()){
+    el.querySelectorAll('.v48-menu-chips').forEach(v48BindChipScroll);
+    v48MountAllMenuSearch(el);
+  }
   if(isV47()) screen.classList.add('v47-fab-open');
   requestAnimationFrame(()=>el.classList.add('on'));
 }
@@ -1635,7 +1639,7 @@ function refreshMenu(){
   if(dr){
     const p = dr.querySelector('.menu-pills'); if(p) p.innerHTML = amPills();
     const s = dr.querySelector('.menu-scroll');
-    if(s){s.innerHTML = renderAllMenu();if(isV48())s.querySelectorAll('.v48-menu-chips').forEach(v48BindChipScroll);}
+    if(s){s.innerHTML = renderAllMenu();if(isV48()){s.querySelectorAll('.v48-menu-chips').forEach(v48BindChipScroll);v48UpdateAllMenuSearch(dr);}}
   } else renderS1();
 }
 
@@ -3975,7 +3979,7 @@ function openConsult(label, opts){
     <div class="cs-head">
       <div class="cs-title" id="consultTitle">${isV47()?'상담 방법을 선택해 주세요':'어떻게 도와드릴까요?'}</div>
       ${s1Ver==='v40'?'':`<div class="cs-sub" id="consultDesc">편하신 방법으로 상담을 연결해 드려요</div>`}
-      ${label?`<div class="cs-ctx">선택하신 업무 · <b>${label}</b></div>`:''}
+      ${label?`<div class="cs-ctx">선택하신 업무 · <b>${v47Esc(label)}</b></div>`:''}
     </div>
     <div class="cs-list">${rows}</div>
     ${isV47()?'<button type="button" class="cs-cancel" data-csclose>닫기</button>':'<div class="cs-cancel" data-csclose>닫기</div>'}
@@ -4986,7 +4990,7 @@ function openMethodSheet(cfg){
     </div>`).join('');
     el.innerHTML = `<div class="consult-sheet v45-msheet">
       <div class="cs-grip"></div>
-      <div class="v45-msheet-head"><div class="v45-msh-title">${cfg.title}</div>${cfg.sub?`<div class="v45-msh-sub">${cfg.sub}</div>`:''}</div>
+      <div class="v45-msheet-head"><div class="v45-msh-title">${v47Esc(cfg.title)}</div>${cfg.sub?`<div class="v45-msh-sub">${cfg.sub}</div>`:''}</div>
       <div class="v45-msheet-list">${rows}</div>
     </div>`;
   } else {
@@ -5005,7 +5009,7 @@ function openMethodSheet(cfg){
     }).join('');
     el.innerHTML = `<div class="consult-sheet">
       <div class="cs-grip"></div>
-      <div class="cs-head"><div class="cs-title">${cfg.title}</div>${(cfg.sub && !(s1Ver==='v40' && cfg.sub.indexOf('편하신 방법으로')===0))?`<div class="cs-sub">${cfg.sub}</div>`:''}</div>
+      <div class="cs-head"><div class="cs-title">${v47Esc(cfg.title)}</div>${(cfg.sub && !(s1Ver==='v40' && cfg.sub.indexOf('편하신 방법으로')===0))?`<div class="cs-sub">${cfg.sub}</div>`:''}</div>
       <div class="cs-list">${rows}</div>
       <div class="cs-cancel" data-msclose>닫기</div>
     </div>`;
@@ -5449,7 +5453,7 @@ function renderIodPurposeDone(){
 }
 /* 음성 ARS 연결 안내 화면 — Ver4.0 플로우 화면 형식(iod-top·헤딩·정보카드·안내·버튼, [입출금]과 동일) */
 function renderVoiceConnect(){
-  const label = s1state.voiceLabel || '음성 ARS';
+  const label = v47Esc(s1state.voiceLabel || '음성 ARS');
   const acctVal = sessionAuthed ? `${v48AccountText((authAcct&&authAcct.no)||'인증 계좌')} 연동` : '통화 중 확인';
   // Ver 4.0: 토스 헤더(뒤로가기만) + 중앙정렬 본문(수화기 아이콘·연결정보·연결 버튼) — renderVoiceV40/renderAgentV40와 동일 구조
   if(isV40()){
@@ -5481,7 +5485,7 @@ function renderVoiceConnect(){
 }
 /* 음성 ARS 연결 완료 화면 — 연결 버튼 클릭 후, 세로 중앙 정렬 */
 function renderVoiceDone(){
-  const label = s1state.voiceLabel || '';
+  const label = v47Esc(s1state.voiceLabel || '');
   const menuLine = label ? `선택하신 <b>${label}</b> 안내를<br>지금 시작할게요.` : `음성 안내를 지금 시작할게요.`;
   return `<div class="iod-done-center">
       <div class="iod-done">
@@ -5495,7 +5499,7 @@ function renderVoiceDone(){
 }
 /* 영웅문S# 연결 완료 화면 — 앱 연결 팝업 '열기' 후, 세로 중앙 정렬 */
 function renderHeroDone(){
-  const title = s1state.heroTitle || '요청하신 업무';
+  const title = v47Esc(s1state.heroTitle || '요청하신 업무');
   const app = s1state.heroApp || '영웅문S#';
   const acctLine = (sessionAuthed && !bigFont) ? '인증하신 계좌를 연동해서<br>' : '';   // 큰글씨: 본문 축약
   return `<div class="iod-done-center">

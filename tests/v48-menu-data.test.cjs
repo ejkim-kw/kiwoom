@@ -85,6 +85,23 @@ test('home and drawer use the same revised hierarchy and section order', () => {
   assert.match(drawer, /data-v47searchgo="v48:item:2-3"/);
 });
 
+test('local edits reorder home and drawer together, keep icons tied to IDs, and rename searchable menus without changing their routes',()=>{
+  const {context,calls}=uiContext(),M=require('../content-model.js'),data=M.empty();
+  data.categoryOrder=['4','1','2','3','5','6','7','8','9'];
+  data.itemOrder['1']=context.V48Menu.categories[0].items.map(i=>i.id).reverse();
+  data.labels['category:4:title']='증명서 발급';data.labels['item:1-1:title']='내 정보 확인';
+  context.V48Menu=M.applyCatalog(context.V48Menu,M.validate(data,context.V48Menu));
+  const $=require('cheerio').load(vm.runInContext('v48Home()+renderV48AllMenu()',context));
+  assert.deepEqual($('.v48-home [data-v48cat]').toArray().map(el=>$(el).attr('data-v48cat')),data.categoryOrder);
+  assert.deepEqual($('.v48-menu-group h2').toArray().map(el=>$(el).attr('id').replace('v48MenuGroup','')),data.categoryOrder);
+  assert.deepEqual($('#v48HomePanel1 [data-v48item]').toArray().map(el=>$(el).attr('data-v48item')),data.itemOrder['1']);
+  assert.deepEqual($('#v48MenuGroup1').parent().find('[data-v48item]').toArray().map(el=>$(el).attr('data-v48item')),data.itemOrder['1']);
+  assert.ok($('.v48-menu-group').first().find('.v48-menu-icon-4').html().includes('M14 2H5v20'));
+  assert.equal(vm.runInContext("v48FilterAllMenu('내 정보 확인')[0].action",context),'v48:item:1-1');
+  assert.equal(vm.runInContext("v48SearchItems('증명서 발급').find(item=>item.action==='v48:category:4').title",context),'증명서 발급');
+  vm.runInContext("v48OpenMenuItem('1-1')",context);assert.deepEqual(calls.at(-1),['myinfo','계좌정보 조회 및 변경']);
+});
+
 test('new category IDs, renamed entries, and search results reach their intended destinations', () => {
   const {context, calls} = uiContext();
   vm.runInContext("v48OpenMenuItem('1-1')", context);
@@ -107,6 +124,36 @@ test('new category IDs, renamed entries, and search results reach their intended
   assert.equal(calls.some(([kind])=>kind==='sheet'),false,'매체 선택 없이 인증이 적용되는 결과 경로로 이동');
   assert.equal(vm.runInContext("v48FindItem('account-open')",context),undefined);
   assert.equal(vm.runInContext("v48SearchItems('계좌개설 시작하기').some(item=>item.action==='v48:item:account-open')",context),false);
+});
+
+test('drawer search matches only visible menu names and returns all matches once',()=>{
+  const {context}=uiContext();
+  const results=query=>{context.drawerQuery=query;return vm.runInContext('v48FilterAllMenu(drawerQuery)',context);};
+  const accounts=results('계좌');
+  assert.ok(accounts.length>5,'drawer search is not limited to the main search suggestion count');
+  assert.ok(accounts.every(item=>item.title.includes('계좌')));
+  assert.equal(new Set(accounts.map(item=>item.action)).size,accounts.length);
+  assert.equal(results('공모주청약').length,1,'popular and catalog entries must not duplicate');
+  assert.equal(results('계좌비밀번호')[0].action,'acctpw','popular-only menu remains searchable');
+  assert.equal(results('계좌 비밀번호')[0].action,'acctpw','spacing should not make a menu impossible to find');
+  assert.equal(results('otp')[0].title,'OTP');
+  assert.equal(results('ISA/연금')[0].action,'v48:item:financial-products');
+  assert.equal(results('패스워드').length,0,'main search synonyms must not leak into menu-name search');
+  assert.equal(results('반대매매').length,0,'menu descriptions and topics are not names');
+  assert.equal(results('실물 OTP').length,0,'hidden legacy menu names are not part of the drawer');
+  assert.equal(results('   ').length,0);
+  assert.equal(results('<img src=x onerror=alert(1)>').length,0);
+});
+
+test('drawer search highlights literal matches safely and identifies each menu category',()=>{
+  const {context}=uiContext();
+  assert.equal(vm.runInContext("v48HighlightMenuName('ID 조회 / ID 비밀번호 재설정','id')",context),'<mark>ID</mark> 조회 / ID 비밀번호 재설정');
+  assert.equal(vm.runInContext("v48HighlightMenuName('메뉴 <script>','<script>')",context),'메뉴 <mark>&lt;script&gt;</mark>');
+  assert.equal(vm.runInContext("v48HighlightMenuName('금융상품(ISA/연금/펀드) 문의','(ISA')",context),'금융상품<mark>(ISA</mark>/연금/펀드) 문의');
+  const rows=vm.runInContext("v48AllMenuResultRows(v48FilterAllMenu('공모주'),'공모주')",context);
+  assert.match(rows,/권리\/청약/);
+  assert.match(rows,/data-v47searchgo="v48:item:5-2"/);
+  assert.match(rows,/<mark>공모주<\/mark>청약/);
 });
 
 test('financial purpose menu authenticates before its result and resumes without the legacy submission sheet',()=>{

@@ -7,9 +7,10 @@ function run(registered=null,session=A.createSession(),options={}){
   let current={flow:A.begin(session,registered,options),session,registration:registered};
   return {get state(){return current;},send(event){current=A.transition(current.flow,current.session,current.registration,event);return current;}};
 }
-function phone(r){
+function phone(r,register=true){
   assert.equal(r.send({type:'PHONE_REQUEST',name:'홍길동',dob:'900101',gender:'1',carrier:'skt',phone:'01012345678',agreed:true}).error,'');
   assert.equal(r.send({type:'PHONE_VERIFY',otp:'123456'}).error,'');
+  if(r.state.flow.step==='enrollment')r.send({type:'ENROLLMENT_DECISION',register});
 }
 
 test('계좌번호 조회 전용 인증은 등록 고객도 휴대폰 인증 후 계좌 선택 없이 완료된다',()=>{
@@ -69,7 +70,7 @@ test('인증번호는 요청부터 3분간 유효하고 재요청하면 새 유�
   r.send({type:'PHONE_REQUEST',...details,now:182000});
   assert.equal(r.state.flow.otpExpiresAt,362000);
   assert.equal(r.state.flow.phoneOtp,'');
-  assert.equal(r.send({type:'PHONE_VERIFY',otp:'123456',now:183000}).flow.step,'accounts');
+  assert.equal(r.send({type:'PHONE_VERIFY',otp:'123456',now:183000}).flow.step,'enrollment');
   assert.equal(r.state.flow.otpExpiresAt,0);
 });
 
@@ -83,6 +84,16 @@ test('인증번호 요청 후 정보 수정은 기존 인증번호를 무효화�
   assert.equal(r.state.flow.step,'accounts');
 });
 
+test('시연 인증번호 불일치는 인증을 완료하지 않고 수정한 번호로 다시 시도할 수 있다',()=>{
+  const r=run();
+  r.send({type:'PHONE_REQUEST',name:'시연고객',dob:'900101',gender:'1',carrier:'skt',phone:'01012345678',agreed:true});
+  assert.match(r.send({type:'PHONE_VERIFY',otp:'654321'}).error,/일치하지/);
+  assert.equal(r.state.session.phoneVerified,false);
+  assert.equal(r.state.flow.step,'otp');
+  assert.equal(r.send({type:'PHONE_VERIFY',otp:'123456'}).error,'');
+  assert.equal(r.state.session.phoneVerified,true);
+});
+
 test('인증 완료는 숫자 6자리가 필요하고 같은 화면의 뒤로가기는 인증을 취소한다',()=>{
   for(const otp of ['', '12345', '1234567', '12ab56'])assert.ok(A.phoneVerifyError(otp));
   assert.equal(A.phoneVerifyError('123456'),'');
@@ -92,7 +103,7 @@ test('인증 완료는 숫자 6자리가 필요하고 같은 화면의 뒤로가
   assert.equal(r.state.session.phoneVerified,false);
   assert.equal(r.send({type:'BACK'}).flow.step,'cancelled');
 });
-test('미등록: 휴대폰 인증 → 계좌 선택 → 기본 동의 → 비밀번호 확인 후에만 등록',()=>{
+test('미등록: 휴대폰 인증 → 별도 등록 동의 → 계좌 선택 → 비밀번호 확인 후에만 등록',()=>{
   const r=run();
   assert.equal(r.send({type:'SELECT_ACCOUNT',accountId:first}).flow.step,'phone');
   phone(r);assert.equal(r.state.session.accountId,'');
@@ -105,16 +116,15 @@ test('미등록: 휴대폰 인증 → 계좌 선택 → 기본 동의 → 비밀
   assert.equal(r.state.session.phoneVerified,true);
   assert.equal(JSON.stringify(r.state).includes('1234'),false);
 });
-test('선택 동의를 해제해도 업무 가능, 다음 연결은 휴대폰 인증',()=>{
-  const r=run();phone(r);r.send({type:'SELECT_ACCOUNT',accountId:first});
+test('등록을 건너뛰어도 업무 가능, 다음 연결은 휴대폰 인증',()=>{
+  const r=run();phone(r,false);r.send({type:'SELECT_ACCOUNT',accountId:first});
   r.send({type:'PASSWORD',password:'1234',consent:false});
   assert.equal(r.state.flow.step,'complete');assert.equal(r.state.registration,null);
   assert.equal(A.begin(A.createSession(),r.state.registration).step,'phone');
 });
 
-test('계좌 선택 전에 해제한 퀵넘버 등록 동의는 계좌를 바꿔도 유지한다',()=>{
-  const r=run();phone(r);
-  r.state.flow.consent=false;
+test('계좌 선택 전에 건너뛴 퀵넘버 등록 선택은 계좌를 바꿔도 유지한다',()=>{
+  const r=run();phone(r,false);
   r.send({type:'SELECT_ACCOUNT',accountId:first});
   assert.equal(r.state.flow.consent,false);
   r.send({type:'BACK'});
@@ -163,17 +173,18 @@ test('퀵넘버 인입 계좌 변경: 휴대폰 인증 후 변경 문의, 동의
   assert.equal(r.state.session.accountId,second);assert.deepEqual(r.state.registration,reg);
 });
 
-test('퀵넘버 인증 후 계좌변경은 목록부터 보여주고 새 계좌 선택 후 휴대폰 인증을 진행한다',()=>{
+test('퀵넘버 인증 후 계좌변경은 휴대폰 인증 후 새 계좌를 선택한다',()=>{
   const login=run(reg);login.send({type:'IDENTITY',matches:true});login.send({type:'PASSWORD',password:'1234'});
   const change=run(reg,login.state.session,{change:true});
-  assert.equal(change.state.flow.step,'accounts');
-  assert.ok(change.send({type:'SELECT_ACCOUNT',accountId:first}).error);
-  change.send({type:'SELECT_ACCOUNT',accountId:second});
   assert.equal(change.state.flow.step,'phone');
+  assert.ok(change.send({type:'SELECT_ACCOUNT',accountId:first}).error);
+  assert.ok(change.send({type:'SELECT_ACCOUNT',accountId:second}).error);
   assert.equal(change.state.session.accountId,first,'새 계좌 인증 전까지 기존 계좌 유지');
   assert.ok(change.send({type:'PASSWORD',password:'1234'}).error);
   phone(change);
-  assert.equal(change.state.flow.step,'changeOffer','선택한 계좌를 다시 고르지 않고 이어감');
+  assert.equal(change.state.flow.step,'accounts');
+  change.send({type:'SELECT_ACCOUNT',accountId:second});
+  assert.equal(change.state.flow.step,'changeOffer');
   change.send({type:'CHANGE_DECISION',changeRegistration:false});
   change.send({type:'PASSWORD',password:'1234'});
   assert.equal(change.state.session.accountId,second);

@@ -7,6 +7,7 @@ const vm=require('node:vm');
 function setup(){
   const saved=new Map();
   const context=vm.createContext({
+    V48Menu:require('../v48-menu-data.js'),
     I:new Proxy({},{get:(_,key)=>`<svg data-icon="${key}"></svg>`}),
     isV48:()=>true,
     v47Esc:value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),

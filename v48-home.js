@@ -52,6 +52,13 @@ function v48AddRecent(title, action){
 function v48FindItem(id){
   return [...V48Menu.categories.flatMap(category=>category.items),...V48Menu.legacyItems,...V48Menu.otherDocuments].find(item=>item.id===id);
 }
+function v48ActionTitle(action,fallback){
+  const [,kind,...parts]=String(action).split(':'),id=parts.join(':');
+  if(kind==='item')return v48FindItem(id)?.title||fallback;
+  if(kind==='category')return V48Menu.categories.find(category=>String(category.id)===id)?.title||fallback;
+  if(kind==='self')return V48Menu.selfServices.find(item=>item.id===id)?.title||fallback;
+  return fallback;
+}
 function v48MenuDescription(item){
   if(item.description)return item.description;
   const legacy=V48_LEGACY_MYINFO[item.id] || V48_LEGACY_UNTACT[item.id];
@@ -115,15 +122,15 @@ function renderV48Header(){
 }
 function v48Home(){
   const services=v48SelfServiceItems().map(item=>`<li><button type="button" class="v48-service-item" ${item.act}><span><b>${v47Esc(item.t)}</b><small>${v47Esc(item.sub)}</small></span><span class="v48-service-arrow" aria-hidden="true">${I.chev}</span></button></li>`).join('');
-  const recent=v48RecentMenus.map(item=>`<button type="button" class="v48-recent-item" data-v47recent data-v47searchgo="${v47Esc(item.action)}" data-v47title="${v47Esc(item.title)}"><b>${v47Esc(item.title)}</b></button>`).join('');
+  const recent=v48RecentMenus.map(item=>`<button type="button" class="v48-recent-item" data-v47recent data-v47searchgo="${v47Esc(item.action)}" data-v47title="${v47Esc(v48ActionTitle(item.action,item.title))}"><b>${v47Esc(v48ActionTitle(item.action,item.title))}</b></button>`).join('');
   const grid=V48Menu.categories.map((category,index)=>{
     const expanded=s1state.v48HomeCategory===category.id;
     const title=v47Esc(category.title).replace('/','/<wbr>');
-    const button=`<button type="button" class="v47-cell" id="v48HomeCategory${category.id}" data-v48cat="${category.id}" data-v48-expand aria-expanded="${expanded}" aria-controls="v48HomePanel${category.id}"><span class="v47-cell-nm">${title}</span>${category.subtitle?`<span class="v47-cell-sub">${v47Esc(category.subtitle)}</span>`:''}<span class="v48-category-chevron" aria-hidden="true">${I.chev}</span></button>`;
+    const button=`<button type="button" class="v47-cell" id="v48HomeCategory${category.id}" data-v48cat="${category.id}" data-v48-expand aria-expanded="${expanded}" aria-controls="v48HomePanel${category.id}"><span class="v47-cell-nm" data-content-label="category:${category.id}:title">${title}</span>${category.subtitle?`<span class="v47-cell-sub" data-content-label="category:${category.id}:subtitle">${v47Esc(category.subtitle)}</span>`:''}<span class="v48-category-chevron" aria-hidden="true">${I.chev}</span></button>`;
     // Panels span the grid immediately after their category's three-button row.
     if((index+1)%3!==0)return button;
     return button+V48Menu.categories.slice(index-2,index+1).map(group=>{
-      const rows=group.items.map(item=>`<li><button type="button" class="v48-inline-menu-link" data-v48item="${item.id}"><span>${v47Esc(item.title)}</span><span aria-hidden="true">${I.chev}</span></button></li>`).join('');
+      const rows=group.items.map(item=>`<li><button type="button" class="v48-inline-menu-link" data-v48item="${item.id}"><span data-content-label="item:${item.id}:title">${v47Esc(item.title)}</span><span aria-hidden="true">${I.chev}</span></button></li>`).join('');
       return `<section class="v48-inline-menu" id="v48HomePanel${group.id}" aria-labelledby="v48HomeCategory${group.id}"${s1state.v48HomeCategory===group.id?'':' hidden'}><p class="v48-category-description">${v47Esc(V48_CATEGORY_COPY[group.id])}</p><ul>${rows}</ul></section>`;
     }).join('');
   }).join('');
@@ -224,15 +231,64 @@ function v48BindChipScroll(list){
 }
 
 function v48MenuRow(item){
-  return `<button type="button" class="v47-pwreset-choice v47-submenu-choice" data-v48item="${item.id}"><span><b>${v47Esc(item.title)}</b><small>${v47Esc(v48MenuDescription(item))}</small></span><span class="v47-pwreset-chev" aria-hidden="true">${I.chev}</span></button>`;
+  return `<button type="button" class="v47-pwreset-choice v47-submenu-choice" data-v48item="${item.id}"><span><b data-content-label="item:${item.id}:title">${v47Esc(item.title)}</b><small>${v47Esc(v48MenuDescription(item))}</small></span><span class="v47-pwreset-chev" aria-hidden="true">${I.chev}</span></button>`;
 }
-function renderV48AllMenu(){
-  const popular=[
+const V48_ALL_MENU_POPULAR=[
     {title:'계좌비밀번호 재설정',action:'acctpw'},
     {title:'금융상품(ISA/연금/펀드) 문의',action:'v48:item:financial-products'},
     {title:'출금계좌등록',action:'v48:item:2-3'},
     {title:'공모주청약',action:'v48:item:5-2'}
-  ].map(item=>`<button type="button" data-v47searchgo="${item.action}" data-v47title="${item.title}">${item.title}</button>`).join('');
+];
+function v48MenuNameMatch(title,query){
+  const text=String(query||'').replace(/\s+/g,'');if(!text)return null;
+  const pattern=Array.from(text,char=>char.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('\\s*');
+  return String(title).match(new RegExp(pattern,'i'));
+}
+function v48FilterAllMenu(query){
+  const catalog=V48Menu.categories.flatMap(category=>category.items.map(item=>({title:item.title,category:category.title,action:`v48:item:${item.id}`})));
+  const popular=V48_ALL_MENU_POPULAR.map(item=>({...item,title:v48ActionTitle(item.action,item.title),category:catalog.find(menu=>menu.action===item.action)?.category||'인기메뉴'}));
+  const seen=new Set();
+  return [...popular,...catalog].filter(item=>!seen.has(item.action)&&seen.add(item.action)&&v48MenuNameMatch(item.title,query));
+}
+function v48HighlightMenuName(title,query){
+  const match=v48MenuNameMatch(title,query);if(!match)return v47Esc(title);
+  return v47Esc(title.slice(0,match.index))+'<mark>'+v47Esc(match[0])+'</mark>'+v47Esc(title.slice(match.index+match[0].length));
+}
+function v48AllMenuResultRows(items,query){
+  return items.map(item=>`<li><button type="button" class="v48-menu-result" data-v47searchgo="${v47Esc(item.action)}" data-v47title="${v47Esc(item.title)}"><span><small>${v47Esc(item.category)}</small><strong>${v48HighlightMenuName(item.title,query)}</strong></span><span aria-hidden="true">${I.chev}</span></button></li>`).join('');
+}
+function renderV48AllMenuSearch(){
+  return `<form class="v48-menu-search" role="search" aria-label="전체메뉴 이름 검색"><input type="search" data-v48-menu-search aria-label="메뉴명 검색" aria-controls="v48MenuResults" placeholder="메뉴명을 입력하세요." maxlength="60" autocomplete="off" enterkeyhint="search"><button type="button" data-v48-menu-clear aria-label="검색어 지우기" hidden>${I.x}</button><button type="submit" aria-label="메뉴 검색">${I.search}</button></form>`;
+}
+function v48UpdateAllMenuSearch(root){
+  const input=root.querySelector('[data-v48-menu-search]');if(!input)return;
+  const query=input.value.trim(),items=v48FilterAllMenu(query);
+  root.querySelector('[data-v48-menu-default]').hidden=!!query;
+  root.querySelector('#v48MenuResults').hidden=!query;
+  root.querySelector('[data-v48-menu-clear]').hidden=!input.value;
+  root.querySelector('[data-v48-menu-count]').textContent=query?`검색결과 ${items.length}개`:'';
+  root.querySelector('[data-v48-menu-results-list]').innerHTML=query?v48AllMenuResultRows(items,query):'';
+  root.querySelector('[data-v48-menu-empty]').hidden=!query||items.length>0;
+  root.querySelector('.menu-scroll').scrollTop=0;
+}
+function v48MountAllMenuSearch(root){
+  const input=root.querySelector('[data-v48-menu-search]'),form=input?.closest('form');
+  if(!form||form.dataset.v48SearchMounted)return;
+  form.dataset.v48SearchMounted='true';
+  const update=()=>v48UpdateAllMenuSearch(root);
+  const clear=()=>{input.value='';update();input.focus({preventScroll:true});};
+  input.addEventListener('input',event=>{if(!event.isComposing)update();});
+  input.addEventListener('compositionend',update);
+  input.addEventListener('search',update);
+  input.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&input.value){event.preventDefault();event.stopPropagation();clear();}
+    if(event.key==='Enter'&&(event.isComposing||event.keyCode===229))event.preventDefault();
+  });
+  form.addEventListener('submit',event=>{event.preventDefault();update();input.blur();});
+  root.addEventListener('click',event=>{if(event.target.closest('[data-v48-menu-clear],[data-v48-menu-reset]'))clear();});
+}
+function renderV48AllMenu(){
+  const popular=V48_ALL_MENU_POPULAR.map(item=>`<button type="button" data-v47searchgo="${item.action}" data-v47title="${v47Esc(v48ActionTitle(item.action,item.title))}">${v47Esc(v48ActionTitle(item.action,item.title))}</button>`).join('');
   const flame='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2c1 5-3 6-3 9-2-1-2-3-2-4-3 3-5 6-4 10a8 8 0 0 0 16-1c0-5-4-8-7-14Zm-1 18c-4 0-3-5 0-7-1 3 3 3 3 5 0 1-1 2-3 2Z"/></svg>';
   const icons=[
     '<circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
@@ -246,12 +302,12 @@ function renderV48AllMenu(){
     '<path d="M3 13v-2a9 9 0 0 1 18 0v6a4 4 0 0 1-4 4h-3"/><rect x="2" y="11" width="4" height="7" rx="2"/><rect x="18" y="11" width="4" height="7" rx="2"/>'
   ];
   const sections=V48Menu.categories.map((category,index)=>{
-    const icon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[index]}</svg>`;
+    const icon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[category.id-1]}</svg>`;
     const subtitle=category.subtitle;
-    const rows=category.items.map(item=>`<li><button type="button" class="v48-menu-link" data-v48item="${item.id}"><span>${v47Esc(item.title)}</span><span aria-hidden="true">${I.chev}</span></button></li>`).join('');
-    return `<section class="v48-menu-group" aria-labelledby="v48MenuGroup${category.id}"><h2 id="v48MenuGroup${category.id}"><span class="v48-menu-icon v48-menu-icon-${category.id}">${icon}</span><span>${v47Esc(category.title)}</span>${subtitle?`<small>${v47Esc(subtitle)}</small>`:''}</h2><ul>${rows}</ul></section>`;
+    const rows=category.items.map(item=>`<li><button type="button" class="v48-menu-link" data-v48item="${item.id}"><span data-content-label="item:${item.id}:title">${v47Esc(item.title)}</span><span aria-hidden="true">${I.chev}</span></button></li>`).join('');
+    return `<section class="v48-menu-group" aria-labelledby="v48MenuGroup${category.id}"><h2 id="v48MenuGroup${category.id}"><span class="v48-menu-icon v48-menu-icon-${category.id}">${icon}</span><span data-content-label="category:${category.id}:title">${v47Esc(category.title)}</span>${subtitle?`<small data-content-label="category:${category.id}:subtitle">${v47Esc(subtitle)}</small>`:''}</h2><ul>${rows}</ul></section>`;
   }).join('');
-  return `<div class="v48-menu-catalog"><section class="v48-menu-popular" aria-labelledby="v48PopularTitle"><h2 id="v48PopularTitle">${flame}인기메뉴</h2><div class="v48-menu-chips" tabindex="0" role="group" aria-label="인기메뉴 목록, 좌우로 이동">${popular}</div></section><div class="v48-menu-groups">${sections}</div></div>`;
+  return `<div class="v48-menu-catalog"><div data-v48-menu-default><section class="v48-menu-popular" aria-labelledby="v48PopularTitle"><h2 id="v48PopularTitle">${flame}인기메뉴</h2><div class="v48-menu-chips" tabindex="0" role="group" aria-label="인기메뉴 목록, 좌우로 이동">${popular}</div></section><div class="v48-menu-groups">${sections}</div></div><section id="v48MenuResults" aria-label="메뉴명 검색결과" hidden><p class="v48-menu-count" data-v48-menu-count role="status" aria-live="polite" aria-atomic="true"></p><ul class="v48-menu-results" data-v48-menu-results-list aria-label="검색된 메뉴"></ul><div class="v48-menu-empty" data-v48-menu-empty hidden><h2>일치하는 메뉴가 없어요</h2><p>메뉴명을 짧게 입력하거나<br>다른 단어로 검색해 주세요.</p><button type="button" data-v48-menu-reset>전체메뉴 보기</button></div></section></div>`;
 }
 function v48Page(title, description, body){
   return `<div class="home-wrap toss-home v48-catalog-page"><div class="toss-stick"><div class="toss-top"><button type="button" class="toss-back" data-s1back aria-label="이전 화면">${I.chev}</button><div class="head-spacer"></div></div><div class="toss-dhead"><h1 class="td-title">${v47Esc(title)}</h1><p class="td-desc">${v47Esc(description).replace(/\n/g,'<br>')}</p></div></div>${body}</div>`;
@@ -387,7 +443,7 @@ function v48SearchItems(query){
     {title:'간편인증/공동인증서',desc:'공동인증서 비밀번호와 발급 방법을 확인해요',keys:'비밀번호 인증서 공동인증서',action:'v48:item:1-6'},
     {title:'서류발급',desc:'필요한 증명서와 서류를 신청해요',keys:'서류 증명서 발급 신청 제출',action:'v48:category:4'},
     {title:'권리/청약',desc:'공모주·유상청약 신청과 권리업무 메뉴를 확인해요',keys:'공모주 청약 유상청약 권리',action:'v48:category:7'}
-  ].filter(item=>normalize(item.title+item.desc+item.keys).includes(q)).map(item=>({...item,badge:'메뉴 보기'}));
+  ].map(item=>({...item,title:v48ActionTitle(item.action,item.title)})).filter(item=>normalize(item.title+item.desc+item.keys).includes(q)).map(item=>({...item,badge:'메뉴 보기'}));
   const menus=V48Menu.categories.flatMap(category=>category.items.flatMap(item=>[item,...(item.children||[]).map(v48FindItem)]).map(item=>({title:item.title,desc:v48MenuDescription(item),badge:category.title,action:`v48:item:${item.id}`}))).filter(item=>normalize(item.title+item.desc).includes(q));
   const self=V48Menu.selfServices.map((item,index)=>({title:item.title,desc:V48_SELF_COPY[index],badge:'셀프서비스',action:`v48:self:${item.id}`})).filter(item=>normalize(item.title+item.desc).includes(q));
   const categories=V48Menu.categories.filter(item=>normalize(item.title+item.subtitle).includes(q)).map(item=>({title:item.title,desc:item.subtitle,badge:'전체메뉴',action:`v48:category:${item.id}`}));
