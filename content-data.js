@@ -2,12 +2,12 @@
 (function(root){const data={
   "version": 1,
   "categoryOrder": [
-    "4",
-    "1",
-    "6",
-    "2",
     "3",
+    "1",
+    "2",
+    "4",
     "5",
+    "6",
     "7",
     "8",
     "9"
@@ -23,6 +23,10 @@
       "1-2"
     ]
   },
-  "labels": {},
+  "labels": {
+    "category:3:title": "계좌개설",
+    "category:4:title": "증명서발급",
+    "category:7:title": "청약/권리"
+  },
   "copies": []
 };root.KiwoomContentData=data;if(typeof module==='object'&&module.exports)module.exports=data;})(typeof globalThis!=='undefined'?globalThis:this);
