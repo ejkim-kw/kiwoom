@@ -38,7 +38,27 @@ const V48_MEDIA_ROUTES = {
   '4-4':'credit', '5-1':'rights', '5-2':'ipo', '6-2':'pwmgmt',
   '6-3':'etcsvc', '7-5':'altex'
 };
-const V48_RECENT_STAR='<svg viewBox="0 0 24 24" fill="#ffdf43" aria-hidden="true"><path d="m12 2.5 3 6.1 6.7 1-4.9 4.7 1.2 6.7-6-3.2L6 21l1.2-6.7-4.9-4.7 6.7-1Z"/></svg>';
+const V48_RECENT_STAR='<svg viewBox="0 0 24 24" fill="#fa58cf" aria-hidden="true"><path d="m12 2.5 3 6.1 6.7 1-4.9 4.7 1.2 6.7-6-3.2L6 21l1.2-6.7-4.9-4.7 6.7-1Z"/></svg>';
+// Small, layered pictograms follow the reference. Stable category IDs keep the
+// correct illustration attached when the local editor reorders the menu.
+const V48_HOME_ICON_PATHS = {
+  1:'<rect x="3" y="7" width="26" height="21" rx="3" fill="#73aaff"/><path d="M6 7h20a3 3 0 0 1 3 3v3H3v-3a3 3 0 0 1 3-3Z" fill="#2866d5"/><rect x="7" y="20" width="8" height="2.5" rx="1" fill="#fff"/><rect x="7" y="24" width="16" height="1.5" rx=".75" fill="#a6cdff"/>',
+  2:'<path d="m16 4 11 4v9c0 7-11 13-11 13S5 24 5 17V8Z" fill="#00bebd"/><path d="m11 16 3.5 3.5 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
+  3:'<rect x="3" y="7" width="25" height="21" rx="3" fill="#77acff"/><path d="M6 7h19a3 3 0 0 1 3 3v3H3v-3a3 3 0 0 1 3-3Z" fill="#2866d5"/><rect x="7" y="20" width="8" height="2.5" rx="1" fill="#fff"/><circle cx="26" cy="24" r="6.5" fill="#4937c8" stroke="#f2f3f5" stroke-width="1.5"/><path d="M26 21v6m-3-3h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>',
+  4:'<path d="M8 3h12l7 7v19H8a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" fill="#cce2ff"/><path d="M20 3v7h7" fill="#78acff"/><path d="M10 13h6m-6 5h12m-12 5h12" stroke="#408bff" stroke-width="2.4" stroke-linecap="round"/>',
+  5:'<path d="m7 9 15-6a2 2 0 0 1 2.6 1.2l2 5.8" fill="#8450ff"/><rect x="3" y="9" width="26" height="20" rx="4" fill="#cbb6ff"/><path d="M22 16h8v9h-8a4.5 4.5 0 0 1 0-9Z" fill="#8552f6"/><circle cx="23" cy="20.5" r="1.5" fill="#f4edff"/><path d="M7 24h8" stroke="#9d78f2" stroke-width="2" stroke-linecap="round"/>',
+  6:'<circle cx="19" cy="10" r="8" fill="#ffca54"/><path d="m14.5 6 2 8 2.5-6 2.5 6 2-8m-10 4h12" fill="none" stroke="#ee9b25" stroke-width="1.35" stroke-linejoin="round"/><path d="M4 22h6v10H4z" fill="#ffbc7b"/><path d="m10 24 5-3h6c3 0 3 4 0 4h-5l8-1 5-4c2-1 4 1 2 3l-7 7H10Z" fill="#ffd29d"/><path d="M1 23h4v9H1z" fill="#ffe4ba"/>',
+  7:'<rect x="3" y="7" width="26" height="23" rx="3" fill="#ffc4f4"/><path d="M6 7h20a3 3 0 0 1 3 3v5H3v-5a3 3 0 0 1 3-3Z" fill="#fa6de3"/><path d="M10 4v7m12-7v7" stroke="#f764df" stroke-width="3" stroke-linecap="round"/><rect x="7" y="19" width="5" height="5" rx="1" fill="#f66cde"/><path d="M22 22h7v10l-3.5-2-3.5 2Z" fill="#f56fe4"/>',
+  8:'<rect x="3" y="4" width="26" height="20" rx="3" fill="#71a9ff"/><path d="M13 24h6v4h-6zM10 28h12v2H10z" fill="#286bd5"/><path d="M9 14v5m7-9v9m7-7v7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
+  9:'<path d="M7 4h20a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H11l-8 5V8a4 4 0 0 1 4-4Z" fill="#00c1bd"/><path d="M17 9v7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="17" cy="20" r="1.4" fill="#fff"/>'
+};
+function v48HomeCategoryIcon(id){
+  return `<svg viewBox="0 0 34 34" fill="none" aria-hidden="true" focusable="false">${V48_HOME_ICON_PATHS[id]||V48_HOME_ICON_PATHS[1]}</svg>`;
+}
+function v48SelfServiceIcon(index){
+  if(index===0)return '<svg viewBox="0 0 34 34" fill="none" aria-hidden="true" focusable="false"><rect x="4" y="4" width="25" height="25" rx="5" fill="#8184ff"/><path d="M9 13h15M10 21h5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="26" cy="26" r="7" fill="#6059de" stroke="#fff" stroke-width="2"/><path d="m24 24 4 4m0-4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  return v48HomeCategoryIcon([1,4,4,2,3,1,5,8,8][index]||9);
+}
 let v48RecentMenus = [
   {title:'계좌비밀번호 재설정', action:'acctpw'},
   {title:'금융상품(ISA/연금/펀드) 문의', action:'v48:item:financial-products'},
@@ -112,21 +132,23 @@ function v48SelfServiceItems(){
 }
 function renderV48Header(){
   const warning='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.8a2 2 0 0 1 3.4 0l9 15.1A2 2 0 0 1 21 22H3a2 2 0 0 1-1.7-3.1Z" fill="#ff3e48"/><path d="M12 8v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18" r="1.2" fill="#fff"/></svg>';
-  return `<div class="v48-brand"><button type="button" class="toss-logo v48-home-logo" data-v48-home aria-label="키움증권 홈으로 이동"><img src="assets/kiwoom-symbol-v48.svg" alt=""></button></div>
+  const home=s1state.page==='home';
+  const status=`<button type="button" class="v48-center-status v48-header-pill" data-v48-congestion aria-label="고객센터 혼잡도: 보통, 스킬별 상세 보기"><span class="v48-center-icon" aria-hidden="true">${I.headset}</span><b>보통</b></button>`;
+  return `<div class="v48-brand"><button type="button" class="toss-logo v48-home-logo" data-v48-home aria-label="키움증권 홈으로 이동"><img src="assets/kiwoom-symbol-v48.svg" alt=""></button>${home?status:''}</div>
     <div class="th-right">
       <button type="button" class="acc-report v48-header-pill" data-mediasheet="accident">${warning}<span>금융사기</span></button>
-      <button type="button" class="v48-center-status v48-header-pill" data-v48-congestion aria-label="고객센터 혼잡도: 보통, 스킬별 상세 보기"><span class="v48-center-icon" aria-hidden="true">${I.headset}</span><b>보통</b></button>
-      <button type="button" class="bigfont-switch v48-header-pill ${bigFont?'on':''}" data-bigfont aria-pressed="${bigFont?'true':'false'}" aria-label="큰글씨"><span class="bfs-label">큰글씨</span></button>
-      <button type="button" class="v48-header-menu" data-menu aria-label="전체메뉴 열기">${I.menu}</button>
+      ${home?'':status}
+      <button type="button" class="bigfont-switch v48-header-pill ${bigFont?'on':''}" data-bigfont aria-pressed="${bigFont?'true':'false'}" aria-label="큰글씨">${home?'<span class="v48-font-dot" aria-hidden="true"></span>':''}<span class="bfs-label">큰글씨</span></button>
+      <button type="button" class="v48-header-menu" data-menu aria-label="전체메뉴 열기">${I.menu}${home?'<span class="v48-menu-caption" aria-hidden="true">메뉴</span>':''}</button>
     </div>`;
 }
 function v48Home(){
-  const services=v48SelfServiceItems().map(item=>`<li><button type="button" class="v48-service-item" ${item.act}><span><b>${v47Esc(item.t)}</b><small>${v47Esc(item.sub)}</small></span><span class="v48-service-arrow" aria-hidden="true">${I.chev}</span></button></li>`).join('');
+  const services=v48SelfServiceItems().map((item,index)=>`<li><button type="button" class="v48-service-item" ${item.act}><span class="v48-service-art" aria-hidden="true">${v48SelfServiceIcon(index)}</span><span class="v48-service-copy"><b>${v47Esc(item.t)}</b><small>${v47Esc(item.sub)}</small></span><span class="v48-service-arrow" aria-hidden="true">${I.chev}</span></button></li>`).join('');
   const recent=v48RecentMenus.map(item=>`<button type="button" class="v48-recent-item" data-v47recent data-v47searchgo="${v47Esc(item.action)}" data-v47title="${v47Esc(v48ActionTitle(item.action,item.title))}"><b>${v47Esc(v48ActionTitle(item.action,item.title))}</b></button>`).join('');
   const grid=V48Menu.categories.map((category,index)=>{
     const expanded=s1state.v48HomeCategory===category.id;
     const title=v47Esc(category.title).replace('/','/<wbr>');
-    const button=`<button type="button" class="v47-cell" id="v48HomeCategory${category.id}" data-v48cat="${category.id}" data-v48-expand aria-expanded="${expanded}" aria-controls="v48HomePanel${category.id}"><span class="v47-cell-nm" data-content-label="category:${category.id}:title">${title}</span>${category.subtitle?`<span class="v47-cell-sub" data-content-label="category:${category.id}:subtitle">${v47Esc(category.subtitle)}</span>`:''}<span class="v48-category-chevron" aria-hidden="true">${I.chev}</span></button>`;
+    const button=`<button type="button" class="v47-cell" id="v48HomeCategory${category.id}" data-v48cat="${category.id}" data-v48-expand aria-expanded="${expanded}" aria-controls="v48HomePanel${category.id}"><span class="v48-category-art" aria-hidden="true">${v48HomeCategoryIcon(category.id)}</span><span class="v47-cell-nm" data-content-label="category:${category.id}:title">${title}</span>${category.subtitle?`<span class="v47-cell-sub" data-content-label="category:${category.id}:subtitle">${v47Esc(category.subtitle)}</span>`:''}<span class="v48-category-chevron" aria-hidden="true">${I.chev}</span></button>`;
     // Panels span the grid immediately after their category's three-button row.
     if((index+1)%3!==0)return button;
     return button+V48Menu.categories.slice(index-2,index+1).map(group=>{
