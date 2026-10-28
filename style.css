@@ -4166,3 +4166,20 @@ body{
 .flow.toss.v48 .v48-search-page .v47-sr-copy b{white-space:normal}
 .flow.toss.v48 .v48-search-page .v47-sr-copy small{color:#616b80}
 
+
+
+/* Digital Form · 전문투자자 요건별 증빙 안내 */
+#dform-phone .df-preparation{margin:18px 20px 0;border-top:1px solid #DDE1E8;color:#50596B;font-size:14px;line-height:1.6}
+#dform-phone .df-preparation summary,#dform-phone .df-guide-section summary{padding:12px 0;min-height:44px;box-sizing:border-box;cursor:pointer;color:#14183C;font-size:14px;font-weight:700;line-height:1.5;overflow-wrap:anywhere}
+#dform-phone .df-preparation ul{margin:0;padding:0 0 8px 20px}
+#dform-phone .df-preparation li{margin:8px 0;word-break:keep-all;overflow-wrap:anywhere}
+#dform-phone .df-guide-section{border-bottom:1px solid #DDE1E8}
+#dform-phone .df-guide-section:first-of-type{margin-top:16px}
+#dform-phone .df-guide-section ul{margin:0 0 12px}
+#dform-phone .df-guide-section li{font-size:14px;font-weight:400;line-height:1.6}
+#dform-phone .df-guide-source{display:flex;align-items:center;flex-wrap:wrap;gap:4px;min-height:44px;margin-top:12px;color:#2563EB;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+#dform-phone .df-guide-source span{font-size:12px}
+#dform-phone .df-preparation summary:focus-visible,#dform-phone .df-guide-section summary:focus-visible,#dform-phone .df-guide-source:focus-visible{outline:2px solid #2563EB;outline-offset:3px;border-radius:4px}
+
+#dform-phone .dform-view:has(>.df-preparation[open]){flex:0 0 auto;min-height:100%}
+#dform-phone .dform-view:has(>.df-preparation[open]) .df-attach-list{flex:none;overflow:visible}

@@ -30,14 +30,14 @@ test('접수상태 다섯 단계를 고객 문구로 제공한다', () => {
   assert.deepEqual(DigitalForm.STATUSES.map(x => x.label), ['접수완료','처리중','보완요청','보완중','처리완료']);
 });
 
-test('Digital Form 신청 목록은 요청한 10개 업무와 분류 배지를 제공한다', () => {
-  assert.equal(Object.keys(DigitalForm.TASKS).length, 10);
+test('Digital Form 신청 목록은 요청한 11개 업무와 분류 배지를 제공한다', () => {
+  assert.equal(Object.keys(DigitalForm.TASKS).length, 11);
   assert.deepEqual(Object.values(DigitalForm.TASKS).map(x => x.category), [
-    '업무','업무','업무','업무','금융상품','선물옵션','국내주식','해외주식','선물옵션','업무'
+    '업무','업무','업무','업무','금융상품','금융상품','선물옵션','국내주식','해외주식','선물옵션','업무'
   ]);
   assert.deepEqual(Object.values(DigitalForm.TASKS).map(x => x.title), [
     '미성년자 업무처리 (대리인)','법인계좌 업무처리 (대리인)','본인확인용','개명',
-    'ISA 서민형 증빙서류 제출','선물옵션 적격투자자','레버리지ETP 적격투자자',
+    'ISA 서민형 증빙서류 제출','전문투자자','선물옵션 적격투자자','레버리지ETP 적격투자자',
     '해외레버리지ETP 적격투자자','선물옵션 기본예탁금 전입','기타'
   ]);
 });
@@ -89,17 +89,21 @@ test('제출서류가 한 종류면 필요서류 배지를 표시하지 않는�
   assert.equal(DigitalForm.requirementLabel(DigitalForm.TASKS.corporate), '아래 서류 중 1개만 선택');
 });
 
-test('모든 제출서류는 맞춤 안내와 실제 예시 이미지 파일을 제공한다', () => {
+test('모든 제출서류는 맞춤 안내와 예시 이미지 또는 공식 요건별 안내를 제공한다', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const docs = Object.values(DigitalForm.TASKS).flatMap(task => task.docs);
-  assert.equal(docs.length, 17);
+  assert.equal(docs.length, 20);
   for (const doc of docs) {
     assert.equal(doc.guide.title, '서류안내', doc.name);
     assert.ok(doc.guide.description.length > 10, doc.name);
     assert.ok(doc.guide.notes.length >= 2, doc.name);
     assert.ok(doc.guide.checks.length >= 1, doc.name);
-    assert.ok(fs.existsSync(path.join(__dirname, doc.guide.sample)), doc.name);
+    if (doc.guide.sample) assert.ok(fs.existsSync(path.join(__dirname, doc.guide.sample)), doc.name);
+    else {
+      assert.ok(doc.guide.sections.length > 0, doc.name);
+      assert.ok(doc.guide.source.url.startsWith('https://www.kiwoom.com/'), doc.name);
+    }
   }
 });
 

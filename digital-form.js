@@ -30,6 +30,43 @@
     derivativesConfirmation:documentGuide('기본예탁금 유형을 확인할 수 있는 파생상품 거래확인서예요.',['발급 금융회사와 고객 성명이 표시되어야 해요.','기본예탁금 유형이 반드시 기재되어 있어야 해요.','문서 전체와 발급일자가 선명하게 보여야 해요.'],['기본예탁금 유형','발급회사','발급일자'],'assets/derivatives-confirmation-sample.svg')
     ,other:documentGuide('업무 처리에 참고할 서류를 자유롭게 첨부할 수 있어요.',['사진 또는 PDF 등 준비한 양식을 첨부해 주세요.','서류는 최대 10개까지 추가할 수 있어요.','글자와 문서 전체가 선명하게 보이는지 확인해 주세요.'],['최대 10개','사진·파일 가능'],'assets/generic-attachment-sample.svg')
   };
+  // 키움증권 개인전문투자자 이용가이드 확인: 2026-10-28 (UG0FD / 2).
+  const PROFESSIONAL_SOURCE={label:'키움증권 필요서류 안내',url:'https://www.kiwoom.com/h/help/right/VHelpProInvestorView?viewIdx=0'};
+  function professionalGuide(description,notes,sections){
+    return {...documentGuide(description,notes,['선택 요건의 서류 전체','신청인 기준 발급'],'',true),sections,source:PROFESSIONAL_SOURCE};
+  }
+  GUIDES.professionalIncome=professionalGuide('본인 연소득 1억원 이상 또는 부부합산 연소득 1.5억원 이상을 증빙합니다.',[
+    '소득금액증명원은 국세청 홈택스에서 발급합니다. ISA 가입용 소득확인증명서와 다른 서류입니다.',
+    '부부합산으로 신청하는 경우에만 배우자 관련 서류를 함께 준비합니다.',
+    '여러 장의 증빙은 하나의 PDF로 묶어 첨부합니다. 발급 기준은 공식 안내를 확인해 주세요.'
+  ],[
+    {title:'본인 소득으로 신청',items:['본인 소득금액증명원']},
+    {title:'부부합산 소득으로 신청',items:['본인·배우자 각각의 소득금액증명원','가족관계증명서 또는 혼인관계증명서','배우자 개인(신용)정보 수집·이용 및 제공동의서','배우자 신분증']}
+  ]);
+  GUIDES.professionalExpert=professionalGuide('인정되는 전문자격과 해당 분야에서 1년 이상 근무한 경력을 증빙합니다.',[
+    '아래에서 본인의 자격을 펼쳐 필요한 서류를 확인합니다. 나열된 자격 이외의 자격증은 인정되지 않습니다.',
+    '경력증명서에는 해당 분야 1년 이상의 근무기간이 표시되어야 하며, 발급일로부터 90일 이내여야 합니다.',
+    '자격 증빙은 90일 이내 발급 기준과 등록증 유효기간을 공식 안내에서 확인합니다. 여러 서류는 하나의 PDF로 묶어 첨부합니다.'
+  ],[
+    {title:'공인회계사',items:['한국공인회계사회 발급 등록증서(유효기간 이내)','경력증명서 · 회계사협회 발급 경력증명서는 심사 불가']},
+    {title:'감정평가사',items:['한국감정평가사협회 발급 등록증서(유효기간 이내)','경력증명서 · 감정평가사협회 발급 경력증명서는 심사 불가']},
+    {title:'세무사',items:['한국세무사회 발급 등록증서(유효기간 이내) · 세무사 자격증은 심사 불가','경력증명서']},
+    {title:'변호사',items:['대한변호사협회 발급 변호사 신분증 앞·뒤 · 협회 등록증명원은 심사 불가','경력증명서']},
+    {title:'변리사',items:['대한변리사회 발급 등록증서','경력증명서']},
+    {title:'투자자산운용사 · 금융투자분석사',items:['금융투자협회 자격시험센터 발급 합격증(90일 이내)','금융투자협회 발급 금융투자전문인력등록확인서(등록이력 1년 이상)','경력증명서']},
+    {title:'국내 재무위험관리사',items:['금융투자협회 자격시험센터 발급 합격증(90일 이내)','경력증명서']},
+    {title:'국제 재무위험관리사',items:['GARP 발급 합격증서','경력증명서']}
+  ]);
+  GUIDES.professionalAssets=professionalGuide('거주부동산 관련 금액을 제외한 부부합산 순자산 5억원 이상을 증빙합니다.',[
+    '공통 서류와 함께 보유 자산에 해당하는 증빙을 준비합니다. 배우자 합산 시 배우자 서류도 필요합니다.',
+    '잔고는 신청일 전일 기준입니다. 신용정보조회서·등기부등본은 발급 다음 영업일에 전문투자자 신청이 가능합니다.',
+    '여러 서류는 하나의 PDF로 묶어 첨부합니다. 개별 서류의 발급일 기준은 공식 안내를 확인해 주세요.'
+  ],[
+    {title:'기본 제출서류',items:['본인 신분증 · 배우자 합산 시 배우자 신분증','가족관계증명서 또는 기혼자의 혼인관계증명서','주민등록등본','본인·배우자의 신용정보조회서(한국신용정보원 크레딧포유)','배우자 합산 시 개인(신용)정보 수집·이용 및 제공동의서']},
+    {title:'금융자산을 증빙하는 경우',items:['금융회사 잔고증명서(신청일 전일 기준)','키움증권 잔고는 본인 증빙 제출 생략 가능 · 배우자 잔고는 제출 필요']},
+    {title:'비거주 소유부동산을 증빙하는 경우',items:['말소사항을 포함한 등기사항전부증명서','기준시가 서류','현재 계약기간이 포함된 임대차계약서 · 미제출 시 해당 부동산 불인정']},
+    {title:'거주부동산 담보대출이 있는 경우',items:['금융거래확인서와 부채증명서(신청일 전일 발급)']}
+  ]);
   const TASKS={
     minor:{category:'업무',title:'미성년자 업무처리 (대리인)',requirementMode:'all',guide:'법정대리인 확인을 위해 아래 서류를 모두 첨부해 주세요.',docs:[
       {name:'법정대리인 신분증',summary:'신분증 원본 · 실물 촬영',description:'주민등록증 또는 운전면허증 원본을 촬영해 주세요. 실물 촬영만 가능하며 스캔본·사본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.guardianId},
@@ -50,6 +87,17 @@
     ]},
     isa:{category:'금융상품',title:'ISA 서민형 증빙서류 제출',requirementMode:'all',guide:'서민형 가입 자격 확인을 위해 아래 서류를 첨부해 주세요.',docs:[
       {name:'소득확인증명서',summary:'ISA 가입용 · 출력본 2매',description:'개인종합자산관리계좌 가입용으로 국세청 홈택스에서 프린터 출력용 2매를 발급해 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.income}
+    ]},
+    professionalInvestor:{category:'금융상품',title:'전문투자자',requirementMode:'any',requirementText:'세 가지 요건 중 한 가지 이상 첨부',guide:'해당하는 요건의 필요서류를 확인하고 첨부합니다.',preparation:[
+      '공통 필수서류: 신분증, 개인전문투자자 증빙용 잔고증명서, 계좌개설확인서(개설 후 1년 경과). 키움증권에서 투자경험 요건을 충족한 경우 해당 투자경험 증빙은 생략할 수 있습니다.',
+      '투자경험은 최근 5년 중 1년 이상 금융투자상품 월말평균 잔고 5천만원 이상이 기준입니다.',
+      '공통서류와 선택한 요건의 서류를 함께 준비합니다. 여러 장은 하나의 PDF로 묶어 해당 구분에 첨부합니다.',
+      '증빙서류는 신청인 기준으로 발급하며 주민등록번호 전체가 표시되어야 합니다. 서류별 발급 기준은 각 요건의 공식 안내에서 확인합니다.',
+      '이 화면은 서류 접수 단계입니다. 전문투자자 등록 완료는 서류심사·본인확인·위험고지 확인 후 별도로 진행됩니다.'
+    ],docs:[
+      {name:'소득요건',summary:'소득금액증명원 · 부부합산 시 추가서류',description:'본인 또는 부부합산 소득 증빙을 첨부합니다.',methods:ALL_METHODS,guide:GUIDES.professionalIncome},
+      {name:'전문가요건',summary:'전문자격 증빙 · 1년 이상 경력증명서',description:'본인의 전문자격에 해당하는 서류와 경력 증빙을 첨부합니다.',methods:ALL_METHODS,guide:GUIDES.professionalExpert},
+      {name:'자산요건',summary:'신용정보조회서 · 금융자산·부동산 증빙',description:'자산 및 부채를 확인할 수 있는 서류를 첨부합니다.',methods:ALL_METHODS,guide:GUIDES.professionalAssets}
     ]},
     futuresQualified:{category:'선물옵션',title:'선물옵션 적격투자자',requirementMode:'any',guide:'해당되는 자격 증빙 중 1개 이상을 첨부해 주세요.',docs:[
       {name:'금융자격증',summary:'성명 · 자격명 · 자격번호',description:'투자자산운용사·금융투자분석사·재무위험관리사·CFA·FRM 등의 자격증을 제출하면 사전교육 이수가 면제돼요.',methods:ALL_METHODS,guide:GUIDES.financeLicense},
@@ -74,6 +122,7 @@
   }
   function requirementLabel(task){
     if(!task || task.docs.length<=1) return '';
+    if(task.requirementText) return task.requirementText;
     return task.requirementMode==='any'?'아래 서류 중 1개만 선택':'아래 서류 모두 필요';
   }
   function createSession(taskId,requiredCount,requirementMode){
