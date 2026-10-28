@@ -38,7 +38,7 @@
   GUIDES.professionalIncome=professionalGuide('본인 연소득 1억원 이상 또는 부부합산 연소득 1.5억원 이상을 증빙합니다.',[
     '소득금액증명원은 국세청 홈택스에서 발급합니다. ISA 가입용 소득확인증명서와 다른 서류입니다.',
     '부부합산으로 신청하는 경우에만 배우자 관련 서류를 함께 준비합니다.',
-    '여러 장의 증빙은 하나의 PDF로 묶어 첨부합니다. 발급 기준은 공식 안내를 확인해 주세요.'
+    '선택한 세부요건의 필요서류 화면에서 서류별로 첨부합니다. 발급 기준은 공식 안내를 확인합니다.'
   ],[
     {title:'본인 소득으로 신청',items:['본인 소득금액증명원']},
     {title:'부부합산 소득으로 신청',items:['본인·배우자 각각의 소득금액증명원','가족관계증명서 또는 혼인관계증명서','배우자 개인(신용)정보 수집·이용 및 제공동의서','배우자 신분증']}
@@ -46,7 +46,7 @@
   GUIDES.professionalExpert=professionalGuide('인정되는 전문자격과 해당 분야에서 1년 이상 근무한 경력을 증빙합니다.',[
     '아래에서 본인의 자격을 펼쳐 필요한 서류를 확인합니다. 나열된 자격 이외의 자격증은 인정되지 않습니다.',
     '경력증명서에는 해당 분야 1년 이상의 근무기간이 표시되어야 하며, 발급일로부터 90일 이내여야 합니다.',
-    '자격 증빙은 90일 이내 발급 기준과 등록증 유효기간을 공식 안내에서 확인합니다. 여러 서류는 하나의 PDF로 묶어 첨부합니다.'
+    '자격 증빙은 90일 이내 발급 기준과 등록증 유효기간을 공식 안내에서 확인합니다. 선택한 자격의 필요서류를 각각 첨부합니다.'
   ],[
     {title:'공인회계사',items:['한국공인회계사회 발급 등록증서(유효기간 이내)','경력증명서 · 회계사협회 발급 경력증명서는 심사 불가']},
     {title:'감정평가사',items:['한국감정평가사협회 발급 등록증서(유효기간 이내)','경력증명서 · 감정평가사협회 발급 경력증명서는 심사 불가']},
@@ -60,13 +60,93 @@
   GUIDES.professionalAssets=professionalGuide('거주부동산 관련 금액을 제외한 부부합산 순자산 5억원 이상을 증빙합니다.',[
     '공통 서류와 함께 보유 자산에 해당하는 증빙을 준비합니다. 배우자 합산 시 배우자 서류도 필요합니다.',
     '잔고는 신청일 전일 기준입니다. 신용정보조회서·등기부등본은 발급 다음 영업일에 전문투자자 신청이 가능합니다.',
-    '여러 서류는 하나의 PDF로 묶어 첨부합니다. 개별 서류의 발급일 기준은 공식 안내를 확인해 주세요.'
+    '자산 구성과 추가 조건에 맞는 서류를 각각 첨부합니다. 개별 서류의 발급일 기준은 공식 안내를 확인합니다.'
   ],[
     {title:'기본 제출서류',items:['본인 신분증 · 배우자 합산 시 배우자 신분증','가족관계증명서 또는 기혼자의 혼인관계증명서','주민등록등본','본인·배우자의 신용정보조회서(한국신용정보원 크레딧포유)','배우자 합산 시 개인(신용)정보 수집·이용 및 제공동의서']},
     {title:'금융자산을 증빙하는 경우',items:['금융회사 잔고증명서(신청일 전일 기준)','키움증권 잔고는 본인 증빙 제출 생략 가능 · 배우자 잔고는 제출 필요']},
     {title:'비거주 소유부동산을 증빙하는 경우',items:['말소사항을 포함한 등기사항전부증명서','기준시가 서류','현재 계약기간이 포함된 임대차계약서 · 미제출 시 해당 부동산 불인정']},
     {title:'거주부동산 담보대출이 있는 경우',items:['금융거래확인서와 부채증명서(신청일 전일 발급)']}
   ]);
+
+  // 요건 선택 후 실제 첨부 항목을 구성한다. 서류 ID는 선택별 임시 첨부 보존에도 사용한다.
+  function professionalDocument(id,name,summary,section){
+    return {id,name,summary,description:summary,section:section||'요건 증빙서류',methods:ALL_METHODS,
+      guide:professionalGuide(summary,['문서 전체와 모든 페이지가 선명하게 표시되어야 합니다.','발급 대상·발급일과 서류별 유효기간은 공식 안내를 확인합니다.'],[])};
+  }
+  const PD=professionalDocument;
+  const COMMON_PROFESSIONAL_DOCS=[
+    PD('identity','본인 신분증','주민등록증 또는 운전면허증','공통서류'),
+    PD('investment-balance','개인전문투자자 증빙용 잔고증명서','최근 5년 중 1년 이상 · 월말평균 잔고 5천만원 이상','공통서류'),
+    PD('account-opening','계좌개설확인서','계좌 개설 후 1년 경과 · 신청 당일 또는 전일 발급','공통서류')
+  ];
+  const spouseDocs=[
+    PD('spouse-consent','배우자 개인(신용)정보 동의서','개인(신용)정보 수집·이용 및 제공동의서'),
+    PD('spouse-identity','배우자 신분증','배우자 합산 신청 시 필요')
+  ];
+  const familyDoc=PD('family','가족관계증명서 또는 혼인관계증명서','해당하는 증명서 한 가지 · 90일 이내 발급');
+  const assetFinancial=[PD('financial-balance','금융회사 잔고증명서','신청일 전일 잔고 · 본인 키움증권 잔고는 제출 생략 가능, 배우자 잔고는 제출 필요')];
+  const assetProperty=[
+    PD('property-register','등기사항전부증명서','비거주 소유부동산 · 말소사항 포함'),
+    PD('property-value','기준시가 서류','해당 부동산의 기준시가 확인용'),
+    PD('property-lease','임대차계약서','현재 계약기간 포함 · 미제출 시 해당 부동산 불인정')
+  ];
+  const expertDefinitions=[
+    ['accountant','공인회계사','한국공인회계사회 발급 등록증서','유효기간 이내 · 회계사협회 발급 경력증명서는 심사 불가'],
+    ['appraiser','감정평가사','한국감정평가사협회 발급 등록증서','유효기간 이내 · 감정평가사협회 발급 경력증명서는 심사 불가'],
+    ['tax-accountant','세무사','한국세무사회 발급 등록증서','유효기간 이내 · 세무사 자격증은 심사 불가'],
+    ['lawyer','변호사','변호사 신분증','대한변호사협회 발급 · 앞·뒤 모두 첨부 · 협회 등록증명원은 심사 불가'],
+    ['patent-attorney','변리사','대한변리사회 발급 등록증서','등록 여부를 확인할 수 있는 증빙'],
+    ['investment-manager','투자자산운용사','자격시험 합격증','금융투자협회 자격시험센터 · 90일 이내 발급',true],
+    ['investment-analyst','금융투자분석사','자격시험 합격증','금융투자협회 자격시험센터 · 90일 이내 발급',true],
+    ['domestic-risk','국내 재무위험관리사','자격시험 합격증','금융투자협회 자격시험센터 · 90일 이내 발급'],
+    ['international-risk','국제 재무위험관리사','GARP 발급 합격증서','국제 재무위험관리사 자격 증빙']
+  ];
+  const PROFESSIONAL_OPTIONS=[
+    [
+      {id:'income-self',title:'본인 소득으로 신청',description:'본인 연소득 1억원 이상',docs:[PD('income-self','본인 소득금액증명원','국세청 홈택스 발급 · ISA 가입용 소득확인증명서와 다름')]},
+      {id:'income-couple',title:'부부합산 소득으로 신청',description:'부부합산 연소득 1.5억원 이상',docs:[PD('income-self','본인 소득금액증명원','국세청 홈택스 발급'),PD('income-spouse','배우자 소득금액증명원','배우자 기준 · 국세청 홈택스 발급'),familyDoc,...spouseDocs]}
+    ],
+    expertDefinitions.map(function(item){return {id:'expert-'+item[0],title:item[1],description:'해당 전문자격 보유 및 관련 분야 경력 1년 이상',docs:[PD('qualification-'+item[0],item[2],item[3]),...(item[4]?[PD('registration-history','금융투자전문인력등록확인서','금융투자협회 발급 · 등록이력 1년 이상')]:[]),PD('career-'+item[0],'경력증명서','해당 분야 근무기간 1년 이상 · 90일 이내 발급'+(item[0]==='accountant'?' · 회계사협회 발급 경력증명서는 심사 불가':item[0]==='appraiser'?' · 감정평가사협회 발급 경력증명서는 심사 불가':''))]};}),
+    [
+      {id:'assets-financial',title:'금융자산으로 신청',description:'거주부동산 관련 금액을 제외한 순자산 5억원 이상',docs:assetFinancial},
+      {id:'assets-property',title:'비거주 소유부동산으로 신청',description:'거주부동산 관련 금액을 제외한 순자산 5억원 이상',docs:assetProperty},
+      {id:'assets-combined',title:'금융자산과 비거주 소유부동산 합산',description:'두 자산을 합산하여 순자산 5억원 이상',docs:[...assetFinancial,...assetProperty]}
+    ]
+  ];
+  function professionalOption(selection){
+    return selection&&(PROFESSIONAL_OPTIONS[selection.groupIndex]||[]).find(option=>option.id===selection.optionId);
+  }
+  function professionalDocuments(selection){
+    const option=professionalOption(selection);if(!option)return [];
+    let docs=COMMON_PROFESSIONAL_DOCS.filter(doc=>!selection.experienceConfirmed||doc.id==='identity');
+    if(selection.groupIndex===2){
+      docs=docs.concat([familyDoc,PD('resident','주민등록등본','신청인 기준 · 90일 이내 발급'),PD('credit-self','본인 신용정보조회서','한국신용정보원 크레딧포유 · 발급 다음 영업일부터 신청 가능')]);
+      if(selection.withSpouse)docs=docs.concat(spouseDocs,[PD('credit-spouse','배우자 신용정보조회서','한국신용정보원 크레딧포유 발급')]);
+    }
+    docs=docs.concat(option.docs.filter(doc=>!(doc.id==='financial-balance'&&selection.ownKiwoomAssets)));
+    if(selection.groupIndex===2&&selection.withSpouse&&option.docs.some(doc=>doc.id==='financial-balance'))docs.push(PD('spouse-financial-balance','배우자 금융회사 잔고증명서','신청일 전일 잔고 · 배우자 키움증권 잔고도 제출 필요'));
+    if(selection.groupIndex===2&&selection.withMortgage)docs=docs.concat([
+      PD('mortgage-confirmation','금융거래확인서','거주부동산 담보대출 확인용 · 신청일 전일 발급'),
+      PD('mortgage-liability','부채증명서','거주부동산 담보대출 확인용 · 신청일 전일 발급')
+    ]);
+    return docs;
+  }
+  function selectProfessionalRequirement(session,groupIndex,optionId,settings){
+    if(!session||session.taskId!=='professionalInvestor'||!professionalOption({groupIndex,optionId}))return session;
+    const drafts={...(session.professionalDrafts||{})};
+    if(session.selection){
+      const prior=drafts[session.selection.optionId];
+      const files={...(prior&&prior.files||{})};
+      session.documentDefinitions.forEach((doc,index)=>{files[doc.id]=session.documents[index];});
+      drafts[session.selection.optionId]={selection:session.selection,files};
+    }
+    const previous=drafts[optionId];
+    const selection={experienceConfirmed:false,withSpouse:false,withMortgage:false,ownKiwoomAssets:false,...(previous?previous.selection:{}),...settings,groupIndex,optionId};
+    const definitions=professionalDocuments(selection);
+    const documents=definitions.map(doc=>previous&&previous.files[doc.id]||null);
+    return {...session,selection,documentDefinitions:definitions,professionalDrafts:drafts,documents,requirementMode:'all',status:'draft',receiptNo:'',submittedAt:''};
+  }
+
   const TASKS={
     minor:{category:'업무',title:'미성년자 업무처리 (대리인)',requirementMode:'all',guide:'법정대리인 확인을 위해 아래 서류를 모두 첨부해 주세요.',docs:[
       {name:'법정대리인 신분증',summary:'신분증 원본 · 실물 촬영',description:'주민등록증 또는 운전면허증 원본을 촬영해 주세요. 실물 촬영만 가능하며 스캔본·사본은 처리할 수 없어요.',methods:['camera'],guide:GUIDES.guardianId},
@@ -88,10 +168,10 @@
     isa:{category:'금융상품',title:'ISA 서민형 증빙서류 제출',requirementMode:'all',guide:'서민형 가입 자격 확인을 위해 아래 서류를 첨부해 주세요.',docs:[
       {name:'소득확인증명서',summary:'ISA 가입용 · 출력본 2매',description:'개인종합자산관리계좌 가입용으로 국세청 홈택스에서 프린터 출력용 2매를 발급해 첨부해 주세요.',methods:ALL_METHODS,guide:GUIDES.income}
     ]},
-    professionalInvestor:{category:'금융상품',title:'전문투자자',requirementMode:'any',requirementText:'세 가지 요건 중 한 가지 이상 첨부',guide:'해당하는 요건의 필요서류를 확인하고 첨부합니다.',preparation:[
+    professionalInvestor:{category:'업무',title:'전문투자자',requirementMode:'any',requirementText:'해당하는 요건 한 가지 선택',guide:'요건별 안내를 확인한 뒤 해당하는 세부요건을 선택합니다.',preparation:[
       '공통 필수서류: 신분증, 개인전문투자자 증빙용 잔고증명서, 계좌개설확인서(개설 후 1년 경과). 키움증권에서 투자경험 요건을 충족한 경우 해당 투자경험 증빙은 생략할 수 있습니다.',
       '투자경험은 최근 5년 중 1년 이상 금융투자상품 월말평균 잔고 5천만원 이상이 기준입니다.',
-      '공통서류와 선택한 요건의 서류를 함께 준비합니다. 여러 장은 하나의 PDF로 묶어 해당 구분에 첨부합니다.',
+      '공통서류와 선택한 세부요건의 서류를 각각 첨부합니다. 한 서류가 여러 장인 경우 전체 페이지를 함께 준비합니다.',
       '증빙서류는 신청인 기준으로 발급하며 주민등록번호 전체가 표시되어야 합니다. 서류별 발급 기준은 각 요건의 공식 안내에서 확인합니다.',
       '이 화면은 서류 접수 단계입니다. 전문투자자 등록 완료는 서류심사·본인확인·위험고지 확인 후 별도로 진행됩니다.'
     ],docs:[
@@ -126,6 +206,7 @@
     return task.requirementMode==='any'?'아래 서류 중 1개만 선택':'아래 서류 모두 필요';
   }
   function createSession(taskId,requiredCount,requirementMode){
+    if(taskId==='professionalInvestor')return {taskId,documents:[],documentDefinitions:[],selection:null,professionalDrafts:{},requirementMode:'all',status:'draft',receiptNo:'',submittedAt:''};
     return {taskId,documents:Array(Math.max(0,requiredCount||0)).fill(null),requirementMode:requirementMode||'all',status:'draft',receiptNo:'',submittedAt:''};
   }
   function attachDocument(session,index,method){
@@ -136,6 +217,7 @@
   }
   function canSubmit(session){
     if(!session || !session.documents.length) return false;
+    if(session.taskId==='professionalInvestor'&&(!professionalOption(session.selection)||professionalDocuments(session.selection).length!==session.documents.length))return false;
     return session.requirementMode==='any'
       ? session.documents.some(x=>x&&x.attached)
       : session.documents.every(x=>x&&x.attached);
@@ -147,7 +229,8 @@
     const limit=session.requirementMode==='any'?1:session.documents.length;
     let next=session;
     for(let index=0;index<limit;index++){
-      const method=(task.docs[index]&&task.docs[index].methods&&task.docs[index].methods[0])||'file';
+      const docs=session.documentDefinitions||task.docs;
+      const method=(docs[index]&&docs[index].methods&&docs[index].methods[0])||'file';
       next=attachDocument(next,index,method);
     }
     return next;
@@ -164,5 +247,5 @@
     const receiptNo=`DF-${date}-${String(Math.floor(Math.random()*10000)).padStart(4,'0')}`;
     return {session:{...session,status:'received',receiptNo,submittedAt:now.toLocaleString('ko-KR')},error:''};
   }
-  return {STATUSES,TASKS,categoryClass,requirementLabel,createSession,attachDocument,attachDemoDocuments,visibleAttachmentCount,canSubmit,submit};
+  return {STATUSES,TASKS,PROFESSIONAL_OPTIONS,professionalOption,professionalDocuments,selectProfessionalRequirement,categoryClass,requirementLabel,createSession,attachDocument,attachDemoDocuments,visibleAttachmentCount,canSubmit,submit};
 });

@@ -33,7 +33,7 @@ test('접수상태 다섯 단계를 고객 문구로 제공한다', () => {
 test('Digital Form 신청 목록은 요청한 11개 업무와 분류 배지를 제공한다', () => {
   assert.equal(Object.keys(DigitalForm.TASKS).length, 11);
   assert.deepEqual(Object.values(DigitalForm.TASKS).map(x => x.category), [
-    '업무','업무','업무','업무','금융상품','금융상품','선물옵션','국내주식','해외주식','선물옵션','업무'
+    '업무','업무','업무','업무','금융상품','업무','선물옵션','국내주식','해외주식','선물옵션','업무'
   ]);
   assert.deepEqual(Object.values(DigitalForm.TASKS).map(x => x.title), [
     '미성년자 업무처리 (대리인)','법인계좌 업무처리 (대리인)','본인확인용','개명',

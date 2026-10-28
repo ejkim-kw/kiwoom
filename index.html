@@ -1492,26 +1492,55 @@
       setStepper(0);
       app.innerHTML='<div class="dform-view df-customer-list"><div class="df-list">'+Object.keys(tasks).map(function(id){return '<button type="button" class="df-row" data-dfgo="'+id+'"><span class="df-row-copy"><span class="df-category '+DigitalForm.categoryClass(tasks[id].category)+'">'+tasks[id].category+'</span><span class="df-nm">'+tasks[id].title+'</span></span>'+arrow+'</button>';}).join('')+'</div></div>';
     }
+
+    function professionalOverview(){return state.taskId==='professionalInvestor'&&(!state.session.selection||state.showRequirements);}
+    function currentTask(){
+      var task=tasks[state.taskId];
+      if(state.taskId!=='professionalInvestor'||!state.session.selection)return task;
+      var option=DigitalForm.professionalOption(state.session.selection);
+      return Object.assign({},task,{detailTitle:'필요서류 첨부',guide:option.title+' · '+option.description,requirementText:'',requirementMode:'all',docs:state.session.documentDefinitions});
+    }
+    function preparation(task){return task.preparation?'<details class="df-preparation"><summary>공통 필수서류 및 제출 안내</summary><ul>'+task.preparation.map(function(note){return '<li>'+note+'</li>';}).join('')+'</ul></details>':'';}
+    function professionalView(){
+      phone.dataset.contentScreen='requirements:professionalInvestor';setStepper(0);
+      var task=tasks.professionalInvestor,selection=state.session.selection;
+      app.innerHTML='<div class="dform-view df-professional-view"><div class="df-head"><button type="button" class="df-text-action" data-dfhome>‹ 서류제출 목록</button><h2 class="df-dtitle">전문투자자</h2><p class="df-desc">요건별 안내를 확인하고 해당하는 세부요건 한 가지를 선택합니다.</p></div><div class="df-attach-list">'+task.docs.map(function(doc,index){var selected=selection&&selection.groupIndex===index;return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-title"><div class="df-attach-nm">'+doc.name+'</div><button type="button" class="df-guide-help" data-dfguide="'+index+'" aria-label="'+doc.name+' 안내 및 선택">?</button></div><div class="df-attach-sub">'+doc.summary+'</div>'+(selected?'<div class="df-attached-state">'+DigitalForm.professionalOption(selection).title+' · '+state.session.documents.filter(Boolean).length+'/'+state.session.documents.length+' 첨부</div>':'')+'</div><button type="button" class="df-attach-btn" data-dfattach="'+index+'">'+(selected?'첨부하기':'선택하기')+'</button></div>';}).join('')+'</div>'+preparation(task)+'</div>';
+    }
+    function professionalGuideSheet(index){
+      var doc=tasks.professionalInvestor.docs[index];if(!doc)return;var guide=doc.guide;
+      state.showRequirements=true;detailView();
+      var sections=DigitalForm.PROFESSIONAL_OPTIONS[index].map(function(option){return '<details class="df-guide-section"><summary>'+option.title+'</summary><p class="df-option-description">'+option.description+'</p><ul>'+option.docs.map(function(item){return '<li><b>'+item.name+'</b><br>'+item.summary+'</li>';}).join('')+'</ul><button type="button" class="df-option-select" data-dfoption="'+option.id+'" data-dfgroup="'+index+'" aria-label="'+option.title+' 선택하기">이 요건 선택하기</button></details>';}).join('');
+      app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov df-guide-ov" data-dfguideclose><section class="df-sheet df-guide-sheet df-professional-guide" role="dialog" aria-modal="true" aria-label="'+doc.name+' 안내 및 선택"><div class="df-sheet-handle"></div><div class="df-guide-head"><h2 class="df-sheet-title">'+doc.name+' 안내 및 선택</h2><button type="button" data-dfguideclose aria-label="요건 안내 닫기">×</button></div><p class="df-guide-desc">'+guide.description+'</p><p class="df-option-description">아래 항목을 펼쳐 안내를 확인한 뒤 선택합니다. 다음 화면에서 공통서류와 필요서류를 각각 첨부합니다.</p>'+sections+'<a class="df-guide-source" href="'+guide.source.url+'" target="_blank" rel="noopener noreferrer">'+guide.source.label+' <span>(새 창)</span></a></section></div>');
+      var close=app.querySelector('.df-guide-head [data-dfguideclose]');if(close)close.focus();
+    }
+    function professionalSettings(){
+      var s=state.session.selection;if(!s)return '';
+      function check(key,label){return '<label class="df-condition"><input type="checkbox" data-dfcondition="'+key+'"'+(s[key]?' checked':'')+'><span>'+label+'</span></label>';}
+      return '<div class="df-professional-settings"><button type="button" class="df-text-action" data-dfrequirements>‹ 요건 다시 선택하기</button>'+check('experienceConfirmed','키움증권에서 투자경험 요건 충족 확인됨')+'<p class="df-condition-note">확인된 경우에만 투자경험 증빙 2종을 생략합니다. 신분증은 첨부합니다.</p>'+(s.groupIndex===2?'<fieldset class="df-asset-conditions"><legend>자산 증빙 추가 조건</legend>'+check('withSpouse','배우자 자산 합산')+check('withMortgage','거주부동산 담보대출 있음')+(s.optionId!=='assets-property'?check('ownKiwoomAssets','본인 금융자산은 키움증권 잔고만 증빙')+'<p class="df-condition-note">본인 키움증권 잔고증명서는 생략합니다. 배우자 합산 시 배우자 증명서는 첨부합니다.</p>':'')+'</fieldset>':'')+'</div>';
+    }
+
     function detailView(){
+      state.view='detail';
+      if(professionalOverview())return professionalView();
       phone.dataset.contentScreen='detail:'+state.taskId;
-      setStepper(0);
-      var task=tasks[state.taskId],ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean),visibleCount=task.maxAttachments?DigitalForm.visibleAttachmentCount(state.session,task.maxAttachments):task.docs.length;
+      setStepper(state.taskId==='professionalInvestor'?1:0);
+      var task=currentTask(),ready=DigitalForm.canSubmit(state.session),hasAttachment=state.session.documents.some(Boolean),visibleCount=task.maxAttachments?DigitalForm.visibleAttachmentCount(state.session,task.maxAttachments):task.docs.length;
       var requirement=DigitalForm.requirementLabel(task);
       var displayDocs=task.maxAttachments?Array.from({length:visibleCount},function(_,i){return task.docs[0];}):task.docs;
       var isRequiredAll=task.requirementMode==='all'&&task.docs.length>1,attachedCount=state.session.documents.filter(Boolean).length;
-      var requirementHtml=isRequiredAll?'<div class="df-requirement is-all" role="status"><span><i>!</i><b>필수 서류를 모두 첨부해야 접수할 수 있어요</b></span><strong>'+attachedCount+'/'+task.docs.length+' 첨부</strong></div>':(requirement?'<div class="df-requirement">'+requirement+'</div>':'');
-      var preparationHtml=task.preparation?'<details class="df-preparation"><summary>공통 필수서류 및 제출 안내</summary><ul>'+task.preparation.map(function(note){return '<li>'+note+'</li>';}).join('')+'</ul></details>':'';
-      var submitLabel=isRequiredAll&&!ready?'필수 서류를 모두 첨부해 주세요':'제출할게요';
-      app.innerHTML='<div class="dform-view"><div class="df-head"><div class="df-dtitle">'+(task.detailTitle||task.title)+'</div><div class="df-desc">'+task.guide+'</div>'+requirementHtml+'</div><div class="df-attach-list">'+displayDocs.map(function(doc,i){var file=state.session.documents[i],name=task.maxAttachments?'첨부서류 '+(i+1):doc.name;return '<div class="df-attach"><div class="df-attach-info"><div class="df-attach-title"><div class="df-attach-nm">'+name+'</div>'+(doc.guide?'<button type="button" class="df-guide-help" data-dfguide="'+i+'" aria-label="'+name+' 서류안내">?</button>':'')+'</div><div class="df-attach-sub">'+(doc.summary||doc.description)+'</div>'+(file?'<div class="df-attached-state">✓ 첨부 완료 · '+methodLabel(file.method)+'</div>':'')+'</div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div>'+preparationHtml+'<div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">'+submitLabel+'</button></div></div>';
+      var requirementHtml=isRequiredAll?'<div class="df-requirement is-all" role="status"><span><i>!</i><b>'+(state.taskId==='professionalInvestor'?'필수 서류를 모두 첨부하면 접수 가능합니다':'필수 서류를 모두 첨부해야 접수할 수 있어요')+'</b></span><strong>'+attachedCount+'/'+task.docs.length+' 첨부</strong></div>':(requirement?'<div class="df-requirement">'+requirement+'</div>':'');
+      var preparationHtml=preparation(task);
+      var submitLabel=state.taskId==='professionalInvestor'?'서류 제출하기':isRequiredAll&&!ready?'필수 서류를 모두 첨부해 주세요':'제출할게요';
+      app.innerHTML='<div class="dform-view '+(state.taskId==='professionalInvestor'?'df-professional-view':'')+'"><div class="df-head"><div class="df-dtitle">'+(task.detailTitle||task.title)+'</div><div class="df-desc">'+task.guide+'</div>'+requirementHtml+'</div>'+(state.taskId==='professionalInvestor'?professionalSettings():'')+'<div class="df-attach-list">'+displayDocs.map(function(doc,i){var file=state.session.documents[i],name=task.maxAttachments?'첨부서류 '+(i+1):doc.name;return (doc.section&&(i===0||displayDocs[i-1].section!==doc.section)?'<h3 class="df-document-section">'+doc.section+'</h3>':'')+'<div class="df-attach"><div class="df-attach-info"><div class="df-attach-title"><div class="df-attach-nm">'+name+'</div>'+(doc.guide?'<button type="button" class="df-guide-help" data-dfguide="'+i+'" aria-label="'+name+' 서류안내">?</button>':'')+'</div><div class="df-attach-sub">'+(doc.summary||doc.description)+'</div>'+(file?'<div class="df-attached-state">✓ 첨부 완료 · '+methodLabel(file.method)+'</div>':'')+'</div><button type="button" class="df-attach-btn '+(file?'attached':'')+'" data-dfattach="'+i+'">'+(file?'변경':'첨부')+'</button></div>';}).join('')+'</div>'+preparationHtml+'<div class="df-foot"><button type="button" class="df-submit '+(ready?'':'disabled')+'" data-dfsubmit aria-disabled="'+(!ready)+'">'+submitLabel+'</button></div></div>';
     }
     function methodLabel(method){return {camera:'사진 촬영',file:'파일 선택',gallery:'사진첩 선택'}[method]||'첨부';}
     function methodSheet(){
-      var task=tasks[state.taskId],doc=task.docs[Math.min(state.target,task.docs.length-1)],methods=doc.methods||['camera','file','gallery'];
+      var task=currentTask(),doc=task.docs[Math.min(state.target,task.docs.length-1)],methods=doc.methods||['camera','file','gallery'];
       var options={camera:'<button type="button" data-dfmethod="camera"><span class="df-method-ic">⌾</span><span><b>사진 촬영</b><small>카메라로 서류를 바로 촬영해요</small></span>'+arrow+'</button>',file:'<button type="button" data-dfmethod="file"><span class="df-method-ic">▤</span><span><b>파일 선택</b><small>저장된 PDF·이미지 파일을 찾아요</small></span>'+arrow+'</button>',gallery:'<button type="button" data-dfmethod="gallery"><span class="df-method-ic">▧</span><span><b>사진첩에서 선택</b><small>사진첩의 서류 이미지를 선택해요</small></span>'+arrow+'</button>'};
       detailView();setStepper(1);app.insertAdjacentHTML('beforeend','<div class="df-sheet-ov" data-dfclose><div class="df-sheet" role="dialog" aria-modal="true" aria-label="첨부 방법 선택"><div class="df-sheet-handle"></div><div class="df-sheet-title">어떻게 첨부할까요?</div>'+(methods.length===1?'<div class="df-method-notice">실물 확인이 필요한 서류로 사진 촬영만 가능해요.</div>':'')+methods.map(function(method){return options[method];}).join('')+'</div></div>');
     }
     function guideSheet(index){
-      var task=tasks[state.taskId],doc=task.docs[Math.min(index,task.docs.length-1)],guide=doc.guide;if(!guide)return;
+      var task=currentTask(),doc=task.docs[Math.min(index,task.docs.length-1)],guide=doc.guide;if(!guide)return;
       var sections=(guide.sections||[]).map(function(section){return '<details class="df-guide-section"><summary>'+section.title+'</summary><ul>'+section.items.map(function(item){return '<li>'+item+'</li>';}).join('')+'</ul></details>';}).join('');
       var source=guide.source?'<a class="df-guide-source" href="'+guide.source.url+'" target="_blank" rel="noopener noreferrer">'+guide.source.label+' <span>(새 창)</span></a>':'';
       var sample=guide.sample?'<div class="df-guide-sample-title">샘플 이미지 <b>예시</b></div><img class="df-guide-sample" src="'+guide.sample+'" alt="'+doc.name+' 예시 이미지">':'';
@@ -1520,7 +1549,7 @@
     function demoView(method){
       phone.dataset.contentScreen='demo:'+state.taskId+':'+method+':'+state.target;
       state.view='demo';state.method=method;setStepper(1);
-      var task=tasks[state.taskId],doc=(task.docs[Math.min(state.target,task.docs.length-1)]||{}).name,body='';
+      var task=currentTask(),doc=(task.docs[Math.min(state.target,task.docs.length-1)]||{}).name,body='';
       if(method==='camera')body='<div class="df-camera"><div class="df-camera-guide"><span></span><b>'+doc+'</b><small>가이드 안에 서류 전체가 보이게 해주세요</small></div></div><button type="button" class="df-demo-submit" data-dfcomplete>촬영하고 사용하기</button>';
       if(method==='file')body='<div class="df-file-list"><button type="button" class="selected" data-dfcomplete><span class="df-file-icon">PDF</span><span><b>'+doc+'.pdf</b><small>1.8 MB · 오늘</small></span><i>✓</i></button><button type="button"><span class="df-file-icon">JPG</span><span><b>최근 스캔 이미지.jpg</b><small>2.4 MB · 어제</small></span></button></div>';
       if(method==='gallery')body='<div class="df-gallery">'+[1,2,3,4,5,6].map(function(n){return '<button type="button" data-dfcomplete class="'+(n===1?'selected':'')+'"><span>서류 '+n+'</span>'+(n===1?'<i>✓</i>':'')+'</button>';}).join('')+'</div>';
@@ -1528,15 +1557,17 @@
     }
     function doneView(){
       phone.dataset.contentScreen='done:'+state.taskId;
-      var task=tasks[state.taskId],current=state.session.status;setStepper(2);
+      var task=currentTask(),current=state.session.status;setStepper(2);
       app.innerHTML='<div class="dform-view df-receipt"><div class="df-done"><div class="df-done-ic">✓</div><div class="df-done-t">접수가 완료됐어요</div><div class="df-done-d">서류를 확인한 뒤 알림톡으로 진행 상황을 안내해 드릴게요.</div></div><div class="df-receipt-card"><dl><div><dt>업무명</dt><dd>'+task.title+'</dd></div><div><dt>접수번호</dt><dd>'+state.session.receiptNo+'</dd></div><div><dt>접수일시</dt><dd>'+state.session.submittedAt+'</dd></div></dl><div class="df-status-title">접수 상태</div><div class="df-status-flow">'+DigitalForm.STATUSES.map(function(s,i){var active=s.id===current;return '<div class="'+(active?'current':'')+'"><i>'+(active?'●':'○')+'</i><span><b>'+s.label+'</b><small>'+(['서류가 정상적으로 접수됐어요','담당자가 제출 서류를 확인하고 있어요','추가 또는 수정 서류가 필요해요','요청된 서류를 보완하고 있어요','업무 처리가 모두 완료됐어요'][i])+'</small></span></div>';}).join('')+'</div></div><div class="df-foot"><button type="button" class="df-submit" data-dfhome>확인</button></div></div>';
     }
     function render(){if(state.view==='list')listView();else if(state.view==='detail')detailView();else if(state.view==='done')doneView();}
     phone.addEventListener('click',function(e){
-    var go=e.target.closest('[data-dfgo]');if(go){state.taskId=go.dataset.dfgo;state.session=DigitalForm.createSession(state.taskId,tasks[state.taskId].maxAttachments||tasks[state.taskId].docs.length,tasks[state.taskId].requirementMode);state.view='detail';return render();}
-      var guide=e.target.closest('[data-dfguide]');if(guide)return guideSheet(Number(guide.dataset.dfguide));
+    var go=e.target.closest('[data-dfgo]');if(go){state.taskId=go.dataset.dfgo;state.showRequirements=false;state.session=DigitalForm.createSession(state.taskId,tasks[state.taskId].maxAttachments||tasks[state.taskId].docs.length,tasks[state.taskId].requirementMode);state.view='detail';return render();}
+      var choice=e.target.closest('[data-dfoption]');if(choice){state.session=DigitalForm.selectProfessionalRequirement(state.session,Number(choice.dataset.dfgroup),choice.dataset.dfoption);state.showRequirements=false;state.view='detail';return render();}
+      if(e.target.closest('[data-dfrequirements]')){state.showRequirements=true;return detailView();}
+      var guide=e.target.closest('[data-dfguide]');if(guide)return professionalOverview()?professionalGuideSheet(Number(guide.dataset.dfguide)):guideSheet(Number(guide.dataset.dfguide));
       if(e.target.classList.contains('df-guide-ov')||e.target.closest('.df-guide-head [data-dfguideclose]'))return detailView();
-      var attach=e.target.closest('[data-dfattach]');if(attach){state.target=Number(attach.dataset.dfattach);return methodSheet();}
+      var attach=e.target.closest('[data-dfattach]');if(attach){var index=Number(attach.dataset.dfattach);if(professionalOverview()){if(state.session.selection&&state.session.selection.groupIndex===index){state.showRequirements=false;return detailView();}return professionalGuideSheet(index);}state.target=index;return methodSheet();}
       var method=e.target.closest('[data-dfmethod]');if(method)return demoView(method.dataset.dfmethod);
       if(e.target.closest('[data-dfclose]')&&e.target.closest('.df-sheet'))return;
       if(e.target.classList.contains('df-sheet-ov'))return detailView();
@@ -1545,9 +1576,25 @@
       var submit=e.target.closest('[data-dfsubmit]');if(submit){if(submit.getAttribute('aria-disabled')==='true')return;var result=DigitalForm.submit(state.session);if(!result.error){state.session=result.session;state.view='done';render();}return;}
       if(e.target.closest('[data-dfhome]')){state={view:'list',taskId:'',session:null,target:-1,method:''};render();}
     });
+    phone.addEventListener('change',function(e){
+      var input=e.target.closest('[data-dfcondition]');if(!input||state.taskId!=='professionalInvestor'||!state.session.selection)return;
+      var settings={},s=state.session.selection;settings[input.dataset.dfcondition]=input.checked;
+      state.session=DigitalForm.selectProfessionalRequirement(state.session,s.groupIndex,s.optionId,settings);detailView();
+      var next=app.querySelector('[data-dfcondition="'+input.dataset.dfcondition+'"]');if(next)next.focus();
+    });
+    phone.addEventListener('keydown',function(e){
+      var dialog=app.querySelector('.df-professional-guide');if(!dialog)return;
+      if(e.key==='Escape'){e.preventDefault();detailView();return;}
+      if(e.key==='Tab'){
+        var nodes=Array.from(dialog.querySelectorAll('button,summary,a[href]')).filter(function(node){return !node.closest('details')||node.tagName==='SUMMARY'||node.closest('details').open;});
+        var first=nodes[0],last=nodes[nodes.length-1];
+        if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+      }
+    });
     document.addEventListener('click',function(e){
       if(!e.target.closest||!e.target.closest('[data-demo-attach-documents]'))return;
-      if(phone.offsetParent===null||state.view!=='detail'||!state.session){if(typeof window.flash==='function')window.flash('Digital Form 서류 상세화면에서 사용해 주세요.');return;}
+      if(phone.offsetParent===null||state.view!=='detail'||!state.session||professionalOverview()){if(typeof window.flash==='function')window.flash('Digital Form 서류 상세화면에서 사용해 주세요.');return;}
       state.session=DigitalForm.attachDemoDocuments(state.session);render();
       if(typeof window.flash==='function')window.flash('시연용 서류를 첨부했습니다. 제출할게요 버튼을 눌러 진행해 주세요.');
     });
