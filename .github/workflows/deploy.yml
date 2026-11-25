@@ -40,13 +40,20 @@ jobs:
       - name: Build and verify presentation package
         run: npm run test:demo
 
+      - name: Stage current prototype and Ver 4.8 archive
+        run: |
+          mkdir -p _site/ver4.8
+          cp -a fresh-ars-20261112/. _site/
+          cp -a demo/. _site/ver4.8/
+          sed -i '/<meta charset="utf-8">/a\  <meta name="robots" content="noindex, nofollow">' _site/index.html _site/digital-form.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload presentation package only
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './demo'
+          path: './_site'
 
       # Deploy 스텝은 간헐적으로 실패할 수 있어 최대 3회 시도(원 1 + 재시도 2, 간격 대기).
       - name: Deploy to GitHub Pages
