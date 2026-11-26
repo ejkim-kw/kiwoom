@@ -160,9 +160,11 @@
     const state = id === 'password-change' || bankLookup ? {fromPasswordScenario: Boolean(fromPasswordScenario)} : undefined;
     go(`service/${id}${hasTopic ? '/' + topic : ''}`, state);
   }
-  function menuLink(s){return `<button class="menu-link" data-action="service" data-id="${s.id}"><span class="bullet"></span><span>${E(s.label)}</span>${chevron()}</button>`;}
+  function menuLink(service, action = 'service') {
+    const popup = action === 'certificate-options' ? ' aria-haspopup="dialog"' : '';
+    return `<button class="menu-link" data-action="${action}" data-id="${service.id}"${popup}><span class="bullet"></span><span>${E(service.label)}</span>${chevron()}</button>`;
+  }
   function categoryButton(group) {
-    if (group.id === 'papers') return `<button class="category" data-action="choose-certificate">${icon(group.icon,'category-icon',group.tone)}<span>${E(group.name)}</span></button>`;
     const direct = group.id === 'transfer';
     const behavior = direct
       ? 'data-action="service" data-id="withdrawal-status"'
@@ -223,7 +225,20 @@
   }
 
   function home(){
-    let grid='';for(let i=0;i<9;i+=3){const row=D.groups.slice(i,i+3);const expanded=row.find(g=>g.id===S.expanded);grid+=`<div class="menu-row">${row.map(categoryButton).join('')}${expanded?`<svg class="menu-outline" aria-hidden="true" focusable="false"><path/></svg><div id="panel-${expanded.id}" class="category-panel ${row.indexOf(expanded)===0?'left':row.indexOf(expanded)===2?'right':''}">${D.services.filter(s=>s.group===expanded.id).map(menuLink).join('')}</div>`:''}</div>`;}
+    let grid = '';
+    for (let i = 0; i < D.groups.length; i += 3) {
+      const row = D.groups.slice(i, i + 3);
+      const expanded = row.find(group => group.id === S.expanded);
+      let panel = '';
+      if (expanded) {
+        const isCertificate = expanded.id === 'papers';
+        const services = isCertificate ? certificates.catalog.map(id => D.service(id)) : D.services.filter(service => service.group === expanded.id);
+        const action = isCertificate ? 'certificate-options' : 'service';
+        const alignment = [' left', '', ' right'][row.indexOf(expanded)];
+        panel = `<svg class="menu-outline" aria-hidden="true" focusable="false"><path/></svg><div id="panel-${expanded.id}" class="category-panel${alignment}">${services.map(service => menuLink(service, action)).join('')}</div>`;
+      }
+      grid += `<div class="menu-row">${row.map(categoryButton).join('')}${panel}</div>`;
+    }
     return `${homeTop()}<main id="main">${noticeTicker()}<section class="intro"><p class="greeting">안녕하세요,</p><h1>쉽고 빠르게 검색해보세요</h1></section>
       <div class="search-dock"><form class="search-box" id="home-search"><label class="visually-hidden" for="home-query">업무 검색</label><input id="home-query" name="query" type="search" placeholder="검색어를 입력하세요." autocomplete="off" maxlength="80" enterkeyhint="search"><button id="home-search-submit" type="submit" aria-label="검색하기">${icon('search')}</button><button id="home-search-clear" type="button" data-action="clear-home-search" aria-label="검색어 지우기" hidden>${icon('close')}</button></form></div>
       <div class="recent-line"><span class="recent-label">${icon('star')}최근 본 메뉴</span><div class="recent-items">${S.recent.length?S.recent.map(id=>`<button class="chip" data-action="service" data-id="${id}">${E(D.service(id).label)}</button>`).join(''):'<span class="empty-recent">이용한 메뉴가 여기에 표시됩니다.</span>'}</div></div><section class="home-menu" aria-label="업무 메뉴">${grid}</section><section class="self-help"><h2 class="section-heading">직접 해결할 수 있어요</h2>${D.scenarios.map(([label,ic,id],i)=>`<button class="situation" data-action="scenario" data-id="${id}" data-index="${i}">${icon(ic)}<span>${E(label)}</span>${chevron()}</button>`).join('')}</section></main>`;
@@ -264,7 +279,7 @@
     return `${top()}<main id="main" class="content notice-page"><h1>${E(notice.title)}</h1><p class="lead">${E(notice.summary)}</p>${sections}${demoNote(notice.demoNote)}</main>`;
   }
   function menuMatches(){return D.search(S.menuQuery, {menuOnly: true});}
-  function menuResults(matches=menuMatches()){return matches.length?D.groups.map(group=>{const items=matches.filter(service=>service.group===group.id);return items.length?`<section class="all-menu-group"><h2>${icon(group.icon,'',group.tone)}${E(group.name)}</h2>${items.map(menuLink).join('')}</section>`:'';}).join(''):`<div class="empty-state">${icon('search')}<h2>검색 결과가 없습니다</h2><p>다른 메뉴명으로 검색해 주세요.</p>${btn('검색어 지우기','clear-menu-search','','secondary')}</div>`;}
+  function menuResults(matches=menuMatches()){return matches.length?D.groups.map(group=>{const items=matches.filter(service=>service.group===group.id);return items.length?`<section class="all-menu-group"><h2>${icon(group.icon,'',group.tone)}${E(group.name)}</h2>${items.map(service=>menuLink(service)).join('')}</section>`:'';}).join(''):`<div class="empty-state">${icon('search')}<h2>검색 결과가 없습니다</h2><p>다른 메뉴명으로 검색해 주세요.</p>${btn('검색어 지우기','clear-menu-search','','secondary')}</div>`;}
   function updateMenuSearch(value) {
     S.menuQuery = value.slice(0, 80);
     const matches = menuMatches();
